@@ -1,5 +1,6 @@
 package com.javix.wordflipster
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
@@ -17,19 +18,28 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 
 class WelcomeActivity : ComponentActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -39,6 +49,15 @@ class WelcomeActivity : ComponentActivity() {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
+
+    val context = LocalContext.current
+    val dataStoreManager = remember { DataStoreManager(context) }
+    val coroutineScope = rememberCoroutineScope()
+
+
+    // State variables to hold the letter and minute counts
+
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -46,7 +65,7 @@ fun DefaultPreview() {
     ) {
 
 
-        TopBarWelcomScreen()
+        TopBarWelcomeScreen()
 
         Column(
             modifier = Modifier
@@ -54,8 +73,8 @@ fun DefaultPreview() {
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            EditLettersButton()
-            MinutesButton()
+            EditLettersButton( dataStoreManager, coroutineScope)
+            MinutesButton(dataStoreManager, coroutineScope)
             Button(
                 onClick = { /*TODO*/ },
                 shape = RoundedCornerShape(
@@ -73,12 +92,24 @@ fun DefaultPreview() {
     }
 }
 
+
 @Composable
-fun EditLettersButton() {
+fun EditLettersButton(dataStoreManager: DataStoreManager, coroutineScope: CoroutineScope) {
+    var letterCount by remember { mutableStateOf(2) }
+    LaunchedEffect(Unit) {
+        dataStoreManager.letterCountFlow.collect { count ->
+            letterCount = count
+        }
+    }
 
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Button(
-            onClick = {},
+            onClick = {
+                if (letterCount > 2) {
+                    letterCount--
+                    coroutineScope.launch { dataStoreManager.saveLetterCount(letterCount) }
+                }
+            },
             shape = RoundedCornerShape(
                 topStart = 16.dp,
                 topEnd = 16.dp,
@@ -99,10 +130,15 @@ fun EditLettersButton() {
             colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black),  // Blue background
             modifier = Modifier.size(150.dp, 50.dp)
         ) {
-            Text("4 Letters", color = Color.White)  // White text
+            Text("${letterCount} Letters", color = Color.White)  // White text
         }
         Button(
-            onClick = {},
+            onClick = {
+                if (letterCount < 5) {
+                    letterCount++
+                    coroutineScope.launch { dataStoreManager.saveLetterCount(letterCount) }
+                }
+            },
             shape = RoundedCornerShape(
                 topStart = 16.dp,
                 topEnd = 16.dp,
@@ -117,11 +153,22 @@ fun EditLettersButton() {
 }
 
 @Composable
-fun MinutesButton() {
+fun MinutesButton(dataStoreManager: DataStoreManager, coroutineScope: CoroutineScope) {
+    var minuteCount by remember { mutableStateOf(1) }
+    LaunchedEffect(Unit) {
+        dataStoreManager.minuteCountFlow.collect { count ->
+            minuteCount = count
+        }
+    }
 
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Button(
-            onClick = {},
+            onClick = {
+                if (minuteCount > 1) {
+                    minuteCount--
+                    coroutineScope.launch { dataStoreManager.saveMinuteCount(minuteCount) }
+                }
+            },
             shape = RoundedCornerShape(
                 topStart = 16.dp,
                 topEnd = 16.dp,
@@ -142,10 +189,15 @@ fun MinutesButton() {
             colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black),  // Blue background
             modifier = Modifier.size(150.dp, 50.dp)
         ) {
-            Text("2 Minutes", color = Color.White)  // White text
+            Text("${minuteCount} Minutes", color = Color.White)  // White text
         }
         Button(
-            onClick = {},
+            onClick = {
+                if (minuteCount < 5) {
+                    minuteCount++
+                    coroutineScope.launch { dataStoreManager.saveMinuteCount(minuteCount) }
+                }
+            },
             shape = RoundedCornerShape(
                 topStart = 16.dp,
                 topEnd = 16.dp,
@@ -160,7 +212,7 @@ fun MinutesButton() {
 }
 
 @Composable
-fun TopBarWelcomScreen() {
+fun TopBarWelcomeScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
