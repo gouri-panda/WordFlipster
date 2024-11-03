@@ -1,0 +1,175 @@
+package com.javix.wordflipster
+
+import android.app.Application
+import android.content.Context
+import android.util.Log
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import java.util.Date
+import java.util.Locale
+
+class HomeViewModel(application: Application, category: String?, onChallengeCompleteListener: (Challenge) -> Unit) :
+    AndroidViewModel(application) {
+    val dataStoreManager = DataStoreManager(application)
+    private val challengeDao = WordFlipsterDatabase.getDatabase(application).challengeDao()
+
+
+    private val _remainingTime = MutableStateFlow(60) // Initialize with default 60 seconds
+    val remainingTime: StateFlow<Int> = _remainingTime
+
+    private val _totalTime = MutableStateFlow(60)
+
+    private val _totalWords = MutableStateFlow(0)
+    val totalWords: StateFlow<Int> = _totalWords
+
+    private val _wordsSolved = MutableStateFlow(0)
+    val wordsSolved: StateFlow<Int> = _wordsSolved
+
+    private val _letterCount = MutableStateFlow(2)
+    val letterCount: StateFlow<Int> = _letterCount
+
+    val _wordsList = MutableStateFlow(getWordsListFrom(category))
+    val wordsList: StateFlow<List<String>> = _wordsList
+
+    private val _vibration = MutableStateFlow(true)
+    val vibration: StateFlow<Boolean> = _vibration
+
+    lateinit var _challenge: MutableStateFlow<Challenge>
+
+
+    init {
+        Log.d("HomeViewModel", "init block called")
+        viewModelScope.launch {
+            // Collect minuteCountFlow and update _totalTime
+            _remainingTime.value = dataStoreManager.minuteCountFlow.first() * 60
+            _totalTime.value = dataStoreManager.minuteCountFlow.first() * 60
+            _letterCount.value = dataStoreManager.letterCountFlow.first()
+            _vibration.value = dataStoreManager.vibrationEnabledFlow.first()
+            _wordsList.value = getWordsListFrom(category)
+
+            dataStoreManager.totalWords.collect { total ->
+                _totalWords.value = total
+            }
+            dataStoreManager.totalCorrectWords.collect { solved ->
+                Log.d("HomeViewModel", "Collected correct words: $solved")
+                _wordsSolved.value = solved
+            }
+
+            viewModelScope.launch {
+                dataStoreManager.letterCountFlow.collect { count ->
+                    Log.d("HomeViewModel", "Collected letter count: $count") // Debug line
+
+                    _letterCount.value = count
+                    _wordsList.value = getWordsListFromCount(count)
+
+                }
+
+            }
+        }
+
+        // Start the countdown timer
+        viewModelScope.launch {
+            while (_remainingTime.value > 0) {
+                delay(1000L) // 1 second delay
+                _remainingTime.value -= 1
+            }
+            if (_remainingTime.value.equals(0)) {
+                saveChallengeEntityToDatabase()
+                val challenge = createChallenge()
+                _challenge.value = challenge
+                onChallengeCompleteListener.invoke(_challenge.value)
+            }
+        }
+    }
+
+    fun updateCorrectWords(correctWords: Int) {
+        _wordsSolved.value = correctWords
+    }
+
+    fun updateTotalWords(totalWords: Int) {
+        _totalWords.value = totalWords
+    }
+
+    fun createChallengeEntity(): ChallengeEntity {
+        return ChallengeEntity(
+            wordsSolved = wordsSolved.value,
+            totalWords = totalWords.value,
+            timeTaken = remainingTime.value.toLong(),
+            date = Date()
+        )
+    }
+
+    fun saveChallengeEntityToDatabase() {
+        viewModelScope.launch {
+            challengeDao.insertChallenge(createChallengeEntity())
+        }
+    }
+
+    fun createChallenge(): Challenge {
+        _challenge = MutableStateFlow(
+            Challenge(
+                wordsSolved = wordsSolved.value,
+                totalWords = totalWords.value,
+                timeTaken = _totalTime.value.toLong(),
+                date = Date()
+            )
+        )
+        return _challenge.value
+    }
+
+
+    fun getWordsListFromCount(count: Int): List<String> {
+        Log.d("HomeViewModel", "Getting words list for letter count: $count") // Debug line
+        return when (count) {
+            2 -> twoLetterWords
+            3 -> threeLetterWords
+            4 -> fourLetterWords
+            5 -> fiveLetterWords
+            else -> twoLetterWords
+        }
+    }
+
+    fun getCharList(): List<List<String>> {
+        return _wordsList.value.map { word ->
+            word.map {
+                it.toString().uppercase(
+                    Locale.getDefault()
+                )
+            }
+        }
+    }
+
+    fun getWordsListFrom(category: String?): List<String> {
+
+        if (category != null && category != "") {
+            return categoriesWithWords[category] ?: twoLetterWords
+        } else return getWordsListFromCount(letterCount.value)
+    }
+
+}
+
+class HomeViewModelFactory(
+    private val context: Context,
+    private val category: String?,
+    private val onChallengeCompleteListener: (Challenge) -> Unit
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return HomeViewModel(
+                context as Application,
+                category = category,
+                onChallengeCompleteListener = onChallengeCompleteListener
+            ) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}
+

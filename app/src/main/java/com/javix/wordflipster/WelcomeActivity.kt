@@ -1,9 +1,10 @@
 package com.javix.wordflipster
 
-import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.Image
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,11 +15,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,25 +28,61 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import androidx.navigation.toRoute
+import com.google.gson.Gson
+import com.javix.wordflipster.ui.theme.WordFlipsterTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 
 class WelcomeActivity : ComponentActivity() {
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            WordFlipsterTheme {
+                Scaffold(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 32.dp),
+                ) { innerPadding ->
+                    val navController = rememberNavController()
+                    NavHost(navController = navController, startDestination = "home") {
+                        composable("home") { StartingScreen(navController) }
+                        composable("mainScreen?category={category}", arguments = listOf(navArgument("category") { type = NavType.StringType }), ) {
+                            val category = it.arguments?.getString("category") ?: ""
+
+                            HomeScreen(navController, category)
+                        }
+                        composable("dashboard") { TestDashboardScreen() }
+                        composable("settings") { SettingsScreen()}
+                        composable(route = "overviewChallenge?challenge={challenge}", arguments = listOf(navArgument("challenge") { type = NavType.StringType })){ backStackEntry ->
+                            val challengeString = backStackEntry.arguments?.getString("challenge")
+                            val challenge = Gson().fromJson(challengeString, Challenge::class.java)
+
+                            ChallengeCompleteScreenWrapper(navController, challenge)
+                        }
+                        composable("puzzleCategory"){
+                            PreviewCategoryGridScreen(navController)
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }
 
-@Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
+fun StartingScreen(navController: NavController) {
 
     val context = LocalContext.current
     val dataStoreManager = remember { DataStoreManager(context) }
@@ -65,7 +99,7 @@ fun DefaultPreview() {
     ) {
 
 
-        TopBarWelcomeScreen()
+        TopBar(navController)
 
         Column(
             modifier = Modifier
@@ -73,10 +107,23 @@ fun DefaultPreview() {
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Button(
+                onClick = { navController.navigate("puzzleCategory") },
+                shape = RoundedCornerShape(
+                    topStart = 16.dp,
+                    topEnd = 16.dp,
+                    bottomEnd = 16.dp,
+                    bottomStart = 16.dp
+                ),  // Rounded corners
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue),
+                modifier = Modifier.size(200.dp, 50.dp)
+            ) {
+                Text("Category", color = Color.White)
+            }
             EditLettersButton( dataStoreManager, coroutineScope)
             MinutesButton(dataStoreManager, coroutineScope)
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { navController.navigate("mainScreen?category=") },
                 shape = RoundedCornerShape(
                     topStart = 16.dp,
                     topEnd = 16.dp,
@@ -96,6 +143,7 @@ fun DefaultPreview() {
 @Composable
 fun EditLettersButton(dataStoreManager: DataStoreManager, coroutineScope: CoroutineScope) {
     var letterCount by remember { mutableStateOf(2) }
+
     LaunchedEffect(Unit) {
         dataStoreManager.letterCountFlow.collect { count ->
             letterCount = count
@@ -105,7 +153,7 @@ fun EditLettersButton(dataStoreManager: DataStoreManager, coroutineScope: Corout
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Button(
             onClick = {
-                if (letterCount > 2) {
+                if (letterCount >= 2) {
                     letterCount--
                     coroutineScope.launch { dataStoreManager.saveLetterCount(letterCount) }
                 }
@@ -211,35 +259,3 @@ fun MinutesButton(dataStoreManager: DataStoreManager, coroutineScope: CoroutineS
 
 }
 
-@Composable
-fun TopBarWelcomeScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top= 16.dp)
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier.align(Alignment.TopEnd)
-        ) {
-            // Icon for progress graph at the top left corner
-            IconButton(
-                onClick = { /* Handle progress graph action */ },
-                  // Padding from the top and left
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.progress_graph), // Replace with your drawable name
-                    contentDescription = "Progress Graph",
-                    modifier = Modifier.size(24.dp) // Set size as needed
-                )
-            }
-
-            // Icon for settings at the bottom right corner
-            IconButton(
-                onClick = { /* Handle settings action */ },
-            ) {
-                Icon(Icons.Default.Settings, contentDescription = "Settings", tint = Color.Black)
-            }
-        }
-    }
-}
