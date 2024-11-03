@@ -166,7 +166,7 @@ fun EditLettersButton(dataStoreManager: DataStoreManager, coroutineScope: Corout
             modifier = Modifier.size(50.dp, 50.dp)
         ) { Text("-", color = Color.Black) }
         Button(
-            onClick = { /*TODO*/ },
+            onClick = {},
             shape = RoundedCornerShape(
                 topStart = 16.dp,
                 topEnd = 16.dp,
@@ -176,7 +176,7 @@ fun EditLettersButton(dataStoreManager: DataStoreManager, coroutineScope: Corout
             colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black),  // Blue background
             modifier = Modifier.size(150.dp, 50.dp)
         ) {
-            Text("${letterCount} Letters", color = Color.White)  // White text
+            Text("$letterCount Letters", color = Color.White)  // White text
         }
         Button(
             onClick = {
@@ -225,7 +225,7 @@ fun MinutesButton(dataStoreManager: DataStoreManager, coroutineScope: CoroutineS
             modifier = Modifier.size(50.dp, 50.dp)
         ) { Text("-", color = Color.Black) }
         Button(
-            onClick = { /*TODO*/ },
+            onClick = {},
             shape = RoundedCornerShape(
                 topStart = 16.dp,
                 topEnd = 16.dp,
@@ -235,7 +235,7 @@ fun MinutesButton(dataStoreManager: DataStoreManager, coroutineScope: CoroutineS
             colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black),  // Blue background
             modifier = Modifier.size(150.dp, 50.dp)
         ) {
-            Text("${minuteCount} Minutes", color = Color.White)  // White text
+            Text("$minuteCount Minutes", color = Color.White)  // White text
         }
         Button(
             onClick = {
