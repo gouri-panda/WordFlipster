@@ -36,7 +36,6 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
     val letterCount: StateFlow<Int> = _letterCount
 
     val _wordsList = MutableStateFlow(getWordsListFrom(category))
-    val wordsList: StateFlow<List<String>> = _wordsList
 
     private val _vibration = MutableStateFlow(true)
     val vibration: StateFlow<Boolean> = _vibration
