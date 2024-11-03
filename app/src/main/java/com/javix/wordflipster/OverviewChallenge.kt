@@ -1,6 +1,5 @@
 package com.javix.wordflipster
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,27 +20,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-
-
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.google.android.gms.games.leaderboard.Leaderboard
-import kotlinx.coroutines.flow.first
 import nl.dionsegijn.konfetti.compose.KonfettiView
 import nl.dionsegijn.konfetti.core.Party
 import nl.dionsegijn.konfetti.core.Position
@@ -164,34 +152,4 @@ fun ConfettiAnimation() {
     ) {
         Text(text = "🎉", fontSize = 80.sp) // Sample confetti text, replace with animation
     }
-    val party = Party(
-        speed = 0f,
-        maxSpeed = 30f,
-        damping = 0.9f,
-        spread = 360,
-        colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
-        position = Position.Relative(0.5, 0.3),
-        emitter = Emitter(duration = 100, TimeUnit.MILLISECONDS).max(100)
-    )
-//    val konfettiView = KonfettiView(
-//        modifier = Modifier.fillMaxSize(),
-//        parties = Party.,
-//    )
-//    konfettiView.start(party)
-}
-
-@Preview(showBackground = true)
-@Composable
-fun testKonfettiView() {
-    Party(
-        emitter = Emitter(duration = 5, TimeUnit.SECONDS).perSecond(30)
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ConfettiExample() {
-
-
-
 }

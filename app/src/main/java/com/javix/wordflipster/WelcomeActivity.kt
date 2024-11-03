@@ -1,7 +1,6 @@
 package com.javix.wordflipster
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -35,7 +34,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import androidx.navigation.toRoute
 import com.google.gson.Gson
 import com.javix.wordflipster.ui.theme.WordFlipsterTheme
 import kotlinx.coroutines.CoroutineScope
