@@ -151,7 +151,7 @@ fun EditLettersButton(dataStoreManager: DataStoreManager, coroutineScope: Corout
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Button(
             onClick = {
-                if (letterCount >= 2) {
+                if (letterCount > 2) {
                     letterCount--
                     coroutineScope.launch { dataStoreManager.saveLetterCount(letterCount) }
                 }
