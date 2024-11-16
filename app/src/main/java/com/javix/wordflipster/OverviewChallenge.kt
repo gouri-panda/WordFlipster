@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import com.javix.wordflipster.Navigation.Screens
 import nl.dionsegijn.konfetti.compose.KonfettiView
 import nl.dionsegijn.konfetti.core.Party
 import nl.dionsegijn.konfetti.core.Position
@@ -55,11 +56,11 @@ fun ChallengeCompleteScreenWrapper(navController: NavController, challenge: Chal
             correctWords = challenge.wordsSolved,
             totalWords = challenge.totalWords,
             onPlayAgainClick = {
-                navController.navigate("mainScreen?category=")
+                navController.navigate(Screens.WordFlipHomeScreen.createRoute(""))
             }, onHomeClick = {
-                navController.navigate("home")
+                navController.navigate(Screens.WelcomeScreen.route)
             }, onDashboardClick = {
-                navController.navigate("dashboard")
+                navController.navigate(Screens.Dashboard.route)
             }, onShareClick = {}) // Todo: Add share click when in the playstore :)
 
     }
@@ -104,7 +105,7 @@ fun ChallengeCompletionScreen(
 
             // Play Again Button
             Button(onClick = onPlayAgainClick, colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue)) {
-                Text(" Play Again")
+                Text(" Play Again", color = Color.White)
             }
         }
 

@@ -15,13 +15,13 @@ import kotlinx.coroutines.launch
 import java.util.Date
 import java.util.Locale
 
-class HomeViewModel(application: Application, category: String?, onChallengeCompleteListener: (Challenge) -> Unit) :
+class HomeViewModel(application: Application, category: String?, onChallengeCompleteListener: (Challenge?) -> Unit) :
     AndroidViewModel(application) {
     val dataStoreManager = DataStoreManager(application)
     private val challengeDao = WordFlipsterDatabase.getDatabase(application).challengeDao()
 
 
-    private val _remainingTime = MutableStateFlow(60) // Initialize with default 60 seconds
+     val _remainingTime = MutableStateFlow(60) // Initialize with default 60 seconds
     val remainingTime: StateFlow<Int> = _remainingTime
 
     private val _totalTime = MutableStateFlow(60)
@@ -40,7 +40,7 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
     private val _vibration = MutableStateFlow(true)
     val vibration: StateFlow<Boolean> = _vibration
 
-    lateinit var _challenge: MutableStateFlow<Challenge>
+    private var _challenge = MutableStateFlow<Challenge?>(null)
 
 
     init {
@@ -111,7 +111,7 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
         }
     }
 
-    fun createChallenge(): Challenge {
+    fun createChallenge(): Challenge? {
         _challenge = MutableStateFlow(
             Challenge(
                 wordsSolved = wordsSolved.value,
@@ -157,7 +157,7 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
 class HomeViewModelFactory(
     private val context: Context,
     private val category: String?,
-    private val onChallengeCompleteListener: (Challenge) -> Unit
+    private val onChallengeCompleteListener: (Challenge?) -> Unit
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {

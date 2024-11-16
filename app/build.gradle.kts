@@ -66,6 +66,8 @@ dependencies {
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.play.services.games)
+    implementation(libs.core.ktx)
+    implementation(libs.androidx.junit.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -89,6 +91,23 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     implementation("nl.dionsegijn:konfetti-compose:2.0.4")
     implementation("com.google.code.gson:gson:2.10.1")
+
+
+    // JUnit for unit testing
+    testImplementation(libs.junit)
+
+    // Espresso for UI testing
+    androidTestImplementation(libs.androidx.espresso.core.v350)
+    androidTestImplementation(libs.androidx.junit.v121)
+
+    // Mockito for mocking
+    testImplementation(libs.mockito.core)
+    androidTestImplementation(libs.mockito.android)
+
+    testImplementation(libs.kotlinx.coroutines.test)
+    implementation("androidx.compose.animation:animation:1.6.0")
+
+
 
 
 }

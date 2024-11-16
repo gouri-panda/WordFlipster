@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.javix.wordflipster.Navigation.Screens
 
 @Composable
 fun CategoryGridScreen(categories: List<Category>, navController: NavController) {
@@ -81,7 +82,7 @@ fun CategoryItem(category: Category, navController: NavController) {
             .scale(scale.value)
             .clickable(
                 onClick = {
-                    navController.navigate("mainScreen?category=${category.title}")
+                    navController.navigate(Screens.WordFlipHomeScreen.createRoute(category.title))
                     // Handle click action here
                 },
                 onClickLabel = "Open ${category.title} category"

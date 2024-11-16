@@ -5,19 +5,19 @@
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="WelcomeActivity">
+      <SelectionState runConfigName="HomeViewModelTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="testKonfettiView">
+      <SelectionState runConfigName="GameScreenPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="ConfettiExample">
+      <SelectionState runConfigName="EnhancedWordChainGameScreen">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="CategorySelectionScreenWrapper">
+      <SelectionState runConfigName="WordChainOnboarding">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="PreviewCategoryGridScreen">
+      <SelectionState runConfigName="WordChainOnboardingWrapper">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

@@ -1,9 +1,6 @@
 package com.javix.wordflipster
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.Text
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -29,58 +27,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.google.gson.Gson
+import com.javix.wordflipster.Navigation.Screens
 import com.javix.wordflipster.ui.theme.WordFlipsterTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 
-class WelcomeActivity : ComponentActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            WordFlipsterTheme {
-                Scaffold(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 32.dp),
-                ) { innerPadding ->
-                    val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "home") {
-                        composable("home") { StartingScreen(navController) }
-                        composable("mainScreen?category={category}", arguments = listOf(navArgument("category") { type = NavType.StringType }), ) {
-                            val category = it.arguments?.getString("category") ?: ""
-
-                            HomeScreen(navController, category)
-                        }
-                        composable("dashboard") { TestDashboardScreen() }
-                        composable("settings") { SettingsScreen()}
-                        composable(route = "overviewChallenge?challenge={challenge}", arguments = listOf(navArgument("challenge") { type = NavType.StringType })){ backStackEntry ->
-                            val challengeString = backStackEntry.arguments?.getString("challenge")
-                            val challenge = Gson().fromJson(challengeString, Challenge::class.java)
-
-                            ChallengeCompleteScreenWrapper(navController, challenge)
-                        }
-                        composable("puzzleCategory"){
-                            PreviewCategoryGridScreen(navController)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-}
 
 @Composable
-fun StartingScreen(navController: NavController) {
+fun WordFlipOnboarding(navController: NavController) {
 
     val context = LocalContext.current
     val dataStoreManager = remember { DataStoreManager(context) }
@@ -121,7 +76,7 @@ fun StartingScreen(navController: NavController) {
             EditLettersButton( dataStoreManager, coroutineScope)
             MinutesButton(dataStoreManager, coroutineScope)
             Button(
-                onClick = { navController.navigate("mainScreen?category=") },
+                onClick = { navController.navigate("${Screens.WordFlipOnboarding.route}?category=") }, // todo: refactor the screns login
                 shape = RoundedCornerShape(
                     topStart = 16.dp,
                     topEnd = 16.dp,

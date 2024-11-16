@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.map
 
 private val Context.dataStore by preferencesDataStore(name = "settings")
 
-class DataStoreManager(context: Context) {
+open class DataStoreManager(context: Context) {
     private val dataStore = context.dataStore
 
     companion object {
@@ -23,23 +23,23 @@ class DataStoreManager(context: Context) {
         val VIBRATION_ENABLED = booleanPreferencesKey("vibration_enabled")
     }
 
-    val letterCountFlow: Flow<Int> = dataStore.data
+    open val letterCountFlow: Flow<Int> = dataStore.data
         .map { preferences ->
             Log.d("DataStoreManager", "Emitted letter count: $preferences") // Add this log
 
             preferences[LETTER_COUNT_KEY] ?: 2 // Default to 2
         }
 
-    val minuteCountFlow: Flow<Int> = dataStore.data
+    open val minuteCountFlow: Flow<Int> = dataStore.data
         .map { preferences ->
             Log.d("DataStoreManager", "Emitted minute count: $preferences")
             preferences[MINUTE_COUNT_KEY] ?: 1 // Default to 1
         }
 
-    val totalWords: Flow<Int> = dataStore.data.map { preference ->
+    open val totalWords: Flow<Int> = dataStore.data.map { preference ->
         preference[TOTAL_WORDS_KEY] ?: 0
     }
-    val totalCorrectWords: Flow<Int> = dataStore.data.map { preference ->
+    open val totalCorrectWords: Flow<Int> = dataStore.data.map { preference ->
         preference[TOTAL_CORRECT_WORDS_KEY] ?: 1
     }
 
@@ -48,7 +48,7 @@ class DataStoreManager(context: Context) {
             preferences[MUSIC_ENABLED] ?: true // Default value is true
         }
 
-    val vibrationEnabledFlow: Flow<Boolean> = context.dataStore.data
+    open val vibrationEnabledFlow: Flow<Boolean> = context.dataStore.data
         .map { preferences ->
             preferences[VIBRATION_ENABLED] ?: true // Default value is true
         }

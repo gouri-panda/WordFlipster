@@ -4,9 +4,11 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -34,6 +36,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -41,6 +44,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,6 +56,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -67,9 +72,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.gson.Gson
 import com.javix.wordflipster.ui.theme.WordFlipsterTheme
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filter
 
 @Composable
-fun HomeScreen(navController: NavController, category: String) {
+fun WordFlipHomeScreen(navController: NavController, category: String) {
     var currentWordIndex = rememberSaveable { mutableStateOf(0) }
     val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(
         LocalContext.current.applicationContext, category = category
@@ -251,6 +258,8 @@ fun InputWordView(
                     val inputChar = inputText.getOrNull(index)?.toString()
                     val isCorrectChar = inputChar != null &&  inputText.getOrNull(index)?.toString() == correctWord.getOrNull((correctWord.size - 1) - index)
 
+
+
                     // Set color based on correctness, default to a neutral color for empty boxes
                     val borderColor = when {
                         inputChar == null -> Color.Gray  // Default color for empty boxes
@@ -286,6 +295,19 @@ fun InputWordView(
             }
         }
     )
+    // Observe inputText changes and trigger onWordCompleteListener only after it appears on screen
+            LaunchedEffect(inputText) {
+                snapshotFlow { inputText }
+                    .filter { it.length == correctWord.size - 1  }
+                    .debounce(5000)
+                    .collect { completedText ->
+//                        val isCorrectWord = evaluateCorrectWord(
+//                            inputWord = completedText,
+//                            correctWord = correctWord.joinToString("")
+//                        )
+//                        onWordCompleteListener(currentWordIndex + 1, isCorrectWord)
+                    }
+            }
 }
 
 
@@ -526,6 +548,87 @@ fun createVibration(vibrator: Vibrator, viewModel: AndroidViewModel) {
                 )
             } else {
                 vib.vibrate(50)
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TestWordGridWithWoodenTiles() {
+    val word = listOf("hope","story","life")
+    // Remember a rotation angle for each letter box
+    val rotations = remember { word.map { Animatable(0f) } }
+
+    // Trigger flip animation whenever the word changes
+    LaunchedEffect(word) {
+        rotations.forEach { rotation ->
+            // Reset rotation before starting the flip
+            rotation.snapTo(0f)
+            rotation.animateTo(
+                targetValue = 180f,
+                animationSpec = tween(durationMillis = 600)
+            )
+        }
+    }
+
+    LazyRow(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(word.size) { index ->
+            val rotation = rotations[index].value
+
+            Box(
+                modifier = Modifier
+                    .size(50.dp)
+                    .graphicsLayer {
+                        rotationY = rotation
+                        cameraDistance = 16f * density // Adds depth for 3D effect
+                    }
+                    .border(1.dp, Color(0xFF8B4513))
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(
+                                Color(0xFFDEB887),
+                                Color(0xFFA0522D)
+                            )
+                        )
+                    )
+                    .shadow(4.dp, shape = RoundedCornerShape(4.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                if (rotation < 90f) {
+                    // First half of the page (front view)
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = word[index],
+                            style = MaterialTheme.typography.h5,
+                            color = Color.Black,
+                            modifier = Modifier.padding(4.dp)
+                        )
+                    }
+                } else {
+                    // Second half of the page (back view)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color(0xFFD3D3D3)), // A different color for the back
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = word[index],
+                            style = MaterialTheme.typography.h5,
+                            color = Color.Gray,
+                            modifier = Modifier.padding(4.dp)
+                        )
+                    }
+                }
             }
         }
     }
