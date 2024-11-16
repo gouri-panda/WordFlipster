@@ -9,15 +9,12 @@ import androidx.navigation.navArgument
 import com.google.gson.Gson
 import com.javix.wordflipster.Challenge
 import com.javix.wordflipster.ChallengeCompleteScreenWrapper
-import com.javix.wordflipster.GameTypeList
 import com.javix.wordflipster.WordFlipHomeScreen
 import com.javix.wordflipster.PreviewCategoryGridScreen
 import com.javix.wordflipster.SettingsScreen
 import com.javix.wordflipster.WordFlipOnboarding
 import com.javix.wordflipster.TestDashboardScreen
-import com.javix.wordflipster.WelcomeScreen
 import com.javix.wordflipster.WelcomeScreenComposeWrapper
-import com.javix.wordflipster.WordChainOnboarding
 import com.javix.wordflipster.WordChainOnboardingWrapper
 
 @Composable
@@ -43,7 +40,7 @@ fun WordFlipsterNavigationSetup(navHostController: NavHostController) {
         composable(Screens.WelcomeScreen.route)  { WelcomeScreenComposeWrapper(navHostController)}
 
         composable(Screens.WordChainOnboarding.route) {
-            WordChainOnboarding()
+            WordChainOnboardingWrapper()
         }
     }
 }
