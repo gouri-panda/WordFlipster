@@ -9,7 +9,7 @@ import androidx.navigation.navArgument
 import com.google.gson.Gson
 import com.javix.wordflipster.Challenge
 import com.javix.wordflipster.ChallengeCompleteScreenWrapper
-import com.javix.wordflipster.WordFlipHomeScreen
+import com.javix.wordflipster.WordFlipMainScreen
 import com.javix.wordflipster.PreviewCategoryGridScreen
 import com.javix.wordflipster.SettingsScreen
 import com.javix.wordflipster.WordFlipOnboarding
@@ -23,7 +23,7 @@ fun WordFlipsterNavigationSetup(navHostController: NavHostController) {
         composable(Screens.WordFlipOnboarding.route) { WordFlipOnboarding(navHostController) }
         composable(Screens.WordFlipHomeScreen.route, arguments = listOf(navArgument("category") { type = NavType.StringType }), ) {
             val category = it.arguments?.getString("category") ?: ""
-            WordFlipHomeScreen(navHostController, category)
+            WordFlipMainScreen(navHostController, category)
         }
         composable(Screens.Dashboard.route) { TestDashboardScreen() }
         composable(Screens.Settings.route) { SettingsScreen() }

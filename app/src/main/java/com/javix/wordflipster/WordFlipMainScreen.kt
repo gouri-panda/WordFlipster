@@ -76,7 +76,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 
 @Composable
-fun WordFlipHomeScreen(navController: NavController, category: String) {
+fun WordFlipMainScreen(navController: NavController, category: String) {
     var currentWordIndex = rememberSaveable { mutableStateOf(0) }
     val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(
         LocalContext.current.applicationContext, category = category
