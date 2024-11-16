@@ -23,7 +23,6 @@ fun WordFlipsterNavigationSetup(navHostController: NavHostController) {
         composable(Screens.WordFlipOnboarding.route) { WordFlipOnboarding(navHostController) }
         composable(Screens.WordFlipHomeScreen.route, arguments = listOf(navArgument("category") { type = NavType.StringType }), ) {
             val category = it.arguments?.getString("category") ?: ""
-
             WordFlipHomeScreen(navHostController, category)
         }
         composable(Screens.Dashboard.route) { TestDashboardScreen() }
@@ -40,7 +39,7 @@ fun WordFlipsterNavigationSetup(navHostController: NavHostController) {
         composable(Screens.WelcomeScreen.route)  { WelcomeScreenComposeWrapper(navHostController)}
 
         composable(Screens.WordChainOnboarding.route) {
-            WordChainOnboardingWrapper()
+            WordChainOnboardingWrapper(navHostController)
         }
     }
 }
