@@ -148,8 +148,8 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
     fun getWordsListFrom(category: String?): List<String> {
 
         if (category != null && category != "") {
-            return categoriesWithWords[category] ?: twoLetterWords
-        } else return getWordsListFromCount(letterCount.value)
+            return categoriesWithWords[category]?.shuffled() ?: twoLetterWords.shuffled()
+        } else return getWordsListFromCount(letterCount.value).shuffled()
     }
 
 }
