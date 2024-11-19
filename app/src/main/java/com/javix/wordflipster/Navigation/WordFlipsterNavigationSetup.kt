@@ -15,6 +15,7 @@ import com.javix.wordflipster.SettingsScreen
 import com.javix.wordflipster.WordFlipOnboarding
 import com.javix.wordflipster.TestDashboardScreen
 import com.javix.wordflipster.WelcomeScreenComposeWrapper
+import com.javix.wordflipster.WordChainMainScreen
 import com.javix.wordflipster.WordChainOnboardingWrapper
 
 @Composable
@@ -40,6 +41,10 @@ fun WordFlipsterNavigationSetup(navHostController: NavHostController) {
 
         composable(Screens.WordChainOnboarding.route) {
             WordChainOnboardingWrapper(navHostController)
+        }
+        composable(Screens.WordChainMainScreen.route, arguments = listOf(navArgument("level") {type = NavType.StringType})){
+            val level = it.arguments?.getString("level") ?: ""
+            WordChainMainScreen(navController = navHostController, level = level)
         }
     }
 }
