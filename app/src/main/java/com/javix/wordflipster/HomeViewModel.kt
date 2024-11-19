@@ -3,6 +3,7 @@ package com.javix.wordflipster
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -37,12 +38,15 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
     private val _letterCount = MutableStateFlow(2)
     val letterCount: StateFlow<Int> = _letterCount
 
+    var isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
+
     val _wordsList = MutableStateFlow(getWordsListFrom(category))
 
     private val _vibration = MutableStateFlow(true)
     val vibration: StateFlow<Boolean> = _vibration
 
     private var _challenge = MutableStateFlow<Challenge?>(null)
+
 
 
     init {
@@ -53,7 +57,9 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
             _totalTime.value = dataStoreManager.minuteCountFlow.first() * 60
             _letterCount.value = dataStoreManager.letterCountFlow.first()
             _vibration.value = dataStoreManager.vibrationEnabledFlow.first()
-            _wordsList.value = getWordsListFrom(category)
+            _wordsList.value = getWordsListFrom(category).also {
+                isLoading.value = false
+            }
 
             dataStoreManager.totalWords.collect { total ->
                 _totalWords.value = total

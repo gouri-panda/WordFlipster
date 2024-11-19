@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -38,6 +39,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -113,50 +115,53 @@ fun WordFlipMainScreen(navController: NavController, category: String) {
             }
         )
     }
-
-    Box(
-        modifier = Modifier
-            .padding(8.dp)
-            .padding(WindowInsets.ime.asPaddingValues())
-    ) {
-        Column(
+    if (!homeViewModel.isLoading.value) {
+        Box(
             modifier = Modifier
-                .align(Alignment.TopEnd)
-                .fillMaxSize()
+                .padding(8.dp)
+                .padding(WindowInsets.ime.asPaddingValues())
         ) {
-            TopBar(navController) {} // Todo show dialog button exit if necessary
-
-
-            TimerAndCorrectObjectsWithTimerWrapper(
-                homeViewModel
-            )
-
-            Box(
+            Column(
                 modifier = Modifier
+                    .align(Alignment.TopEnd)
                     .fillMaxSize()
-                    .padding(bottom = 32.dp),
-                contentAlignment = Alignment.Center
             ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                TopBar(navController) {} // Todo show dialog button exit if necessary
+
+
+                TimerAndCorrectObjectsWithTimerWrapper(
+                    homeViewModel
+                )
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = 32.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    WordGridWithWoodenTiles(charLists[homeViewModel.currentWordIndex.collectAsState().value])
-                    ArrowButton()
-                    InputWordWrapperView(
-                        charLists[0],
-                        currentWordIndex = homeViewModel.currentWordIndex.collectAsState().value,
-                        isVibrationEnabled = homeViewModel.isVibrationEnabled()
-                    ) { count, isCorrectWord ->
-                        homeViewModel.currentWordIndex.value = count
-                        homeViewModel.updateTotalWords(homeViewModel.totalWords.value + 1)
-                        if (isCorrectWord) {
-                            homeViewModel.updateCorrectWords(homeViewModel.wordsSolved.value + 1)
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        WordGridWithWoodenTiles(charLists[homeViewModel.currentWordIndex.collectAsState().value])
+                        ArrowButton()
+                        InputWordWrapperView(
+                            charLists[0],
+                            currentWordIndex = homeViewModel.currentWordIndex.collectAsState().value,
+                            isVibrationEnabled = homeViewModel.isVibrationEnabled()
+                        ) { count, isCorrectWord ->
+                            homeViewModel.currentWordIndex.value = count
+                            homeViewModel.updateTotalWords(homeViewModel.totalWords.value + 1)
+                            if (isCorrectWord) {
+                                homeViewModel.updateCorrectWords(homeViewModel.wordsSolved.value + 1)
+                            }
                         }
                     }
                 }
             }
         }
+    } else {
+        CircularLoadingIndicator()
     }
 }
 
@@ -666,5 +671,15 @@ fun TestWordGridWithWoodenTiles() {
                 }
             }
         }
+    }
+}
+@Composable
+fun CircularLoadingIndicator() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .wrapContentSize(Alignment.Center)
+    ) {
+        CircularProgressIndicator() // Default Circular Progress
     }
 }
