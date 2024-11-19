@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.javix.wordflipster.Navigation.Screens
 import com.javix.wordflipster.ui.theme.WordChainLevel
 
 
@@ -44,7 +45,7 @@ fun WordChainOnboardingWrapper(navController: NavHostController) {
                 .align(Alignment.TopEnd)
                 .fillMaxSize()
         ) {
-            TopBar(navController)
+            TopBar(navController) {}
             val context = LocalContext.current
             val dataStoreManager = remember { DataStoreManager(context) }
             val coroutineScope = rememberCoroutineScope()
@@ -65,7 +66,7 @@ fun WordChainOnboardingWrapper(navController: NavHostController) {
                         coroutineScope = coroutineScope
                     )
                     Button(
-                        onClick = {  },
+                        onClick = { navController.navigate(Screens.WordChainMainScreen.createRoute("Easy")) },
                         shape = RoundedCornerShape(
                             topStart = 16.dp,
                             topEnd = 16.dp,

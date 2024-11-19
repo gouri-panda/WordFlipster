@@ -24,6 +24,8 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
      val _remainingTime = MutableStateFlow(60) // Initialize with default 60 seconds
     val remainingTime: StateFlow<Int> = _remainingTime
 
+    val currentWordIndex  = MutableStateFlow(0)
+
     private val _totalTime = MutableStateFlow(60)
 
     private val _totalWords = MutableStateFlow(0)
@@ -80,12 +82,25 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
                 _remainingTime.value -= 1
             }
             if (_remainingTime.value.equals(0)) {
-                saveChallengeEntityToDatabase()
-                val challenge = createChallenge()
-                _challenge.value = challenge
-                onChallengeCompleteListener.invoke(_challenge.value)
+                finishGame(onChallengeCompleteListener)
             }
         }
+
+        viewModelScope.launch {
+            currentWordIndex.collect { currentWordIndex ->
+                if (currentWordIndex  == _wordsList.value.size - 1) { // Todo: This is temp fix . we still don't see the last word
+                    finishGame(onChallengeCompleteListener)
+                }
+            }
+        }
+
+    }
+
+    private fun finishGame(onChallengeCompleteListener: (Challenge?) -> Unit) {
+        saveChallengeEntityToDatabase()
+        val challenge = createChallenge()
+        _challenge.value = challenge
+        onChallengeCompleteListener.invoke(_challenge.value)
     }
 
     fun updateCorrectWords(correctWords: Int) {
@@ -95,6 +110,7 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
     fun updateTotalWords(totalWords: Int) {
         _totalWords.value = totalWords
     }
+    fun isVibrationEnabled() = _vibration.value
 
     fun createChallengeEntity(): ChallengeEntity {
         return ChallengeEntity(

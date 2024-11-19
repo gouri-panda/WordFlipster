@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
 @Composable
-fun TopBar(navController: NavController) {
+fun TopBar(navController: NavController, onClickListener: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -31,7 +31,10 @@ fun TopBar(navController: NavController) {
         ) {
             // Icon for progress graph at the top left corner
             IconButton(
-                onClick = { navController.navigate("dashboard") },
+                onClick = {
+                    onClickListener()
+                    navController.navigate("dashboard")
+                          },
                 // Padding from the top and left
             ) {
                 Image(
@@ -43,7 +46,10 @@ fun TopBar(navController: NavController) {
 
             // Icon for settings at the bottom right corner
             IconButton(
-                onClick = { navController.navigate("settings") },
+                onClick = {
+                    onClickListener()
+                    navController.navigate("settings")
+                          },
             ) {
                 androidx.compose.material.Icon(Icons.Default.Settings, contentDescription = "Settings", tint = Color.Black)
             }

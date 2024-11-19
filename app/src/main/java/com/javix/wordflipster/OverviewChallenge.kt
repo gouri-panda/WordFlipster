@@ -1,5 +1,6 @@
 package com.javix.wordflipster
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,6 +40,13 @@ import java.util.concurrent.TimeUnit
 
 @Composable
 fun ChallengeCompleteScreenWrapper(navController: NavController, challenge: Challenge) {
+    BackHandler {
+        navController.navigate(Screens.WelcomeScreen.route){
+            popUpTo(Screens.WelcomeScreen.route) {
+                inclusive = true // Two make sure we don't have double Welcome screen
+            }
+        }
+    }
     Box {
         val party = Party(
             emitter = Emitter(duration = 5, TimeUnit.SECONDS).perSecond(30),
@@ -61,7 +69,7 @@ fun ChallengeCompleteScreenWrapper(navController: NavController, challenge: Chal
                 navController.navigate(Screens.WelcomeScreen.route)
             }, onDashboardClick = {
                 navController.navigate(Screens.Dashboard.route)
-            }, onShareClick = {}) // Todo: Add share click when in the playstore :)
+            }, onShareClick = {}) // Todo: Add share click when in the play store :)
 
     }
 

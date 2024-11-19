@@ -4,6 +4,7 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
@@ -29,10 +30,12 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.Composable
@@ -77,7 +80,10 @@ import kotlinx.coroutines.flow.filter
 
 @Composable
 fun WordFlipMainScreen(navController: NavController, category: String) {
-    var currentWordIndex = rememberSaveable { mutableStateOf(0) }
+    var showDialog by remember { mutableStateOf(false) }
+    BackHandler {
+        showDialog = true
+    }
     val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(
         LocalContext.current.applicationContext, category = category
     ) { challenge ->
@@ -87,18 +93,43 @@ fun WordFlipMainScreen(navController: NavController, category: String) {
     )
 
     val charLists = homeViewModel.getCharList()
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Exit Game?") },
+            text = { Text("Are you sure you want to exit? Your progress will be lost.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDialog = false
+                    navController.popBackStack()
+                }) {
+                    Text("Yes")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text("No")
+                }
+            }
+        )
+    }
 
-    Box(modifier = Modifier
-        .padding(8.dp)
-        .padding(WindowInsets.ime.asPaddingValues())) {
-        Column(modifier = Modifier
-            .align(Alignment.TopEnd)
-            .fillMaxSize()) {
-            TopBar(navController)
+    Box(
+        modifier = Modifier
+            .padding(8.dp)
+            .padding(WindowInsets.ime.asPaddingValues())
+    ) {
+        Column(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .fillMaxSize()
+        ) {
+            TopBar(navController) {} // Todo show dialog button exit if necessary
 
-                TimerAndCorrectObjectsWithTimer(
-                    homeViewModel
-                )
+
+            TimerAndCorrectObjectsWithTimerWrapper(
+                homeViewModel
+            )
 
             Box(
                 modifier = Modifier
@@ -110,13 +141,14 @@ fun WordFlipMainScreen(navController: NavController, category: String) {
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    WordGridWithWoodenTiles(charLists[currentWordIndex.value])
+                    WordGridWithWoodenTiles(charLists[homeViewModel.currentWordIndex.collectAsState().value])
                     ArrowButton()
-                    InputWordWrapperView(charLists[currentWordIndex.value],
-                        currentWordIndex = currentWordIndex.value,
-                        viewModel = homeViewModel) { count, isCorrectWord ->
-                        currentWordIndex.value = count
-
+                    InputWordWrapperView(
+                        charLists[0],
+                        currentWordIndex = homeViewModel.currentWordIndex.collectAsState().value,
+                        isVibrationEnabled = homeViewModel.isVibrationEnabled()
+                    ) { count, isCorrectWord ->
+                        homeViewModel.currentWordIndex.value = count
                         homeViewModel.updateTotalWords(homeViewModel.totalWords.value + 1)
                         if (isCorrectWord) {
                             homeViewModel.updateCorrectWords(homeViewModel.wordsSolved.value + 1)
@@ -128,8 +160,6 @@ fun WordFlipMainScreen(navController: NavController, category: String) {
     }
 }
 
-
-@Preview(showBackground = true)
 @Composable
 fun MainScreen() {
     WordFlipsterTheme {
@@ -175,9 +205,12 @@ fun MainScreen() {
 }
 
 @Composable
-fun InputWordWrapperView(word: List<String>,currentWordIndex: Int,
-                         viewModel: AndroidViewModel,
-                         onCompleteListener: (Int, Boolean) -> Unit) {
+fun InputWordWrapperView(
+    word: List<String>,
+    currentWordIndex: Int,
+    isVibrationEnabled: Boolean,
+    onCompleteListener: (Int, Boolean) -> Unit
+) {
     WordFlipsterTheme {
 
         var inputValue by remember { mutableStateOf("") }
@@ -203,7 +236,7 @@ fun InputWordWrapperView(word: List<String>,currentWordIndex: Int,
                 charColor = Color.Blue,
                 correctWord = word,
                 currentWordIndex = currentWordIndex,
-                viewModel = viewModel,
+                isVibrationEnabled = isVibrationEnabled,
                 onWordCompleteListener = { count, isCorrect ->
                     onCompleteListener(count, isCorrect)
                     inputValue = ""
@@ -212,7 +245,6 @@ fun InputWordWrapperView(word: List<String>,currentWordIndex: Int,
         }
     }
 }
-
 
 
 @Composable
@@ -232,7 +264,7 @@ fun InputWordView(
     keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
     onTextChange: (String) -> Unit,
     currentWordIndex: Int,
-    viewModel: AndroidViewModel,
+    isVibrationEnabled: Boolean,
     onWordCompleteListener: (Int, Boolean) -> Unit
 ) {
     val context = LocalContext.current
@@ -245,8 +277,11 @@ fun InputWordView(
                 onTextChange.invoke(it)
                 Log.d("Actual Value", it)
                 if (it.length == correctWord.size) {
-                    val isCorrectWord = evaluateCorrectWord(inputWord = it, correctWord = correctWord.joinToString(""))
-                        onWordCompleteListener(currentWordIndex + 1, isCorrectWord)
+                    val isCorrectWord = evaluateCorrectWord(
+                        inputWord = it,
+                        correctWord = correctWord.joinToString("")
+                    )
+                    onWordCompleteListener(currentWordIndex + 1, isCorrectWord)
                 }
             }
         },
@@ -256,8 +291,8 @@ fun InputWordView(
                 repeat(count) { index ->
                     // Check if there is an input character for this position
                     val inputChar = inputText.getOrNull(index)?.toString()
-                    val isCorrectChar = inputChar != null &&  inputText.getOrNull(index)?.toString() == correctWord.getOrNull((correctWord.size - 1) - index)
-
+                    val isCorrectChar = inputChar != null && inputText.getOrNull(index)
+                        ?.toString() == correctWord.getOrNull((correctWord.size - 1) - index)
 
 
                     // Set color based on correctness, default to a neutral color for empty boxes
@@ -266,7 +301,9 @@ fun InputWordView(
                         isCorrectChar -> Color.Blue      // Blue if correct
                         else -> {
                             // Trigger vibration if input is incorrect
-                            createVibration(vibrator, viewModel)
+                            if (isVibrationEnabled) {
+                            createVibration(vibrator)
+                            }
                             Color.Red  // Red if incorrect
                         }
 
@@ -289,29 +326,26 @@ fun InputWordView(
                         containerRadius = containerRadius,
                         containerSize = containerSize,
                         charBackground = charBackground,
-                        letter = correctWord[(correctWord.size -1) - index]
+                        letter = correctWord[(correctWord.size - 1) - index]
                     )
                 }
             }
         }
     )
     // Observe inputText changes and trigger onWordCompleteListener only after it appears on screen
-            LaunchedEffect(inputText) {
-                snapshotFlow { inputText }
-                    .filter { it.length == correctWord.size - 1  }
-                    .debounce(5000)
-                    .collect { completedText ->
+    LaunchedEffect(inputText) {
+        snapshotFlow { inputText }
+            .filter { it.length == correctWord.size - 1 }
+            .debounce(5000)
+            .collect { completedText ->
 //                        val isCorrectWord = evaluateCorrectWord(
 //                            inputWord = completedText,
 //                            correctWord = correctWord.joinToString("")
 //                        )
 //                        onWordCompleteListener(currentWordIndex + 1, isCorrectWord)
-                    }
             }
+    }
 }
-
-
-
 
 
 @Composable
@@ -372,8 +406,7 @@ fun WordGridWithWoodenTiles(word: List<String>) {
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                , horizontalArrangement = Arrangement.Center
+                .fillMaxWidth(), horizontalArrangement = Arrangement.Center
         ) {
             word.forEach { letter ->
                 LazyRow(
@@ -412,10 +445,11 @@ fun WordGridWithWoodenTiles(word: List<String>) {
         }
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun WordGridWith3DTiles() {
-    val words: List<String> = listOf("W", "O", "R","D")
+    val words: List<String> = listOf("W", "O", "R", "D")
     Column(modifier = Modifier.fillMaxSize()) {
         words.forEach { word ->
             LazyRow(
@@ -460,8 +494,6 @@ fun WordGridWith3DTiles() {
         }
     }
 }
-
-@Preview(showBackground = true)
 @Composable
 fun ArrowButton() {
     IconButton(
@@ -479,37 +511,44 @@ fun TimerAndCorrectObjects(
     totalWords: Int,   // Total number of objects
 ) {
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.End
-        ) {
-            // Display the timer
-            Text(
-                text = "Time: $timeLeft",
-                style = MaterialTheme.typography.h6,
-                color = Color.Black,
-            )
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.End
+    ) {
+        // Display the timer
+        Text(
+            text = "Time: $timeLeft",
+            style = MaterialTheme.typography.h6,
+            color = Color.Black,
+        )
 
-            Spacer(modifier = Modifier.width(16.dp)) // Spacer between Timer and Correct Objects
+        Spacer(modifier = Modifier.width(16.dp)) // Spacer between Timer and Correct Objects
 
-            // Display the correct objects out of total objects
-            Text(
-                text = "$wordsSolved/$totalWords",
-                style = MaterialTheme.typography.h6,
-                color = Color.Black,
-            )
-        }
+        // Display the correct objects out of total objects
+        Text(
+            text = "$wordsSolved/$totalWords",
+            style = MaterialTheme.typography.h6,
+            color = Color.Black,
+        )
+    }
 }
 
 @Composable
- fun TimerAndCorrectObjectsWithTimer(
- homeViewModel: HomeViewModel
-) {
-   val totalTime by homeViewModel.remainingTime.collectAsState()
+private fun TimerAndCorrectObjectsWithTimerWrapper(homeViewModel: HomeViewModel) {
+    val totalTime by homeViewModel.remainingTime.collectAsState()
     val wordsSolved by homeViewModel.wordsSolved.collectAsState()
     val totalWords by homeViewModel.totalWords.collectAsState()
+    TimerAndCorrectObjectsWithTimer(totalTime, wordsSolved, totalWords)
+}
+
+@Composable
+fun TimerAndCorrectObjectsWithTimer(
+    totalTime: Int,
+    wordsSolved: Int,
+    totalWords: Int
+) {
 
 
     // Format time in MM:SS format
@@ -526,18 +565,15 @@ fun TimerAndCorrectObjects(
 }
 
 fun evaluateCorrectWord(correctWord: String, inputWord: String): Boolean {
-  for(index in correctWord.indices) {
-      if (!correctWord[(correctWord.length - 1) - index].equals(inputWord[index])) {
-          return false
-      }
-  }
+    for (index in correctWord.indices) {
+        if (!correctWord[(correctWord.length - 1) - index].equals(inputWord[index])) {
+            return false
+        }
+    }
     return true
 }
 
-fun createVibration(vibrator: Vibrator, viewModel: AndroidViewModel) {
-    val viewModel = viewModel as HomeViewModel
-    val isVibratorEnabled = viewModel.vibration.value
-    if (isVibratorEnabled) {
+fun createVibration(vibrator: Vibrator) {
         vibrator?.let { vib ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 vib.vibrate(
@@ -550,7 +586,6 @@ fun createVibration(vibrator: Vibrator, viewModel: AndroidViewModel) {
                 vib.vibrate(50)
             }
         }
-    }
 }
 
 @Preview(showBackground = true)
