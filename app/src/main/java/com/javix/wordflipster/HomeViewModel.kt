@@ -102,7 +102,7 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
 
     }
 
-    private fun finishGame(onChallengeCompleteListener: (Challenge?) -> Unit) {
+    fun finishGame(onChallengeCompleteListener: (Challenge?) -> Unit) {
         saveChallengeEntityToDatabase()
         val challenge = createChallenge()
         _challenge.value = challenge

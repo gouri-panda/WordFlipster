@@ -32,6 +32,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -89,8 +91,7 @@ fun WordFlipMainScreen(navController: NavController, category: String) {
     val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(
         LocalContext.current.applicationContext, category = category
     ) { challenge ->
-        val jsonChallenge = Gson().toJson(challenge)
-        navController.navigate("overviewChallenge?challenge=${jsonChallenge}")
+        finishChallenge(challenge, navController)
     }
     )
 
@@ -156,6 +157,17 @@ fun WordFlipMainScreen(navController: NavController, category: String) {
                                 homeViewModel.updateCorrectWords(homeViewModel.wordsSolved.value + 1)
                             }
                         }
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Button(onClick = {
+                                homeViewModel.finishGame { challenge ->
+                                    finishChallenge(challenge, navController)
+                                }
+                            },
+                                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue),
+                            ) {
+                                Text("Finish", color = Color.White)
+                            }
+                        }
                     }
                 }
             }
@@ -163,6 +175,15 @@ fun WordFlipMainScreen(navController: NavController, category: String) {
     } else {
         CircularLoadingIndicator()
     }
+}
+
+
+private fun finishChallenge(
+    challenge: Challenge?,
+    navController: NavController
+) {
+    val jsonChallenge = Gson().toJson(challenge)
+    navController.navigate("overviewChallenge?challenge=${jsonChallenge}")
 }
 
 @Composable
