@@ -123,7 +123,8 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
             wordsSolved = wordsSolved.value,
             totalWords = totalWords.value,
             timeTaken = remainingTime.value.toLong(),
-            date = Date()
+            date = Date(),
+            gameType = wordFlipGame
         )
     }
 
@@ -139,7 +140,8 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
                 wordsSolved = wordsSolved.value,
                 totalWords = totalWords.value,
                 timeTaken = _totalTime.value.toLong(),
-                date = Date()
+                date = Date(),
+                gameType = wordFlipGame
             )
         )
         return _challenge.value

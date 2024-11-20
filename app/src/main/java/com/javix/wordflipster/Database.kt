@@ -8,9 +8,11 @@ import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.google.android.gms.games.Game
+import com.google.gson.Gson
 import java.util.Date
 
-@Database(entities = [ChallengeEntity::class], version = 2, exportSchema = false)
+@Database(entities = [ChallengeEntity::class], version = 3, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class WordFlipsterDatabase : RoomDatabase() {
     abstract fun challengeDao(): ChallengeDao
@@ -27,6 +29,7 @@ abstract class WordFlipsterDatabase : RoomDatabase() {
                     WordFlipsterDatabase::class.java,
                     "challenge_database"
                 ).addMigrations(MIGRATION_1_2)
+                    .addMigrations(Migration_2_3)
                     .build()
 
                 INSTANCE = instance
@@ -38,6 +41,11 @@ abstract class WordFlipsterDatabase : RoomDatabase() {
 val MIGRATION_1_2 = object : Migration(1, 2) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE challenges ADD COLUMN date INTEGER NOT NULL DEFAULT 0")
+    }
+}
+val Migration_2_3 = object: Migration(2,3) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE challenges ADD COLUMN gameType TEXT")
     }
 }
 
@@ -53,5 +61,17 @@ class Converters {
     @TypeConverter
     fun dateToTimestamp(date: Date?): Long? {
         return date?.time
+    }
+
+    @TypeConverter
+    fun fromJsonGameType(value: String?): GameType? {
+        return value?.let {
+            Gson().fromJson(value, GameType::class.java)
+        }
+    }
+
+    @TypeConverter
+    fun toJsonGameType(value: GameType?): String? {
+        return Gson().toJson(value)
     }
 }

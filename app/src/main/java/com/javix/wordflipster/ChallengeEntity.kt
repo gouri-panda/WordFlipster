@@ -10,5 +10,6 @@ data class ChallengeEntity(
     val wordsSolved: Int,
     val totalWords: Int,
     val timeTaken: Long, // time in milliseconds
-    val date: Date) {
-}
+    val date: Date,
+    val gameType: GameType?
+)

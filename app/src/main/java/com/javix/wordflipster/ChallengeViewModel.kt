@@ -18,7 +18,12 @@ class ChallengeViewModel(application: Application) : AndroidViewModel(applicatio
     fun addChallenge(challenge: Challenge) {
         viewModelScope.launch {
             repository.addChallenge(
-                ChallengeEntity(wordsSolved = challenge.wordsSolved, totalWords = challenge.totalWords, timeTaken = challenge.timeTaken, date = challenge.date ?: Date())
+                ChallengeEntity(wordsSolved = challenge.wordsSolved,
+                    totalWords = challenge.totalWords,
+                    timeTaken = challenge.timeTaken,
+                    date = challenge.date ?: Date(),
+                    gameType = challenge.gameType ?: wordFlipGame
+                )
             )
             loadChallenges()
         }
@@ -28,7 +33,7 @@ class ChallengeViewModel(application: Application) : AndroidViewModel(applicatio
         viewModelScope.launch {
             val challengeEntities = repository.getChallenges()
             _challenges.value = challengeEntities.map {
-                Challenge(it.wordsSolved, it.totalWords, it.timeTaken, date = it.date)
+                Challenge(it.wordsSolved, it.totalWords, it.timeTaken, date = it.date, gameType = it?.gameType ?: wordFlipGame)
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.javix.wordflipster
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -104,10 +106,9 @@ fun ChallengeItem(challenge: Challenge) {
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = Icons.Default.Home,
+                Image(
+                    painter = painterResource(R.drawable.word_chain),
                     contentDescription = "Challenge Icon",
-                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(28.dp)
                 )
             }
@@ -118,7 +119,7 @@ fun ChallengeItem(challenge: Challenge) {
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = "Challenge name",
+                    text = challenge.gameType?.name ?: "",
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
@@ -130,11 +131,21 @@ fun ChallengeItem(challenge: Challenge) {
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Text(
-                    text = "Time: ${challenge.timeTaken} mins",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Row{
+                    Text(
+                        text = "Time: ${challenge.timeTaken} min",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Text(
+                        text = "Date: ${formatDate(challenge.date)} min",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
             }
 
             Spacer(modifier = Modifier.width(8.dp))
