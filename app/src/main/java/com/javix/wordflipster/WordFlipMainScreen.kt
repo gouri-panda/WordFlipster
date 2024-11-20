@@ -147,7 +147,7 @@ fun WordFlipMainScreen(navController: NavController, category: String) {
                         WordGridWithWoodenTiles(charLists[homeViewModel.currentWordIndex.collectAsState().value])
                         ArrowButton()
                         InputWordWrapperView(
-                            charLists[0],
+                            charLists[homeViewModel.currentWordIndex.collectAsState().value],
                             currentWordIndex = homeViewModel.currentWordIndex.collectAsState().value,
                             isVibrationEnabled = homeViewModel.isVibrationEnabled()
                         ) { count, isCorrectWord ->
