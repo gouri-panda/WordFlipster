@@ -9,15 +9,13 @@ import androidx.navigation.navArgument
 import com.google.gson.Gson
 import com.javix.wordflipster.Challenge
 import com.javix.wordflipster.ChallengeCompleteScreenWrapper
-import com.javix.wordflipster.GameTypeList
-import com.javix.wordflipster.WordFlipHomeScreen
+import com.javix.wordflipster.WordFlipMainScreen
 import com.javix.wordflipster.PreviewCategoryGridScreen
 import com.javix.wordflipster.SettingsScreen
 import com.javix.wordflipster.WordFlipOnboarding
 import com.javix.wordflipster.TestDashboardScreen
-import com.javix.wordflipster.WelcomeScreen
 import com.javix.wordflipster.WelcomeScreenComposeWrapper
-import com.javix.wordflipster.WordChainOnboarding
+import com.javix.wordflipster.WordChainMainScreen
 import com.javix.wordflipster.WordChainOnboardingWrapper
 
 @Composable
@@ -26,8 +24,7 @@ fun WordFlipsterNavigationSetup(navHostController: NavHostController) {
         composable(Screens.WordFlipOnboarding.route) { WordFlipOnboarding(navHostController) }
         composable(Screens.WordFlipHomeScreen.route, arguments = listOf(navArgument("category") { type = NavType.StringType }), ) {
             val category = it.arguments?.getString("category") ?: ""
-
-            WordFlipHomeScreen(navHostController, category)
+            WordFlipMainScreen(navHostController, category)
         }
         composable(Screens.Dashboard.route) { TestDashboardScreen() }
         composable(Screens.Settings.route) { SettingsScreen() }
@@ -43,7 +40,11 @@ fun WordFlipsterNavigationSetup(navHostController: NavHostController) {
         composable(Screens.WelcomeScreen.route)  { WelcomeScreenComposeWrapper(navHostController)}
 
         composable(Screens.WordChainOnboarding.route) {
-            WordChainOnboarding()
+            WordChainOnboardingWrapper(navHostController)
+        }
+        composable(Screens.WordChainMainScreen.route, arguments = listOf(navArgument("level") {type = NavType.StringType})){
+            val level = it.arguments?.getString("level") ?: ""
+            WordChainMainScreen(navController = navHostController, level = level)
         }
     }
 }

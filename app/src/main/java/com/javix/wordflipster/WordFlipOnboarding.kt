@@ -13,7 +13,6 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.Text
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,7 +27,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.javix.wordflipster.Navigation.Screens
-import com.javix.wordflipster.ui.theme.WordFlipsterTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -52,7 +50,7 @@ fun WordFlipOnboarding(navController: NavController) {
     ) {
 
 
-        TopBar(navController)
+        TopBar(navController) {}
 
         Column(
             modifier = Modifier
@@ -76,7 +74,7 @@ fun WordFlipOnboarding(navController: NavController) {
             EditLettersButton( dataStoreManager, coroutineScope)
             MinutesButton(dataStoreManager, coroutineScope)
             Button(
-                onClick = { navController.navigate("${Screens.WordFlipOnboarding.route}?category=") }, // todo: refactor the screns login
+                onClick = { navController.navigate(Screens.WordFlipHomeScreen.createRoute("")) },
                 shape = RoundedCornerShape(
                     topStart = 16.dp,
                     topEnd = 16.dp,

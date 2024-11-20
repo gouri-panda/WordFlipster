@@ -260,7 +260,6 @@ fun GameTypeCard(
                         scaleX = if (isSelected) 1.2f else 1f
                         scaleY = if (isSelected) 1.2f else 1f
                     },
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimaryContainer)
             )
             Text(
                 text = gameType.name,

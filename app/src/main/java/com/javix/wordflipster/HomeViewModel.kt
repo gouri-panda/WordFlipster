@@ -3,6 +3,7 @@ package com.javix.wordflipster
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -24,6 +25,8 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
      val _remainingTime = MutableStateFlow(60) // Initialize with default 60 seconds
     val remainingTime: StateFlow<Int> = _remainingTime
 
+    val currentWordIndex  = MutableStateFlow(0)
+
     private val _totalTime = MutableStateFlow(60)
 
     private val _totalWords = MutableStateFlow(0)
@@ -35,12 +38,15 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
     private val _letterCount = MutableStateFlow(2)
     val letterCount: StateFlow<Int> = _letterCount
 
+    var isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
+
     val _wordsList = MutableStateFlow(getWordsListFrom(category))
 
     private val _vibration = MutableStateFlow(true)
     val vibration: StateFlow<Boolean> = _vibration
 
     private var _challenge = MutableStateFlow<Challenge?>(null)
+
 
 
     init {
@@ -51,7 +57,9 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
             _totalTime.value = dataStoreManager.minuteCountFlow.first() * 60
             _letterCount.value = dataStoreManager.letterCountFlow.first()
             _vibration.value = dataStoreManager.vibrationEnabledFlow.first()
-            _wordsList.value = getWordsListFrom(category)
+            _wordsList.value = getWordsListFrom(category).also {
+                isLoading.value = false
+            }
 
             dataStoreManager.totalWords.collect { total ->
                 _totalWords.value = total
@@ -80,12 +88,25 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
                 _remainingTime.value -= 1
             }
             if (_remainingTime.value.equals(0)) {
-                saveChallengeEntityToDatabase()
-                val challenge = createChallenge()
-                _challenge.value = challenge
-                onChallengeCompleteListener.invoke(_challenge.value)
+                finishGame(onChallengeCompleteListener)
             }
         }
+
+        viewModelScope.launch {
+            currentWordIndex.collect { currentWordIndex ->
+                if (currentWordIndex  == _wordsList.value.size - 1) { // Todo: This is temp fix . we still don't see the last word
+                    finishGame(onChallengeCompleteListener)
+                }
+            }
+        }
+
+    }
+
+    private fun finishGame(onChallengeCompleteListener: (Challenge?) -> Unit) {
+        saveChallengeEntityToDatabase()
+        val challenge = createChallenge()
+        _challenge.value = challenge
+        onChallengeCompleteListener.invoke(_challenge.value)
     }
 
     fun updateCorrectWords(correctWords: Int) {
@@ -95,6 +116,7 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
     fun updateTotalWords(totalWords: Int) {
         _totalWords.value = totalWords
     }
+    fun isVibrationEnabled() = _vibration.value
 
     fun createChallengeEntity(): ChallengeEntity {
         return ChallengeEntity(
@@ -146,10 +168,9 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
     }
 
     fun getWordsListFrom(category: String?): List<String> {
-
-        if (category != null && category != "") {
-            return categoriesWithWords[category] ?: twoLetterWords
-        } else return getWordsListFromCount(letterCount.value)
+        return if (category != null && category != "") {
+            categoriesWithWords[category]?.shuffled() ?: twoLetterWords.shuffled()
+        } else getWordsListFromCount(letterCount.value).shuffled()
     }
 
 }
