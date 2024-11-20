@@ -27,7 +27,7 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
 
     val currentWordIndex  = MutableStateFlow(0)
 
-    private val _totalTime = MutableStateFlow(60)
+    private var totalTime: Int = 0
 
     private val _totalWords = MutableStateFlow(0)
     val totalWords: StateFlow<Int> = _totalWords
@@ -54,7 +54,7 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
         viewModelScope.launch {
             // Collect minuteCountFlow and update _totalTime
             _remainingTime.value = dataStoreManager.minuteCountFlow.first() * 60
-            _totalTime.value = dataStoreManager.minuteCountFlow.first() * 60
+            totalTime = _remainingTime.value
             _letterCount.value = dataStoreManager.letterCountFlow.first()
             _vibration.value = dataStoreManager.vibrationEnabledFlow.first()
             _wordsList.value = getWordsListFrom(category).also {
@@ -122,7 +122,7 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
         return ChallengeEntity(
             wordsSolved = wordsSolved.value,
             totalWords = totalWords.value,
-            timeTaken = remainingTime.value.toLong(),
+            timeTaken = totalTime.toLong(),
             date = Date(),
             gameType = wordFlipGame
         )
@@ -139,7 +139,7 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
             Challenge(
                 wordsSolved = wordsSolved.value,
                 totalWords = totalWords.value,
-                timeTaken = _totalTime.value.toLong(),
+                timeTaken = totalTime.toLong(),
                 date = Date(),
                 gameType = wordFlipGame
             )

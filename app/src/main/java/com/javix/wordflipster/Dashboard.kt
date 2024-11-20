@@ -127,24 +127,29 @@ fun ChallengeItem(challenge: Challenge) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Words Solved: ${challenge.wordsSolved}",
-                    style = MaterialTheme.typography.bodyMedium,
+                    text = "Words Solved: ${challenge.wordsSolved} / ${challenge.totalWords}",
+                    style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Row{
                     Text(
-                        text = "Time: ${challenge.timeTaken} min",
-                        style = MaterialTheme.typography.bodySmall,
+                        text = "Time: ${challenge.timeTaken / 60} min",
+                        style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.width(16.dp))
 
                     Text(
                         text = "Date: ${formatDate(challenge.date)} min",
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
+                Text(
+                    text = "Avg Time: ${convertReadableTimeToString(calculateAverageTime(challenge.timeTaken * 1000, challenge.wordsSolved))} Sec / word",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
 
             }
 
