@@ -3,6 +3,7 @@ package com.javix.wordflipster
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,15 +19,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -38,6 +36,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,14 +64,49 @@ fun ChallengesList(challenges: List<Challenge>) {
                 ),
                 modifier = Modifier.padding(vertical = 8.dp)
             )
-
-            LazyColumn(
-                contentPadding = PaddingValues(vertical = 8.dp)
-            ) {
-                items(challenges) { challenge ->
-                    ChallengeItem(challenge)
+            if (challenges.isEmpty()) {
+                // Beautiful empty state
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Info, // Replace with your preferred icon
+                        contentDescription = "No Challenges",
+                        tint = MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier.size(64.dp)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "No challenges found!",
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Start your first challenge to see it here.",
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                            textAlign = TextAlign.Center
+                        ),
+                        modifier = Modifier.padding(horizontal = 32.dp)
+                    )
                 }
-            }
+            } else {
+                    LazyColumn(
+                        contentPadding = PaddingValues(vertical = 8.dp)
+                    ) {
+                        items(challenges) { challenge ->
+                            ChallengeItem(challenge)
+                        }
+                    }
+                }
+
         }
     }
 
