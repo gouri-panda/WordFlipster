@@ -9,6 +9,6 @@ interface ChallengeDao {
     @Insert
     suspend fun insertChallenge(challenge: ChallengeEntity)
 
-    @Query("SELECT * FROM challenges")
+    @Query("SELECT * FROM challenges ORDER BY date DESC")
     suspend fun getAllChallenges(): List<ChallengeEntity>
 }

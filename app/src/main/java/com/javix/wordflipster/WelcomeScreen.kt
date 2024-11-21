@@ -87,6 +87,7 @@ class WelcomeScreen: ComponentActivity() {
 
 @Composable
 fun WelcomeScreenComposeWrapper(navController: NavHostController) {
+    TopBar(navController = navController) {}
     GameTypeList(gameTypes = gameTypes()) { gameType ->
         // Handle game type selection
         if (gameType.name == navController.context.getString(R.string.word_flip)) {
