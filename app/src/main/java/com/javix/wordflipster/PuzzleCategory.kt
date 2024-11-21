@@ -152,7 +152,7 @@ fun PreviewCategoryGridScreen(navController: NavController) {
         Category("Drinks", R.drawable.drinks),
         Category("Fruits", R.drawable.fruits),
         Category("Names", R.drawable.name),
-        Category("Animals", R.drawable.animals),
+        Category("Animals", R.drawable.animal),
         Category("Colors", R.drawable.colors),
         Category("Countries", R.drawable.countries),
         Category("Sports", R.drawable.sports),
