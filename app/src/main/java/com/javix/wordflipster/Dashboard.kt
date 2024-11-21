@@ -107,7 +107,7 @@ fun ChallengeItem(challenge: Challenge) {
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(R.drawable.word_chain),
+                    painter = painterResource(R.drawable.word_flip),
                     contentDescription = "Challenge Icon",
                     modifier = Modifier.size(28.dp)
                 )
