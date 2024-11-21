@@ -8,7 +8,7 @@ import androidx.core.content.ContextCompat.getString
 
 @Composable
 fun gameTypes() = listOf(
-    wordFlipGame, wordChainGame, wordGameX
+    wordFlipGame,
 )
 
 
@@ -19,7 +19,7 @@ data class GameType(
     val isPopular: Boolean = false
 )
 
-val wordFlipGame = GameType("Word Flip", R.drawable.word_chain, "Flip the word letters.")
+val wordFlipGame = GameType("Word Flip", R.drawable.word_flip, "Flip the word letters.")
 val wordChainGame = GameType(R.string.word_Chain.toString(), R.drawable.word_chain, "Find next words in a grid.", isPopular = true)
 val wordGameX =  GameType(R.string.word_Chain.toString(), R.drawable.word_chain, "Identify a specific word among jumbled letters.")
 
