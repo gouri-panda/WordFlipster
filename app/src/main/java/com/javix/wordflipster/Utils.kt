@@ -8,5 +8,6 @@ fun calculateAverageTime(totalTimeMillis: Long, correctWords: Int): Double {
     }
 }
 
-fun convertReadableTimeToString(time: Double) : String{
+fun convertReadableTimeToString(time: Double) : String {
     return String.format("%.2f", time)  // Format to 5 decimal places
+}
