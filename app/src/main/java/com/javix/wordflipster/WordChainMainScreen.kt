@@ -67,15 +67,15 @@ fun WordChainMainScreen (navController: NavHostController, level: String) {
                     val currentWord = charLists[currentWordIndex.value]
                     WordGridWithWoodenTiles(currentWord)
                     ArrowButton()
-                    InputWordWrapperView(
-                        currentWord,
-                        currentWordIndex = currentWordIndex.value,
-                        isVibrationEnabled = true,
-                    ) { count, _->
-                       val isValidWord = isValidWordFromFileBinarySearch(context,"bato")
-                        Log.d("WordFlipster", isValidWord.toString())
-
-                    }
+//                    InputWordWrapperView(
+//                        currentWord,
+//                        currentWordIndex = currentWordIndex.value,
+//                        isVibrationEnabled = true,
+//                    ) { count, _->
+//                       val isValidWord = isValidWordFromFileBinarySearch(context,"bato")
+//                        Log.d("WordFlipster", isValidWord.toString())
+//
+//                    }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Button(onClick = { currentWordIndex.value += 1 },
                             colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue),

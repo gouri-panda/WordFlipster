@@ -94,6 +94,8 @@ fun WelcomeScreenComposeWrapper(navController: NavHostController) {
             navController.navigate(Screens.WordFlipOnboarding.route)
         } else if (gameType.name == navController.context.getString(R.string.word_Chain)) {
             navController.navigate(Screens.WordChainOnboarding.route)
+        } else if(gameType.name ==  navController.context.getString(R.string.word_shuffle)) {
+            navController.navigate(Screens.WordShuffleOnboarding.route)
         }
     }
 }

@@ -78,6 +78,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.gson.Gson
+import com.javix.wordflipster.Navigation.Screens
 import com.javix.wordflipster.ui.theme.WordFlipsterTheme
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
@@ -96,6 +97,7 @@ fun WordFlipMainScreen(navController: NavController, category: String) {
     )
 
     val charLists = homeViewModel.getCharList()
+    homeViewModel.updateCurrentScreen(Screens.WordFlipHomeScreen)
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
@@ -231,14 +233,13 @@ fun MainScreen() {
 }
 
 @Composable
-fun InputWordWrapperView(
+private fun InputWordWrapperView(
     word: List<String>,
     currentWordIndex: Int,
     isVibrationEnabled: Boolean,
     onCompleteListener: (Int, Boolean) -> Unit
 ) {
     WordFlipsterTheme {
-
         var inputValue by remember { mutableStateOf("") }
         Row(
             modifier = Modifier
@@ -261,11 +262,24 @@ fun InputWordWrapperView(
                 ),
                 charColor = Color.Blue,
                 correctWord = word,
-                currentWordIndex = currentWordIndex,
                 isVibrationEnabled = isVibrationEnabled,
-                onWordCompleteListener = { count, isCorrect ->
-                    onCompleteListener(count, isCorrect)
-                    inputValue = ""
+                onValueChange = { value ->
+                    if (value.length <= word.size) {
+                        Log.d("Actual Value", value)
+                        if (value.length == word.size) {
+                            val isCorrectWord = evaluateCorrectWord(
+                                inputWord = value,
+                                correctWord = word.joinToString("")
+                            )
+                            onCompleteListener(currentWordIndex + 1, isCorrectWord)
+                            inputValue = ""
+                        }
+                    }
+                }, onEachLetterChange = { inputText, index ->
+                    // Check if there is an input character for this position
+                    val inputChar = inputText.getOrNull(index)?.toString()
+                    val isCorrectChar = inputChar != null && inputChar == word.getOrNull((word.size - 1) - index)
+                    return@InputWordView isCorrectChar
                 }
             )
         }
@@ -279,7 +293,6 @@ fun InputWordView(
     inputText: String,
     modifier: Modifier = Modifier,
     charColor: Color = Color.Black,
-    containerColor: Color = charColor,
     selectedContainerColor: Color = charColor,
     charBackground: Color = Color.Transparent,
     charSize: TextUnit = 16.sp,
@@ -289,9 +302,9 @@ fun InputWordView(
     count: Int = correctWord.size,
     keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
     onTextChange: (String) -> Unit,
-    currentWordIndex: Int,
     isVibrationEnabled: Boolean,
-    onWordCompleteListener: (Int, Boolean) -> Unit
+    onValueChange: (value: String) -> Unit = {},
+    onEachLetterChange: @Composable (inputLetter: String, index : Int) -> Boolean
 ) {
     val context = LocalContext.current
     val vibrator = remember { context.getSystemService(Vibrator::class.java) }
@@ -299,27 +312,15 @@ fun InputWordView(
         modifier = modifier,
         value = inputText,
         onValueChange = {
-            if (it.length <= count) {
-                onTextChange.invoke(it)
-                Log.d("Actual Value", it)
-                if (it.length == correctWord.size) {
-                    val isCorrectWord = evaluateCorrectWord(
-                        inputWord = it,
-                        correctWord = correctWord.joinToString("")
-                    )
-                    onWordCompleteListener(currentWordIndex + 1, isCorrectWord)
-                }
-            }
+            onTextChange.invoke(it)
+            onValueChange(it)
         },
         keyboardOptions = keyboardOptions,
         decorationBox = {
             Row(horizontalArrangement = Arrangement.spacedBy(containerSpacing)) {
                 repeat(count) { index ->
-                    // Check if there is an input character for this position
+                    val isCorrectChar = onEachLetterChange(inputText, index)
                     val inputChar = inputText.getOrNull(index)?.toString()
-                    val isCorrectChar = inputChar != null && inputText.getOrNull(index)
-                        ?.toString() == correctWord.getOrNull((correctWord.size - 1) - index)
-
 
                     // Set color based on correctness, default to a neutral color for empty boxes
                     val borderColor = when {
@@ -328,7 +329,7 @@ fun InputWordView(
                         else -> {
                             // Trigger vibration if input is incorrect
                             if (isVibrationEnabled) {
-                            createVibration(vibrator)
+                                createVibration(vibrator)
                             }
                             Color.Red  // Red if incorrect
                         }
@@ -424,7 +425,7 @@ private fun CharView(
 }
 
 @Composable
-fun WordGridWithWoodenTiles(word: List<String>) {
+fun WordGridWithWoodenTiles(word: List<String>) { // Here a letter is a string
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -562,7 +563,7 @@ fun TimerAndCorrectObjects(
 }
 
 @Composable
-private fun TimerAndCorrectObjectsWithTimerWrapper(homeViewModel: HomeViewModel) {
+fun TimerAndCorrectObjectsWithTimerWrapper(homeViewModel: HomeViewModel) {
     val totalTime by homeViewModel.remainingTime.collectAsState()
     val wordsSolved by homeViewModel.wordsSolved.collectAsState()
     val totalWords by homeViewModel.totalWords.collectAsState()

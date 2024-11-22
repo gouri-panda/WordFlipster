@@ -14,4 +14,9 @@ sealed class Screens(val route: String) {
     data object WordChainMainScreen: Screens("wordChainMainScreen?level={level}"){
         fun createRoute(level: String) = "wordChainMainScreen?level=$level"
     }
+    data object WordShuffleMainScreen: Screens("wordShuffleMainScreen?category={category}"){
+        fun createRoute(category: String) = "wordShuffleMainScreen?category=$category"
+    }
+    data object WordShuffleOnboarding: Screens("wordShuffleOnboarding")
+
 }

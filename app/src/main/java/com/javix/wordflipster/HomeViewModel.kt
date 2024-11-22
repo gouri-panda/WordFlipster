@@ -5,9 +5,12 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.javix.wordflipster.Navigation.Screens
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -46,6 +49,9 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
     val vibration: StateFlow<Boolean> = _vibration
 
     private var _challenge = MutableStateFlow<Challenge?>(null)
+
+    private val _currentScreen = MutableStateFlow<Screens>(Screens.WordFlipHomeScreen)
+    val currentScreen: StateFlow<Screens> = _currentScreen
 
 
 
@@ -124,7 +130,7 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
             totalWords = totalWords.value,
             timeTaken = totalTime.toLong(),
             date = Date(),
-            gameType = wordFlipGame
+            gameType  = getGameType()
         )
     }
 
@@ -141,10 +147,22 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
                 totalWords = totalWords.value,
                 timeTaken = totalTime.toLong(),
                 date = Date(),
-                gameType = wordFlipGame
+                gameType = getGameType()
             )
         )
         return _challenge.value
+    }
+
+    private fun getGameType() = when (currentScreen.value) {
+        Screens.WordFlipHomeScreen -> {
+            wordFlipGame
+        }
+        Screens.WordShuffleMainScreen -> {
+            wordShuffleGame
+        }
+        else -> {
+            wordFlipGame
+        }
     }
 
 
@@ -173,6 +191,9 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
         return if (category != null && category != "") {
             categoriesWithWords[category]?.shuffled() ?: twoLetterWords.shuffled()
         } else getWordsListFromCount(letterCount.value).shuffled()
+    }
+    fun updateCurrentScreen(screen: Screens) {
+        _currentScreen.value = screen
     }
 
 }

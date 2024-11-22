@@ -2,4 +2,5 @@
     <string name="app_name">WordFlipster</string>
     <string name="word_flip">Word Flip</string>
     <string name ="word_Chain">Word Chain</string>
+    <string name="word_shuffle">Word Shuffle</string>
 </resources>
