@@ -161,7 +161,7 @@ fun ChallengeItem(challenge: Challenge) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Words Solved: ${challenge.wordsSolved} / ${challenge.totalWords}",
+                    text = "Words Solved: ${challenge.wordsSolved}/${challenge.totalWords}",
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
