@@ -47,19 +47,19 @@ fun WordShuffleOnboarding(navController: NavController) {
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Button(
-                onClick = { navController.navigate("puzzleCategory") },
-                shape = RoundedCornerShape(
-                    topStart = 16.dp,
-                    topEnd = 16.dp,
-                    bottomEnd = 16.dp,
-                    bottomStart = 16.dp
-                ),  // Rounded corners
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue),
-                modifier = Modifier.size(200.dp, 50.dp)
-            ) {
-                Text("Category", color = Color.White)
-            }
+//            Button(
+//                onClick = { navController.navigate("puzzleCategory") },
+//                shape = RoundedCornerShape(
+//                    topStart = 16.dp,
+//                    topEnd = 16.dp,
+//                    bottomEnd = 16.dp,
+//                    bottomStart = 16.dp
+//                ),  // Rounded corners
+//                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue),
+//                modifier = Modifier.size(200.dp, 50.dp)
+//            ) {
+//                Text("Category", color = Color.White)
+//            } // Todo: Add later in the screen
             EditLettersButton( dataStoreManager, coroutineScope)
             MinutesButton(dataStoreManager, coroutineScope)
             Button(
