@@ -19,4 +19,9 @@ sealed class Screens(val route: String) {
     }
     data object WordShuffleOnboarding: Screens("wordShuffleOnboarding")
 
+    data object WordCrypticMainScreen: Screens("wordCrypticMainScreen?category={category}") {
+        fun createRoute(category: String) = "wordCrypticMainScreen?category=$category"
+    }
+    data object WordCrypticOnboarding: Screens("wordCrypticOnboarding")
+
 }

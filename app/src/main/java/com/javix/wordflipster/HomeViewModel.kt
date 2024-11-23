@@ -160,6 +160,9 @@ class HomeViewModel(application: Application, category: String?, onChallengeComp
         Screens.WordShuffleMainScreen -> {
             wordShuffleGame
         }
+        Screens.WordCrypticMainScreen -> {
+            wordCrypticGame
+        }
         else -> {
             wordFlipGame
         }

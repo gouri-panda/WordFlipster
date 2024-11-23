@@ -52,6 +52,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -96,6 +97,8 @@ fun WelcomeScreenComposeWrapper(navController: NavHostController) {
             navController.navigate(Screens.WordChainOnboarding.route)
         } else if(gameType.name ==  navController.context.getString(R.string.word_shuffle)) {
             navController.navigate(Screens.WordShuffleOnboarding.route)
+        } else if (gameType.name == navController.context.getString(R.string.word_cryptic)) {
+            navController.navigate(Screens.WordCrypticOnboarding.route)
         }
     }
 }

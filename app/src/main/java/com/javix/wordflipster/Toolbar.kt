@@ -74,6 +74,9 @@ fun getHints(screen: Screens): String {
         Screens.WordShuffleMainScreen -> {
             stringResource(id = R.string.word_shuffle_hint)
         }
+        Screens.WordCrypticMainScreen -> {
+            stringResource(id = R.string.word_cryptic_hint)
+        }
         else ->{
             ""
         }

@@ -5,4 +5,6 @@
     <string name="word_shuffle">Word Shuffle</string>
     <string name="word_flip_hint"> Read the word from right to left to find the answer.E.g  \'egg\' to \'gge\'.</string>
     <string name="word_shuffle_hint">Can you find the hidden word? Rearrange the letters to solve the puzzle! 💡</string>
+    <string name="word_cryptic_hint">Each word has been scrambled using a secret shift in the alphabet! Your goal is to figure out how far each letter has moved forward or backward. Remember, the alphabet wraps around — so \'A\' can follow \'Z.\' Decode the word and reveal the hidden message!</string>
+    <string name="word_cryptic">Word Cryptic</string>
 </resources>
