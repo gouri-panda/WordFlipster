@@ -121,6 +121,15 @@ fun WordShuffleMainScreen(navController: NavController, category: String) {
                         }
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Button(onClick = {
+                                homeViewModel.currentWordIndex.value += 1
+                                homeViewModel.updateTotalWords(homeViewModel.totalWords.value + 1)
+
+                            },
+                                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue),
+                            ) {
+                                Text("Next", color = Color.White)
+                            }
+                            Button(onClick = {
                                 homeViewModel.finishGame { challenge ->
                                     finishChallenge(challenge, navController)
                                 }
