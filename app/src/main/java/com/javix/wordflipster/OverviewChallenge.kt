@@ -69,7 +69,6 @@ fun ChallengeCompleteScreenWrapper(navController: NavController, challenge: Chal
                   wordShuffleGame -> navController.navigate(Screens.WordShuffleMainScreen.createRoute(challenge.gameType.name))
                     wordCrypticGame ->navController.navigate(Screens.WordCrypticMainScreen.createRoute(challenge.gameType.name))
                 }
-                navController.navigate(Screens.WordFlipHomeScreen.createRoute(""))
             }, onHomeClick = {
                 navController.navigate(Screens.WelcomeScreen.route)
             }, onDashboardClick = {
