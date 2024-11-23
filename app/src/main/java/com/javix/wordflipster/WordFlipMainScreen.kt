@@ -129,7 +129,7 @@ fun WordFlipMainScreen(navController: NavController, category: String) {
                     .align(Alignment.TopEnd)
                     .fillMaxSize()
             ) {
-                TopBar(navController) {} // Todo show dialog button exit if necessary
+                TopBar(navController, screen = Screens.WordFlipHomeScreen) {} // Todo show dialog button exit if necessary
 
 
                 TimerAndCorrectObjectsWithTimerWrapper(

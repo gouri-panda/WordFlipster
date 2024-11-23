@@ -15,21 +15,30 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.javix.wordflipster.Navigation.Screens
+import com.javix.wordflipster.compose.HintDialogButton
 
 @Composable
-fun TopBar(navController: NavController, onClickListener: () -> Unit) {
+fun TopBar(navController: NavController,screen : Screens = Screens.WelcomeScreen,  onClickListener: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top= 8.dp)
+            .padding(top = 8.dp)
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier.align(Alignment.TopEnd)
         ) {
             // Icon for progress graph at the top left corner
+            val hint = getHints(screen)
+            if (hint.isNotEmpty())  {
+                HintDialogButton(hint = hint)
+            }
+
+
             IconButton(
                 onClick = {
                     onClickListener()
@@ -53,6 +62,20 @@ fun TopBar(navController: NavController, onClickListener: () -> Unit) {
             ) {
                 androidx.compose.material.Icon(Icons.Default.Settings, contentDescription = "Settings", tint = Color.Black)
             }
+        }
+    }
+}
+@Composable
+fun getHints(screen: Screens): String {
+    return when(screen) {
+        Screens.WordFlipHomeScreen -> {
+           stringResource(id = R.string.word_flip_hint)
+        }
+        Screens.WordShuffleMainScreen -> {
+            stringResource(id = R.string.word_shuffle_hint)
+        }
+        else ->{
+            ""
         }
     }
 }
