@@ -91,7 +91,7 @@ fun HintDialogButton(hint: String) {
                     Button(
                         onClick = { showHintDialog = false },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF2196F3),
+                            containerColor = Color.Blue,
                             contentColor = Color.White
                         ),
                         shape = RoundedCornerShape(12.dp)
