@@ -181,7 +181,7 @@ private fun InputWordWrapperView(
                     capitalization = KeyboardCapitalization.Characters
                 ),
                 charColor = Color.Blue,
-                correctWord = shuffledWord,
+                correctWord = correctWord,
                 isVibrationEnabled = isVibrationEnabled,
                 onValueChange = { value ->
                     if (value.length <= shuffledWord.size) {
