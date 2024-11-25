@@ -58,7 +58,7 @@ fun WordigmaScreen(
             Text(text = "Level 1", style = MaterialTheme.typography.h6)
         }
 
-        QuoteDisplaySection(quote = "WHERE THERE IS LOVE THERE IS LIVE", maxRowLength = 13) {
+        QuoteDisplaySection(quote = "WHERE THERE IS LOVE THERE IS LIFE", maxRowLength = 13) {
 
         }
 
