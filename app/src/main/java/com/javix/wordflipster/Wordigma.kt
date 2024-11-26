@@ -3,9 +3,11 @@ package com.javix.wordflipster
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +19,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
@@ -26,13 +31,26 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalTextInputService
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,6 +67,9 @@ fun WordigmaScreen(
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         // Top Section: Lives, Mistakes, and Level
+
+        val currentFocusIndex = remember { mutableStateOf(0) }
+        val inputLetter = remember { mutableStateOf("") }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -62,11 +83,10 @@ fun WordigmaScreen(
 
         }
 
-//        // Keyboard Section
-//        Keyboard(onKeyClick = { letter ->
-//            // Handle keyboard input
-//        })
-        CustomKeyboard({}, {}, {})
+        CustomKeyboard({ char ->
+            inputLetter.value  = char
+            Log.d("home", char)
+        }, {}, {})
 
     }
 
@@ -75,11 +95,25 @@ fun WordigmaScreen(
 @Composable
 fun QuoteDisplaySection(
     quote: String, // Input quote
+    commonLetterCount: Int = 2,
     maxRowLength: Int, // Maximum row length based on word character count
     onLetterInput: (Char) -> Unit // Input handler for each letter
 ) {
     // Split the quote into words
     val words = quote.split(" ")
+
+    // Find at least 'commonLetterCount' common letters
+    val letterFrequency = words.joinToString("").groupingBy { it.lowercaseChar() }.eachCount()
+    val commonLetters = letterFrequency
+        .filter { it.key.isLetter() }
+        .toList()
+        .sortedByDescending { it.second } // Sort by frequency
+        .take(commonLetterCount)
+        .map { it.first } // Get the top common letters
+
+    // Mutable state to track user input for each word
+    val userInputs = remember { mutableStateOf(words.map { it.map { char -> char.toString() }.toMutableList() }) }
+
 
     // Distribute words into rows based on their lengths
     val rows = mutableListOf<List<String>>()
@@ -109,14 +143,15 @@ fun QuoteDisplaySection(
     ) {
         for (row in rows) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(0.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                    for (word in row) {
-                        WordRow(word = word, onLetterInput = onLetterInput)
+                for (word in row) {
+                        WordRow(word = word,commonLetters = commonLetters, onLetterInput = onLetterInput)
                     }
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(32.dp))
+
             }
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -127,111 +162,49 @@ fun QuoteDisplaySection(
 @Composable
 fun WordRow(
     word: String,
+    commonLetters: List<Char>,
     onLetterInput: (Char) -> Unit
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(2.dp),
+        horizontalArrangement = Arrangement.spacedBy(0.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        for (letter in word) {
+        word.forEachIndexed { charIndex, char ->
+            val shouldHide = commonLetters.contains(char.lowercaseChar())
+
             Box(
                 modifier = Modifier
+                    .width(IntrinsicSize.Min)
+                    .padding(0.dp)
                     .size(28.dp)
-                    .border(1.dp, Color.Gray, RoundedCornerShape(4.dp)),
+                .border(0.dp, if (shouldHide) Color.Gray else Color.Transparent, RoundedCornerShape(4.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = letter.toString(), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                if (shouldHide) {
+                        BasicTextField(
+                            value = "k",
+                            onValueChange = { input ->
+
+                            },
+                            readOnly = true,
+                            modifier = Modifier.width(30.dp),
+                            singleLine = true,
+                            textStyle = TextStyle(fontSize = 16.sp, textAlign = TextAlign.Center)
+                        )
+                } else {
+                    // Show the original letter
+                    Text(
+                        text = char.toString(),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    )
+                }
             }
         }
     }
 }
 
-@Composable
-fun WordRow(word: LetterWithHint, isCorrect: Boolean, onLetterInput: (String, Int) -> Unit) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-            Box(
-                modifier = Modifier
-                    .padding(4.dp)
-                    .background(if (isCorrect)Color.Green else Color.White),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(modifier = Modifier.padding(bottom = 4.dp, top =4.dp)) {
-                    Text(
-                        text = word.char.toString(),
-                        style = MaterialTheme.typography.h6
-                    )
-                    Text(text = "_____")
-                    Text(
-                        text = word.hint?.toString() ?: "",
-                        style = MaterialTheme.typography.h6,
-                        modifier = Modifier.padding(horizontal = 12.dp)
-                    )
 
-                }
-
-            }
-    }
-
-}
-@Composable
-fun Keyboard(onKeyClick: (Char) -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .background(Color.Magenta)
-            .padding(8.dp)
-    ) {
-        val keyboardRows = listOf(
-            "QWERTYUIOP",
-            "ASDFGHJKL",
-            "ZXCVBNM"
-        )
-        keyboardRows.forEach { row ->
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                row.forEach { letter ->
-                    Button(
-                        onClick = { onKeyClick(letter) },
-                        modifier = Modifier
-                            .width(42.dp)
-                            .height(42.dp)
-                            .padding(2.dp),
-                        shape  = RoundedCornerShape(
-                            topStart = 4.dp,
-                            topEnd = 4.dp,
-                            bottomEnd = 4.dp,
-                            bottomStart = 4.dp
-                        )
-                    ) {
-                        Text(
-                            text = letter.toString(),
-                            style = MaterialTheme.typography.body1
-                        )
-                    }
-                }
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-    }
-}
-
-// Data Model
-data class WordWithHints(
-    val letters: List<LetterWithHint>
-)
-
-data class LetterWithHint(
-    val char: Char?, // Correct letter or null if empty
-    val hint: Int?,  // Hint number (e.g., 19 for E)
-    val isCorrect: Boolean = false // If the letter input is correct
-)
 
 @Preview(showBackground = true)
 @Composable
@@ -345,3 +318,90 @@ fun ActionKeyButton(icon: ImageVector, onClick: () -> Unit) {
                 Icon(icon, contentDescription = null)
             }
 }
+
+@Composable
+fun WordRow(word: LetterWithHint, isCorrect: Boolean, onLetterInput: (String, Int) -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(4.dp)
+                .background(if (isCorrect)Color.Green else Color.White),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(modifier = Modifier.padding(bottom = 4.dp, top =4.dp)) {
+                Text(
+                    text = word.char.toString(),
+                    style = MaterialTheme.typography.h6
+                )
+                Text(text = "_____")
+                Text(
+                    text = word.hint?.toString() ?: "",
+                    style = MaterialTheme.typography.h6,
+                    modifier = Modifier.padding(horizontal = 12.dp)
+                )
+
+            }
+
+        }
+    }
+
+}
+@Composable
+fun Keyboard(onKeyClick: (Char) -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .background(Color.Magenta)
+            .padding(8.dp)
+    ) {
+        val keyboardRows = listOf(
+            "QWERTYUIOP",
+            "ASDFGHJKL",
+            "ZXCVBNM"
+        )
+        keyboardRows.forEach { row ->
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                row.forEach { letter ->
+                    Button(
+                        onClick = { onKeyClick(letter) },
+                        modifier = Modifier
+                            .width(42.dp)
+                            .height(42.dp)
+                            .padding(2.dp),
+                        shape  = RoundedCornerShape(
+                            topStart = 4.dp,
+                            topEnd = 4.dp,
+                            bottomEnd = 4.dp,
+                            bottomStart = 4.dp
+                        )
+                    ) {
+                        Text(
+                            text = letter.toString(),
+                            style = MaterialTheme.typography.body1
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+    }
+}
+
+// Data Model
+data class WordWithHints(
+    val letters: List<LetterWithHint>
+)
+
+data class LetterWithHint(
+    val char: Char?, // Correct letter or null if empty
+    val hint: Int?,  // Hint number (e.g., 19 for E)
+    val isCorrect: Boolean = false // If the letter input is correct
+)
