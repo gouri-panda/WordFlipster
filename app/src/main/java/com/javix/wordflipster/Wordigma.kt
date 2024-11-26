@@ -3,6 +3,7 @@ package com.javix.wordflipster
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -81,8 +82,8 @@ fun WordigmaScreen(
 fun QuoteDisplaySection(
     quote: String,
     commonLetterCount: Int = 2,
-    maxRowLength: Int, // Maximum row length based on word character count
-    onLetterInput: (Char) -> Unit // Input handler for each letter
+    maxRowLength: Int,
+    onLetterInput: (Char) -> Unit
 ) {
     val words = quote.split(" ")
     val letterFrequency = words.joinToString("").groupingBy { it.lowercaseChar() }.eachCount()
@@ -106,6 +107,7 @@ fun QuoteDisplaySection(
     }
 
     val currentHiddenIndex = remember { mutableStateOf(0) }
+    val manuallySelectedIndex = remember { mutableStateOf<Int?>(null) }
 
     val rows = mutableListOf<List<Int>>()
     var currentRow = mutableListOf<Int>()
@@ -126,8 +128,7 @@ fun QuoteDisplaySection(
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+            .fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -142,15 +143,23 @@ fun QuoteDisplaySection(
                         commonLetters = commonLetters,
                         userInput = userInputs[wordIndex],
                         hiddenIndices = hiddenIndices.filter { it.first == wordIndex },
-                        currentHiddenIndex = currentHiddenIndex.value,
+                        currentHiddenIndex = hiddenIndices.getOrNull(
+                            manuallySelectedIndex.value ?: currentHiddenIndex.value
+                        )?.let { (index, _, _) ->
+                            if (index == wordIndex) manuallySelectedIndex.value ?: currentHiddenIndex.value else -1
+                        } ?: -1,
                         onValueChange = { wordIdx, charIdx, input ->
                             if (input.length == 1) {
                                 userInputs[wordIdx][charIdx] = input
+                                manuallySelectedIndex.value = null
                                 val nextHiddenIndex = currentHiddenIndex.value + 1
                                 if (nextHiddenIndex < hiddenIndices.size) {
                                     currentHiddenIndex.value = nextHiddenIndex
                                 }
                             }
+                        },
+                        onLetterSelected = { selectedIndex ->
+                            manuallySelectedIndex.value = selectedIndex
                         }
                     )
                 }
@@ -189,26 +198,33 @@ fun WordRow(
     userInput: List<String>,
     hiddenIndices: List<Triple<Int, Int, String>>,
     currentHiddenIndex: Int,
-    onValueChange: (Int, Int, String) -> Unit
+    onValueChange: (Int, Int, String) -> Unit,
+    onLetterSelected: (Int) -> Unit
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(0.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         word.forEachIndexed { charIndex, char ->
             val shouldHide = commonLetters.contains(char.lowercaseChar())
-            val isFocused = hiddenIndices.indexOfFirst { it.second == charIndex } == currentHiddenIndex
+            val isFocused = currentHiddenIndex != -1 && hiddenIndices.indexOfFirst { it.second == charIndex } == currentHiddenIndex
 
             Box(
                 modifier = Modifier
-                    .width(IntrinsicSize.Min)
-                    .padding(0.dp)
-                    .size(28.dp)
+                    .width(28.dp)
+                    .padding(1.dp)
+                    .size(23.dp)
                     .border(
                         1.dp,
-                        if (shouldHide) Color.Gray else Color.Transparent,
+                        if (shouldHide) {
+                            if (isFocused) Color.LightGray else Color.Gray
+                        } else Color.Transparent,
                         RoundedCornerShape(4.dp)
-                    ),
+                    )
+                    .clickable(enabled = shouldHide) {
+                        val index = hiddenIndices.indexOfFirst { it.second == charIndex }
+                        if (index != -1) onLetterSelected(index)
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 if (shouldHide) {
