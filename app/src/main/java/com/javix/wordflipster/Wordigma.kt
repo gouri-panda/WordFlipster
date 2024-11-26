@@ -70,14 +70,10 @@ fun WordigmaScreen(
         val inputLetter = remember { mutableStateOf("") }
         TopInfoSection(lives = 7, mistakes = 1, level = 1)
 
-        QuoteDisplaySection(quote = "WHERE THERE IS LOVE THERE IS LIFE", maxRowLength = 13) {
+        QuoteDisplaySection(quote = "WHERE THERE IS LOVE THERE IS LIFE CAT BALL YELLOW", maxRowLength = 13) {
 
         }
 
-        CustomKeyboard({ char ->
-            inputLetter.value  = char
-            Log.d("home", char)
-        }, {}, {})
 
     }
 
@@ -102,22 +98,37 @@ fun QuoteDisplaySection(
         .take(commonLetterCount)
         .map { it.first } // Get the top common letters
 
-    // Mutable state to track user input for each word
-    val userInputs = remember { mutableStateOf(words.map { it.map { char -> char.toString() }.toMutableList() }) }
+    // Track hidden letter indices per word instance
+    val hiddenIndices = words.flatMapIndexed { wordIndex, word ->
+        word.mapIndexedNotNull { charIndex, char ->
+            if (commonLetters.contains(char.lowercaseChar())) {
+                Triple(wordIndex, charIndex, word) // Include the word index for scoping
+            } else null
+        }
+    }
 
+    // Mutable state for user inputs (one per word instance)
+    val userInputs = remember {
+        words.map { word ->
+            word.map { char -> if (commonLetters.contains(char.lowercaseChar())) "" else char.toString() }.toMutableList()
+        }
+    }
 
-    // Distribute words into rows based on their lengths
-    val rows = mutableListOf<List<String>>()
-    var currentRow = mutableListOf<String>()
+    // Track the index of the current hidden letter
+    val currentHiddenIndex = remember { mutableStateOf(0) }
+
+    // Group words into rows
+    val rows = mutableListOf<List<Int>>() // Row contains indices of words in `words`
+    var currentRow = mutableListOf<Int>()
     var currentLength = 0
 
-    for (word in words) {
+    for ((index, word) in words.withIndex()) {
         if (currentLength + word.length + currentRow.size > maxRowLength) {
             rows.add(currentRow)
             currentRow = mutableListOf()
             currentLength = 0
         }
-        currentRow.add(word)
+        currentRow.add(index)
         currentLength += word.length
     }
     if (currentRow.isNotEmpty()) {
@@ -134,19 +145,52 @@ fun QuoteDisplaySection(
     ) {
         for (row in rows) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(0.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
-                for (word in row) {
-                        WordRow(word = word,commonLetters = commonLetters, onLetterInput = onLetterInput)
-                    }
-                Spacer(modifier = Modifier.height(32.dp))
-
+                for (wordIndex in row) {
+                    WordRow(
+                        word = words[wordIndex],
+                        commonLetters = commonLetters,
+                        userInput = userInputs[wordIndex],
+                        hiddenIndices = hiddenIndices.filter { it.first == wordIndex },
+                        currentHiddenIndex = currentHiddenIndex.value,
+                        onValueChange = { wordIdx, charIdx, input ->
+                            if (input.length == 1) {
+                                userInputs[wordIdx][charIdx] = input
+                                val nextHiddenIndex = currentHiddenIndex.value + 1
+                                if (nextHiddenIndex < hiddenIndices.size) {
+                                    currentHiddenIndex.value = nextHiddenIndex
+                                }
+                            }
+                        }
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(16.dp))
         }
+
+
+        CustomKeyboard(onKeyPress = { char ->
+            if (currentHiddenIndex.value < hiddenIndices.size) {
+                val (wordIndex, charIndex, _) = hiddenIndices[currentHiddenIndex.value]
+                if (userInputs[wordIndex][charIndex].isEmpty()) { // Prevent overwriting existing input
+                    userInputs[wordIndex][charIndex] = char.toString()
+                    val nextHiddenIndex = currentHiddenIndex.value + 1
+                    if (nextHiddenIndex < hiddenIndices.size) {
+                        currentHiddenIndex.value = nextHiddenIndex
+                    }
+                }
+            }
+        }, onBackspacePress = {
+            if (currentHiddenIndex.value > 0) {
+                currentHiddenIndex.value -= 1
+                val (wordIndex, charIndex, _) = hiddenIndices[currentHiddenIndex.value]
+                userInputs[wordIndex][charIndex] = ""
+            }
+        }, {})
     }
+
 }
 
 
@@ -154,14 +198,18 @@ fun QuoteDisplaySection(
 fun WordRow(
     word: String,
     commonLetters: List<Char>,
-    onLetterInput: (Char) -> Unit
+    userInput: List<String>,
+    hiddenIndices: List<Triple<Int, Int, String>>,
+    currentHiddenIndex: Int,
+    onValueChange: (Int, Int, String) -> Unit
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(0.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         word.forEachIndexed { charIndex, char ->
             val shouldHide = commonLetters.contains(char.lowercaseChar())
+            val isFocused = hiddenIndices.indexOfFirst { it.second == charIndex } == currentHiddenIndex
 
             Box(
                 modifier = Modifier
@@ -169,25 +217,31 @@ fun WordRow(
                     .padding(0.dp)
                     .size(28.dp)
                     .border(
-                        0.dp,
+                        1.dp,
                         if (shouldHide) Color.Gray else Color.Transparent,
                         RoundedCornerShape(4.dp)
                     ),
                 contentAlignment = Alignment.Center
             ) {
                 if (shouldHide) {
-                        BasicTextField(
-                            value = "k",
-                            onValueChange = { input ->
-
-                            },
-                            readOnly = true,
-                            modifier = Modifier.width(30.dp),
-                            singleLine = true,
-                            textStyle = TextStyle(fontSize = 16.sp, textAlign = TextAlign.Center)
-                        )
+                    BasicTextField(
+                        value = userInput[charIndex],
+                        onValueChange = { input ->
+                            if (input.length <= 1) {
+                                val wordIdx = hiddenIndices.firstOrNull { it.second == charIndex }?.first ?: return@BasicTextField
+                                onValueChange(wordIdx, charIndex, input)
+                            }
+                        },
+                        singleLine = true,
+                        modifier = Modifier
+                            .width(32.dp)
+                            .background(
+                                if (isFocused) Color.Green else Color.White,
+                                RoundedCornerShape(4.dp)
+                            ),
+                        textStyle = TextStyle(fontSize = 16.sp, textAlign = TextAlign.Center)
+                    )
                 } else {
-                    // Show the original letter
                     Text(
                         text = char.toString(),
                         fontWeight = FontWeight.Bold,
