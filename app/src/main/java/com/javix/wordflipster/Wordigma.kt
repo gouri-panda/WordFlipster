@@ -71,7 +71,7 @@ fun WordigmaScreen(
         val inputLetter = remember { mutableStateOf("") }
         TopInfoSection(lives = 7, mistakes = 1, level = 1)
 
-        QuoteDisplaySection(quote = "WHERE THERE IS LOVE THERE IS LIFE CAT BALL YELLOW", maxRowLength = 13) {
+        QuoteDisplaySection(quote = "WHERE THERE IS LOVE THERE IS LIFE.", maxRowLength = 13) {
 
         }
 
@@ -309,7 +309,7 @@ fun CustomKeyboard(
     val keys = listOf(
         listOf("Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"),
         listOf("A", "S", "D", "F", "G", "H", "J", "K", "L"),
-        listOf("Z", "X", "C", "V", "B", "N", "M")
+        listOf("Back", "Z", "X", "C", "V", "B", "N", "M", "Enter")
     )
 
     Column(
@@ -323,33 +323,30 @@ fun CustomKeyboard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
-                        start = ((rowIndex) * 16).dp,
-                        end = ((rowIndex) * 16).dp
+                        start =
+                             if (rowIndex == 2) 4.dp else (rowIndex * 16).dp, // Reduce padding for the 3rd row
+                        end = if (rowIndex == 2) 0.dp else (rowIndex * 16).dp // Reduce padding for the 3rd row
+
                     ) // Adjust start padding based on row index
                     .padding(top = 2.dp, bottom = 2.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp) // Adjust space between buttons
+                horizontalArrangement = Arrangement.spacedBy(2.dp) // Adjust space between buttons
             ) {
                 row.forEach { key ->
-                    KeyButton(key = key, onKeyPress = { onKeyPress(key) })
+                    when (key) {
+                        "Back" -> ActionKeyButton(
+                            icon = Icons.Default.ArrowBack, // Backspace icon
+                            modifier = Modifier.weight(1f),
+                            onClick = { onBackspacePress() }
+                        )
+                        "Enter" -> ActionKeyButton(
+                            icon = Icons.Default.ArrowForward, // Enter icon
+                            modifier = Modifier.weight(1f),
+                            onClick = { onEnterPress() }
+                        )
+                        else -> KeyButton(key = key, onKeyPress = { onKeyPress(key) })
+                    }
                 }
             }
-        }
-
-        // Action buttons: Backspace and Enter
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(4.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            ActionKeyButton(
-                icon = Icons.Default.ArrowBack, // Backspace icon
-                onClick = { onBackspacePress() }
-            )
-            ActionKeyButton(
-                icon = Icons.Default.ArrowForward, // Enter icon
-                onClick = { onEnterPress() }
-            )
         }
     }
 }
@@ -359,7 +356,7 @@ fun KeyButton(key: String, onKeyPress: () -> Unit) {
         Button(
             onClick = onKeyPress,
             modifier = Modifier
-                .width(35.dp)
+                .width(32.dp)
                 .height(45.dp)
                 .padding(0.dp),
             colors = ButtonDefaults.buttonColors(
@@ -374,11 +371,13 @@ fun KeyButton(key: String, onKeyPress: () -> Unit) {
 }
 
 @Composable
-fun ActionKeyButton(icon: ImageVector, onClick: () -> Unit) {
+fun ActionKeyButton(icon: ImageVector,modifier: Modifier = Modifier, onClick: () -> Unit) {
             Button(
                 onClick = onClick,
-                modifier = Modifier
-                    .padding(4.dp),
+                modifier = modifier
+                    .width(43.dp)
+                    .height(50.dp)
+                    .padding(top = 4.dp, bottom = 4.dp, start =2.dp, end = 2.dp),
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = Color.Gray,
                     contentColor = Color.White
