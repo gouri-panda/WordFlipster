@@ -132,6 +132,9 @@ fun QuoteDisplaySection(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        Spacer(modifier = Modifier.weight(1f)) // Push content downward
+
         for (row in rows) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -166,6 +169,7 @@ fun QuoteDisplaySection(
             }
             Spacer(modifier = Modifier.height(16.dp))
         }
+        Spacer(modifier = Modifier.weight(1f)) // Push content downward
 
 
         CustomKeyboard(onKeyPress = { char ->
