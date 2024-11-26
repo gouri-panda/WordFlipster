@@ -77,48 +77,37 @@ fun WordigmaScreen(
 
     }
 
-}
-
-@Composable
+}@Composable
 fun QuoteDisplaySection(
-    quote: String, // Input quote
+    quote: String,
     commonLetterCount: Int = 2,
     maxRowLength: Int, // Maximum row length based on word character count
     onLetterInput: (Char) -> Unit // Input handler for each letter
 ) {
-    // Split the quote into words
     val words = quote.split(" ")
-
-    // Find at least 'commonLetterCount' common letters
     val letterFrequency = words.joinToString("").groupingBy { it.lowercaseChar() }.eachCount()
     val commonLetters = letterFrequency
         .filter { it.key.isLetter() }
         .toList()
-        .sortedByDescending { it.second } // Sort by frequency
+        .sortedByDescending { it.second }
         .take(commonLetterCount)
-        .map { it.first } // Get the top common letters
+        .map { it.first }
 
-    // Track hidden letter indices per word instance
     val hiddenIndices = words.flatMapIndexed { wordIndex, word ->
         word.mapIndexedNotNull { charIndex, char ->
-            if (commonLetters.contains(char.lowercaseChar())) {
-                Triple(wordIndex, charIndex, word) // Include the word index for scoping
-            } else null
+            if (commonLetters.contains(char.lowercaseChar())) Triple(wordIndex, charIndex, word) else null
         }
     }
 
-    // Mutable state for user inputs (one per word instance)
     val userInputs = remember {
         words.map { word ->
             word.map { char -> if (commonLetters.contains(char.lowercaseChar())) "" else char.toString() }.toMutableList()
         }
     }
 
-    // Track the index of the current hidden letter
     val currentHiddenIndex = remember { mutableStateOf(0) }
 
-    // Group words into rows
-    val rows = mutableListOf<List<Int>>() // Row contains indices of words in `words`
+    val rows = mutableListOf<List<Int>>()
     var currentRow = mutableListOf<Int>()
     var currentLength = 0
 
@@ -135,7 +124,6 @@ fun QuoteDisplaySection(
         rows.add(currentRow)
     }
 
-    // Render the rows
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -177,7 +165,7 @@ fun QuoteDisplaySection(
                 if (userInputs[wordIndex][charIndex].isEmpty()) { // Prevent overwriting existing input
                     userInputs[wordIndex][charIndex] = char.toString()
                     val nextHiddenIndex = currentHiddenIndex.value + 1
-                    if (nextHiddenIndex < hiddenIndices.size) {
+                    if (nextHiddenIndex <= hiddenIndices.size) {
                         currentHiddenIndex.value = nextHiddenIndex
                     }
                 }
