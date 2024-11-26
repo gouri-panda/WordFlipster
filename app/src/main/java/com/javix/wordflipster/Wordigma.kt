@@ -66,18 +66,9 @@ fun WordigmaScreen(
             .padding(top = 16.dp, bottom = 16.dp, start = 8.dp, end = 8.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        // Top Section: Lives, Mistakes, and Level
-
         val currentFocusIndex = remember { mutableStateOf(0) }
         val inputLetter = remember { mutableStateOf("") }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(text = "❤️ 5", style = MaterialTheme.typography.h6)
-            Text(text = "Mistakes: ✗✗○", style = MaterialTheme.typography.h6)
-            Text(text = "Level 1", style = MaterialTheme.typography.h6)
-        }
+        TopInfoSection(lives = 7, mistakes = 1, level = 1)
 
         QuoteDisplaySection(quote = "WHERE THERE IS LOVE THERE IS LIFE", maxRowLength = 13) {
 
@@ -177,7 +168,11 @@ fun WordRow(
                     .width(IntrinsicSize.Min)
                     .padding(0.dp)
                     .size(28.dp)
-                .border(0.dp, if (shouldHide) Color.Gray else Color.Transparent, RoundedCornerShape(4.dp)),
+                    .border(
+                        0.dp,
+                        if (shouldHide) Color.Gray else Color.Transparent,
+                        RoundedCornerShape(4.dp)
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 if (shouldHide) {
@@ -203,6 +198,19 @@ fun WordRow(
         }
     }
 }
+
+@Composable
+fun TopInfoSection(lives: Int, mistakes: Int, level: Int) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(text = "❤️ $lives", style = MaterialTheme.typography.h6)
+        Text(text = "Mistakes: ${"✗".repeat(mistakes)}${"○".repeat(3 - mistakes)}", style = MaterialTheme.typography.h6)
+        Text(text = "Level $level", style = MaterialTheme.typography.h6)
+    }
+}
+
 
 
 
@@ -329,7 +337,7 @@ fun WordRow(word: LetterWithHint, isCorrect: Boolean, onLetterInput: (String, In
         Box(
             modifier = Modifier
                 .padding(4.dp)
-                .background(if (isCorrect)Color.Green else Color.White),
+                .background(if (isCorrect) Color.Green else Color.White),
             contentAlignment = Alignment.Center
         ) {
             Column(modifier = Modifier.padding(bottom = 4.dp, top =4.dp)) {
