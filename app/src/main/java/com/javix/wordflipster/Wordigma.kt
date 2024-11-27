@@ -137,7 +137,7 @@ fun QuoteDisplaySection(
 
         for (row in rows) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(32.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 for (wordIndex in row) {
@@ -215,9 +215,7 @@ fun WordRow(
 
             Box(
                 modifier = Modifier
-                    .width(28.dp)
-                    .padding(1.dp)
-                    .size(23.dp)
+                    .padding(2.dp)
                     .border(
                         1.dp,
                         if (shouldHide) {
@@ -242,7 +240,7 @@ fun WordRow(
                         },
                         singleLine = true,
                         modifier = Modifier
-                            .width(32.dp)
+                            .width(25.dp)
                             .background(
                                 if (isFocused) Color.Green else Color.White,
                                 RoundedCornerShape(4.dp)
@@ -324,7 +322,7 @@ fun CustomKeyboard(
                     .fillMaxWidth()
                     .padding(
                         start =
-                             if (rowIndex == 2) 4.dp else (rowIndex * 16).dp, // Reduce padding for the 3rd row
+                        if (rowIndex == 2) 4.dp else (rowIndex * 16).dp, // Reduce padding for the 3rd row
                         end = if (rowIndex == 2) 0.dp else (rowIndex * 16).dp // Reduce padding for the 3rd row
 
                     ) // Adjust start padding based on row index
@@ -377,7 +375,7 @@ fun ActionKeyButton(icon: ImageVector,modifier: Modifier = Modifier, onClick: ()
                 modifier = modifier
                     .width(43.dp)
                     .height(50.dp)
-                    .padding(top = 4.dp, bottom = 4.dp, start =2.dp, end = 2.dp),
+                    .padding(top = 4.dp, bottom = 4.dp, start = 2.dp, end = 2.dp),
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = Color.Gray,
                     contentColor = Color.White
