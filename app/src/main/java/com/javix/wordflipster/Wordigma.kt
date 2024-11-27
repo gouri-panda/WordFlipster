@@ -215,7 +215,7 @@ fun WordRow(
 
             Box(
                 modifier = Modifier
-                    .padding(2.dp)
+                    .padding(1.dp)
                     .border(
                         1.dp,
                         if (shouldHide) {
