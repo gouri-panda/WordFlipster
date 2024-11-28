@@ -223,11 +223,11 @@ fun WordRow(
                 modifier = Modifier
                     .padding(1.dp)
                     .border(
-                        1.dp,
-                        if (shouldHide) {
-                            if (isFocused) Color.LightGray else Color.Gray
-                        } else Color.Transparent,
-                        RoundedCornerShape(4.dp)
+                        width = if (shouldHide && isFocused) 1.dp else 0.dp,
+                        color = if (shouldHide && isFocused) Color.Green
+                        else if (shouldHide) Color.White
+                        else Color.Transparent,
+                        shape = RoundedCornerShape(4.dp)
                     )
                     .clickable(enabled = shouldHide) {
                         val index = hiddenIndices.indexOfFirst { it.second == charIndex }
@@ -236,7 +236,7 @@ fun WordRow(
                 contentAlignment = Alignment.Center
             ) {
                 if (shouldHide) {
-                    Column(modifier = Modifier.padding(4.dp)) {
+                    Column(modifier = Modifier.padding(top = 0.dp)) {
                         BasicTextField(
                             value = userInput[charIndex],
                             onValueChange = { input ->
@@ -251,7 +251,7 @@ fun WordRow(
                             modifier = Modifier
                                 .width(25.dp)
                                 .background(
-                                    if (isFocused) Color.Green else Color.White,
+                                     Color.White,
                                     RoundedCornerShape(4.dp)
                                 ),
                             textStyle = TextStyle(fontSize = 16.sp, textAlign = TextAlign.Center)
