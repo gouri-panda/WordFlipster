@@ -55,6 +55,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlin.random.Random
 
 @Composable
 fun WordigmaScreen(
@@ -472,3 +473,43 @@ data class LetterWithHint(
     val hint: Int?,  // Hint number (e.g., 19 for E)
     val isCorrect: Boolean = false // If the letter input is correct
 )
+
+private fun decodeWord(
+    encodedWord: List<Int>,
+    mapping: Map<Int, Char>
+) {
+    // Reverse the mapping for decoding
+    val reversedMapping = mapping.entries.associate { (key, value) -> value to key }
+    println("Decoding Mapping: $reversedMapping")
+
+    // Decode the encoded word
+    val decodedWord = encodedWord.map { number ->
+        reversedMapping.entries.find { it.value == number }?.key ?: error("Number not found")
+    }
+    println("Decoded Word: ${decodedWord.joinToString("")}")
+}
+
+private fun encodeWord(
+    message: String,
+    mapping: Map<Int, Char>
+): List<Int> {
+    // Encode the message
+    val encodedWord = message.map { char ->
+        mapping.entries.find { it.value == char }?.key ?: error("Letter not found")
+    }
+    println("Encoded Word: $encodedWord")
+    return encodedWord
+}
+
+private fun getMapping(): Map<Int, Char> {
+    // Use a randomized base letter
+    val random = Random(System.currentTimeMillis())
+    val baseChar = 'A' + random.nextInt(0, 26) // Random base letter
+    println("Base Character: $baseChar")
+
+    // Generate the mapping
+    val mapping = (1..26).shuffled(random).associateWith {
+        ((it - 1 + baseChar.code) % 26 + 'A'.code).toChar()
+    }
+    return mapping
+}

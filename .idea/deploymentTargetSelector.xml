@@ -8,9 +8,6 @@
       <SelectionState runConfigName="previewWordgimaMainScreen">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="WordigmaPreview">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="WordigmaScreen">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
