@@ -70,9 +70,11 @@ fun WordigmaScreen(
     ) {
         val currentFocusIndex = remember { mutableStateOf(0) }
         val inputLetter = remember { mutableStateOf("") }
+
+        val mapping = remember {mutableStateOf(getMapping()) }
         TopInfoSection(lives = 7, mistakes = 1, level = 1)
 
-        QuoteDisplaySection(quote = "WHERE THERE IS LOVE THERE IS LIFE.", maxRowLength = 13) {
+        QuoteDisplaySection(quote = "WHERE THERE IS LOVE THERE IS LIFE.", maxRowLength = 13, mapping = mapping.value) {
 
         }
 
@@ -84,6 +86,7 @@ fun QuoteDisplaySection(
     quote: String,
     commonLetterCount: Int = 2,
     maxRowLength: Int,
+    mapping: Map<Int,Char>,
     onLetterInput: (Char) -> Unit
 ) {
     val words = quote.split(" ")
@@ -147,6 +150,7 @@ fun QuoteDisplaySection(
                         commonLetters = commonLetters,
                         userInput = userInputs[wordIndex],
                         hiddenIndices = hiddenIndices.filter { it.first == wordIndex },
+                        mapping = mapping,
                         currentHiddenIndex = hiddenIndices.getOrNull(
                             manuallySelectedIndex.value ?: currentHiddenIndex.value
                         )?.let { (index, _, _) ->
@@ -201,6 +205,7 @@ fun WordRow(
     word: String,
     commonLetters: List<Char>,
     userInput: List<String>,
+    mapping: Map<Int, Char>,
     hiddenIndices: List<Triple<Int, Int, String>>,
     currentHiddenIndex: Int,
     onValueChange: (Int, Int, String) -> Unit,
@@ -231,23 +236,38 @@ fun WordRow(
                 contentAlignment = Alignment.Center
             ) {
                 if (shouldHide) {
-                    BasicTextField(
-                        value = userInput[charIndex],
-                        onValueChange = { input ->
-                            if (input.length <= 1) {
-                                val wordIdx = hiddenIndices.firstOrNull { it.second == charIndex }?.first ?: return@BasicTextField
-                                onValueChange(wordIdx, charIndex, input)
-                            }
-                        },
-                        singleLine = true,
-                        modifier = Modifier
-                            .width(25.dp)
-                            .background(
-                                if (isFocused) Color.Green else Color.White,
-                                RoundedCornerShape(4.dp)
-                            ),
-                        textStyle = TextStyle(fontSize = 16.sp, textAlign = TextAlign.Center)
-                    )
+                    Column(modifier = Modifier.padding(4.dp)) {
+                        BasicTextField(
+                            value = userInput[charIndex],
+                            onValueChange = { input ->
+                                if (input.length <= 1) {
+                                    val wordIdx =
+                                        hiddenIndices.firstOrNull { it.second == charIndex }?.first
+                                            ?: return@BasicTextField
+                                    onValueChange(wordIdx, charIndex, input)
+                                }
+                            },
+                            singleLine = true,
+                            modifier = Modifier
+                                .width(25.dp)
+                                .background(
+                                    if (isFocused) Color.Green else Color.White,
+                                    RoundedCornerShape(4.dp)
+                                ),
+                            textStyle = TextStyle(fontSize = 16.sp, textAlign = TextAlign.Center)
+                        )
+                        Text(
+                            text = "_____",
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
+
+                        Text(
+                            text = encodeWord(char.toString(), mapping)[0].toString(), // Hint (letter position)
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
+                    }
                 } else {
                     Text(
                         text = char.toString(),
