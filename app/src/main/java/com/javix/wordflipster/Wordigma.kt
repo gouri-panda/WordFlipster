@@ -218,7 +218,7 @@ fun WordRow(
     onBoxClick: (Int, Int) -> Unit
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(0.dp),
+        horizontalArrangement = Arrangement.spacedBy(0.dp), // Adjusted spacing for a more natural look
         verticalAlignment = Alignment.CenterVertically
     ) {
         word.forEachIndexed { charIndex, char ->
@@ -231,16 +231,24 @@ fun WordRow(
                     .padding(1.dp)
                     .border(
                         width = if (shouldHide && isFocused) 2.dp else 1.dp,
-                        color = if (shouldHide && isFocused) Color.Green
-                        else if (shouldHide) Color.Gray
-                        else Color.Transparent,
-                        shape = RoundedCornerShape(4.dp)
+                        color = when {
+                            shouldHide && isFocused -> Color.Green
+                            shouldHide -> Color.White
+                            else -> Color.Transparent
+                        },
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .background(
+                        color = if (shouldHide) Color(0xFFF5F5F5) else Color.Transparent,
+                        shape = RoundedCornerShape(8.dp)
                     )
                     .clickable { if (shouldHide) onBoxClick(wordIndex, charIndex) },
                 contentAlignment = Alignment.Center
             ) {
                 if (shouldHide) {
-                    Column(modifier = Modifier.padding(top = 0.dp)) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(0.dp)
+                    ) {
                         BasicTextField(
                             value = userInput[charIndex],
                             onValueChange = { input ->
@@ -254,35 +262,44 @@ fun WordRow(
                             singleLine = true,
                             modifier = Modifier
                                 .width(25.dp)
-                                .background(
-                                     Color.White,
-                                    RoundedCornerShape(4.dp)
-                                ),
-                            textStyle = TextStyle(fontSize = 16.sp, textAlign = TextAlign.Center)
+                                .fillMaxWidth()
+                                .padding(top = 16.dp, bottom =0.dp),
+                            textStyle = TextStyle(
+                                fontSize = 16.sp,
+                                color = Color.Black,
+                                textAlign = TextAlign.Center
+                            )
                         )
                         Text(
                             text = "_____",
                             fontSize = 12.sp,
-                            color = Color.Gray
+                            color = Color.Gray,
+                            modifier = Modifier.padding(top = 0.dp)
                         )
 
                         Text(
-                            text = encodeWord(char.toString(), mapping)[0].toString(), // Hint (letter position)
+                            text = encodeWord(
+                                char.toString(),
+                                mapping
+                            )[0].toString(), // Hint (letter position)
                             fontSize = 12.sp,
                             color = Color.Gray
                         )
                     }
+
                 } else {
                     Text(
                         text = char.toString(),
                         fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp
+                        fontSize = 18.sp,
+                        color = Color.Black
                     )
                 }
             }
         }
     }
 }
+
 
 
 @Composable
