@@ -86,7 +86,7 @@ fun QuoteDisplaySection(
     quote: String,
     commonLetterCount: Int = 2,
     maxRowLength: Int,
-    mapping: Map<Int,Char>,
+    mapping: Map<Int, Char>,
     onLetterInput: (Char) -> Unit
 ) {
     val words = quote.split(" ")
@@ -110,13 +110,14 @@ fun QuoteDisplaySection(
         }
     }
 
-    val currentHiddenIndex = remember { mutableStateOf(0) }
-    val manuallySelectedIndex = remember { mutableStateOf<Int?>(null) }
+    // Track the current focus globally
+    val currentFocusIndex = remember { mutableStateOf(0) }
 
     val rows = mutableListOf<List<Int>>()
     var currentRow = mutableListOf<Int>()
     var currentLength = 0
 
+    // Group words into rows based on the max row length
     for ((index, word) in words.withIndex()) {
         if (currentLength + word.length + currentRow.size > maxRowLength) {
             rows.add(currentRow)
@@ -136,9 +137,9 @@ fun QuoteDisplaySection(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Spacer(modifier = Modifier.weight(1f)) // Push content downward
 
+        // Render rows of words
         for (row in rows) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(32.dp),
@@ -150,55 +151,58 @@ fun QuoteDisplaySection(
                         commonLetters = commonLetters,
                         userInput = userInputs[wordIndex],
                         hiddenIndices = hiddenIndices.filter { it.first == wordIndex },
+                        currentFocusIndex = currentFocusIndex.value,
                         mapping = mapping,
-                        currentHiddenIndex = hiddenIndices.getOrNull(
-                            manuallySelectedIndex.value ?: currentHiddenIndex.value
-                        )?.let { (index, _, _) ->
-                            if (index == wordIndex) manuallySelectedIndex.value ?: currentHiddenIndex.value else -1
-                        } ?: -1,
+                        globalHiddenIndices = hiddenIndices,
+                        wordIndex = wordIndex,
                         onValueChange = { wordIdx, charIdx, input ->
                             if (input.length == 1) {
                                 userInputs[wordIdx][charIdx] = input
-                                manuallySelectedIndex.value = null
-                                val nextHiddenIndex = currentHiddenIndex.value + 1
-                                if (nextHiddenIndex < hiddenIndices.size) {
-                                    currentHiddenIndex.value = nextHiddenIndex
+                                val nextFocus = hiddenIndices.indexOfFirst {
+                                    it.first == wordIdx && it.second == charIdx
+                                } + 1
+                                if (nextFocus < hiddenIndices.size) {
+                                    currentFocusIndex.value = nextFocus
                                 }
                             }
                         },
-                        onLetterSelected = { selectedIndex ->
-                            manuallySelectedIndex.value = selectedIndex
+                        onBoxClick = { wordIdx, charIdx ->
+                            val newFocusIndex = hiddenIndices.indexOfFirst {
+                                it.first == wordIdx && it.second == charIdx
+                            }
+                            if (newFocusIndex != -1) {
+                                currentFocusIndex.value = newFocusIndex
+                            }
                         }
                     )
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
         }
+
         Spacer(modifier = Modifier.weight(1f)) // Push content downward
 
-
+        // Render the custom keyboard
         CustomKeyboard(onKeyPress = { char ->
-            if (currentHiddenIndex.value < hiddenIndices.size) {
-                val (wordIndex, charIndex, _) = hiddenIndices[currentHiddenIndex.value]
+            if (currentFocusIndex.value < hiddenIndices.size) {
+                val (wordIndex, charIndex, _) = hiddenIndices[currentFocusIndex.value]
                 if (userInputs[wordIndex][charIndex].isEmpty()) { // Prevent overwriting existing input
                     userInputs[wordIndex][charIndex] = char.toString()
-                    val nextHiddenIndex = currentHiddenIndex.value + 1
-                    if (nextHiddenIndex <= hiddenIndices.size) {
-                        currentHiddenIndex.value = nextHiddenIndex
+                    val nextFocus = currentFocusIndex.value + 1
+                    if (nextFocus <= hiddenIndices.size) {
+                        currentFocusIndex.value = nextFocus
                     }
                 }
             }
         }, onBackspacePress = {
-            if (currentHiddenIndex.value > 0) {
-                currentHiddenIndex.value -= 1
-                val (wordIndex, charIndex, _) = hiddenIndices[currentHiddenIndex.value]
+            if (currentFocusIndex.value > 0) {
+                val (wordIndex, charIndex, _) = hiddenIndices[currentFocusIndex.value]
                 userInputs[wordIndex][charIndex] = ""
+                currentFocusIndex.value -= 1
             }
         }, {})
     }
-
 }
-
 
 @Composable
 fun WordRow(
@@ -207,9 +211,11 @@ fun WordRow(
     userInput: List<String>,
     mapping: Map<Int, Char>,
     hiddenIndices: List<Triple<Int, Int, String>>,
-    currentHiddenIndex: Int,
+    currentFocusIndex: Int,
+    globalHiddenIndices: List<Triple<Int, Int, String>>,
+    wordIndex: Int,
     onValueChange: (Int, Int, String) -> Unit,
-    onLetterSelected: (Int) -> Unit
+    onBoxClick: (Int, Int) -> Unit
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(0.dp),
@@ -217,22 +223,20 @@ fun WordRow(
     ) {
         word.forEachIndexed { charIndex, char ->
             val shouldHide = commonLetters.contains(char.lowercaseChar())
-            val isFocused = currentHiddenIndex != -1 && hiddenIndices.indexOfFirst { it.second == charIndex } == currentHiddenIndex
+            val globalIndex = globalHiddenIndices.indexOfFirst { it.first == wordIndex && it.second == charIndex }
+            val isFocused = currentFocusIndex == globalIndex
 
             Box(
                 modifier = Modifier
                     .padding(1.dp)
                     .border(
-                        width = if (shouldHide && isFocused) 1.dp else 0.dp,
+                        width = if (shouldHide && isFocused) 2.dp else 1.dp,
                         color = if (shouldHide && isFocused) Color.Green
-                        else if (shouldHide) Color.White
+                        else if (shouldHide) Color.Gray
                         else Color.Transparent,
                         shape = RoundedCornerShape(4.dp)
                     )
-                    .clickable(enabled = shouldHide) {
-                        val index = hiddenIndices.indexOfFirst { it.second == charIndex }
-                        if (index != -1) onLetterSelected(index)
-                    },
+                    .clickable { if (shouldHide) onBoxClick(wordIndex, charIndex) },
                 contentAlignment = Alignment.Center
             ) {
                 if (shouldHide) {
@@ -279,6 +283,7 @@ fun WordRow(
         }
     }
 }
+
 
 @Composable
 fun TopInfoSection(lives: Int, mistakes: Int, level: Int) {
