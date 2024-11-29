@@ -262,8 +262,9 @@ fun WordRow(
                             singleLine = true,
                             modifier = Modifier
                                 .width(25.dp)
+                                .height(33.dp)
                                 .fillMaxWidth()
-                                .padding(top = 16.dp, bottom =0.dp),
+                                .padding(top = 18.dp, bottom =0.dp),
                             textStyle = TextStyle(
                                 fontSize = 16.sp,
                                 color = Color.Black,
@@ -273,8 +274,7 @@ fun WordRow(
                         Text(
                             text = "_____",
                             fontSize = 12.sp,
-                            color = Color.Gray,
-                            modifier = Modifier.padding(top = 0.dp)
+                            color = Color.Gray
                         )
 
                         Text(
