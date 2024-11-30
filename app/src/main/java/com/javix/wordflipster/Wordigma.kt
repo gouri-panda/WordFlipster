@@ -1,6 +1,9 @@
 package com.javix.wordflipster
 
 import android.util.Log
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -36,6 +40,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,6 +52,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 @Composable
@@ -105,6 +114,8 @@ fun QuoteDisplaySection(
     // Track the current focus globally
     val currentFocusIndex = remember { mutableStateOf(0) }
 
+    val currentWrongChar = remember { mutableStateOf("") }
+
     val rows = mutableListOf<List<Int>>()
     var currentRow = mutableListOf<Int>()
     var currentLength = 0
@@ -147,6 +158,7 @@ fun QuoteDisplaySection(
                         mapping = mapping,
                         globalHiddenIndices = hiddenIndices,
                         wordIndex = wordIndex,
+                        currentWrongChar = currentWrongChar.value,
                         onValueChange = { wordIdx, charIdx, input ->
                             if (input.length == 1) {
                                 userInputs[wordIdx][charIdx] = input
@@ -165,6 +177,9 @@ fun QuoteDisplaySection(
                             if (newFocusIndex != -1) {
                                 currentFocusIndex.value = newFocusIndex
                             }
+                        },
+                        hideTextAfterAnimation = {
+                            currentWrongChar.value = ""
                         }
                     )
                 }
@@ -183,11 +198,13 @@ fun QuoteDisplaySection(
                 if (userInputs[wordIndex][charIndex].isEmpty()) { // Prevent overwriting existing input
                     userInputs[wordIndex][charIndex] = char.toString()
                     if(userInputs[wordIndex][charIndex] == actualChar.toString()) {
+                        currentWrongChar.value = ""
                         val nextFocus = currentFocusIndex.value + 1
                         if (nextFocus <= hiddenIndices.size) {
                             currentFocusIndex.value = nextFocus
                         }
                     } else {
+                        currentWrongChar.value = userInputs[wordIndex][charIndex]
                         userInputs[wordIndex][charIndex] = ""
                     }
                 }
@@ -210,15 +227,36 @@ fun WordRow(
     mapping: Map<Int, Char>,
     hiddenIndices: List<Triple<Int, Int, String>>,
     currentFocusIndex: Int,
+    currentWrongChar: String,
     globalHiddenIndices: List<Triple<Int, Int, String>>,
     wordIndex: Int,
     onValueChange: (Int, Int, String) -> Unit,
-    onBoxClick: (Int, Int) -> Unit
+    onBoxClick: (Int, Int) -> Unit,
+    hideTextAfterAnimation:() -> Unit
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(0.dp), // Adjusted spacing for a more natural look
         verticalAlignment = Alignment.CenterVertically
     ) {
+        val coroutineScope = rememberCoroutineScope()
+        val shakeOffset = remember { Animatable(0f) }
+
+        suspend fun triggerShakeAnimation() {
+            shakeOffset.animateTo(
+                targetValue = 10f, // Shake distance
+                animationSpec = tween(durationMillis = 50, easing = LinearEasing)
+            )
+            shakeOffset.animateTo(
+                targetValue = -10f,
+                animationSpec = tween(durationMillis = 50, easing = LinearEasing)
+            )
+            shakeOffset.animateTo(
+                targetValue = 0f,
+                animationSpec = tween(durationMillis = 50, easing = LinearEasing)
+            )
+        }
+
+
         word.forEachIndexed { charIndex, char ->
             val shouldHide = commonLetters.contains(char.lowercaseChar())
             val globalIndex = globalHiddenIndices.indexOfFirst { it.first == wordIndex && it.second == charIndex }
@@ -230,6 +268,7 @@ fun WordRow(
                     .border(
                         width = if (shouldHide && isFocused) 2.dp else 1.dp,
                         color = when {
+                            shouldHide && isFocused && currentWrongChar.isNotEmpty() -> Color.Red
                             shouldHide && isFocused -> Color.Green
                             shouldHide -> Color.White
                             else -> Color.Transparent
@@ -248,7 +287,13 @@ fun WordRow(
                         verticalArrangement = Arrangement.spacedBy(0.dp)
                     ) {
                         BasicTextField(
-                            value = userInput[charIndex],
+                            value = if(currentWrongChar.isNotEmpty() && isFocused){
+                                coroutineScope.launch {
+                                    delay(1000)
+                                    hideTextAfterAnimation()
+                                }
+                                currentWrongChar
+                            } else userInput[charIndex],
                             onValueChange = { input ->
                                 if (input.length <= 1) {
                                     val wordIdx =
@@ -261,6 +306,7 @@ fun WordRow(
                             modifier = Modifier
                                 .width(25.dp)
                                 .height(33.dp)
+                                .offset(x = if (shouldHide && isFocused && currentWrongChar.isNotEmpty()) shakeOffset.value.dp else 0.dp)
                                 .fillMaxWidth()
                                 .padding(top = 18.dp, bottom =0.dp),
                             textStyle = TextStyle(
