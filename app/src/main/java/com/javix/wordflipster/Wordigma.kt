@@ -239,7 +239,7 @@ fun WordRow(
     hideTextAfterAnimation:() -> Unit
 ) {
     Row(
-        horizontalArrangement = Arrangement.SpaceEvenly,
+        horizontalArrangement = Arrangement.spacedBy(0.dp), // Adjusted spacing for a more natural look
         verticalAlignment = Alignment.CenterVertically
     ) {
         val coroutineScope = rememberCoroutineScope()
@@ -316,7 +316,7 @@ fun WordRow(
                             },
                             singleLine = true,
                             modifier = Modifier
-                                .width(22.dp)
+                                .width(20.dp)
                                 .height(33.dp)
                                 .offset(x = if (shouldHide && isFocused && currentWrongChar.isNotEmpty()) shakeOffset.value.dp else 0.dp)
                                 .fillMaxWidth()
@@ -330,7 +330,7 @@ fun WordRow(
                         )
                         Divider(
                             modifier = Modifier
-                                .width(25.dp),
+                                .width(18.dp),
                             color = Color.Black // Choose your desired color
                         )
 
@@ -341,7 +341,7 @@ fun WordRow(
                             )[0].toString(), // Hint (letter position)
                             fontSize = 12.sp,
                             color = Color.Gray,
-                            modifier = Modifier.padding(start = 8.dp)
+                            modifier = Modifier.padding(start = 4.dp)
                         )
                     }
 
@@ -361,13 +361,13 @@ fun WordRow(
                                 fontSize = 18.sp,
                                 color = Color.Black,
                                 modifier = Modifier
-                                    .width(22.dp)
+                                    .width(20.dp)
                                     .height(33.dp)
                                 .padding( bottom =0.dp, start = 4.dp, top = 8.dp)
                             )
                             Divider(
                                 modifier = Modifier
-                                    .width(25.dp), // Makes the line span the entire width
+                                    .width(18.dp), // Makes the line span the entire width
                                 color = Color.Black // Choose your desired color
                             )
                             Text(
@@ -377,7 +377,7 @@ fun WordRow(
                                 )[0].toString(), // Hint (letter position)
                                 fontSize = 12.sp,
                                 color = Color.Gray,
-                                modifier = Modifier.padding(start = 8.dp)
+                                modifier = Modifier.padding(start = 4.dp)
                             )
                         }
                     }
