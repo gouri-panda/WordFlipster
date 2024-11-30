@@ -26,6 +26,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -456,7 +457,7 @@ fun CustomKeyboard(
                     .padding(
                         start =
                         if (rowIndex == 2) 4.dp else (rowIndex * 16).dp, // Reduce padding for the 3rd row
-                        end = if (rowIndex == 2) 0.dp else (rowIndex * 16).dp // Reduce padding for the 3rd row
+                        end = if (rowIndex == 2) 4.dp else (rowIndex * 16).dp // Reduce padding for the 3rd row
 
                     ) // Adjust start padding based on row index
                     .padding(top = 2.dp, bottom = 2.dp),
@@ -508,8 +509,8 @@ fun KeyButton(key: String, onKeyPress: () -> Unit, backgroundContentColor: Color
         Button(
             onClick = onKeyPress,
             modifier = Modifier
-                .width(32.dp)
-                .height(45.dp)
+                .width(30.dp)
+                .height(50.dp)
                 .padding(0.dp),
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Color.White,
@@ -528,9 +529,9 @@ fun ActionKeyButton(icon: ImageVector,modifier: Modifier = Modifier, onClick: ()
             Button(
                 onClick = onClick,
                 modifier = modifier
-                    .width(38.dp)
+                    .width(35.dp)
                     .height(50.dp)
-                    .padding(top = 4.dp, bottom = 4.dp, start = 2.dp, end = 2.dp),
+                    .padding(top = 4.dp, bottom = 0.dp, start = 2.dp, end = 2.dp),
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = Color.Gray,
                     contentColor = Color.White
