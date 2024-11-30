@@ -333,12 +333,37 @@ fun WordRow(
                     }
 
                 } else {
-                    Text(
-                        text = char.toString(),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        color = Color.Black
-                    )
+                    if(char.toString() == ".") {
+                        Text(
+                            text = char.toString(),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            color = Color.Black
+                        )
+                    }else {
+                        Column {
+                            Text(
+                                text = char.toString(),
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                                color = Color.Black
+                            )
+                            Text(
+                                text = "_____",
+                                fontSize = 12.sp,
+                                color = Color.Gray
+                            )
+                            Text(
+                                text = encodeWord(
+                                    char.toString(),
+                                    mapping
+                                )[0].toString(), // Hint (letter position)
+                                fontSize = 12.sp,
+                                color = Color.Gray,
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -582,7 +607,7 @@ private fun encodeWord(
 ): List<Int> {
     // Encode the message
     val encodedWord = message.map { char ->
-        mapping.entries.find { it.value == char }?.key ?: error("Letter not found")
+        mapping.entries.find { it.value == char }?.key ?: error("Letter not found with $char")
     }
     println("Encoded Word: $encodedWord")
     return encodedWord
