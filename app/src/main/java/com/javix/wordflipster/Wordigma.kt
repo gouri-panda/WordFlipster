@@ -301,6 +301,7 @@ fun WordRow(
                                 }
                             },
                             singleLine = true,
+                            readOnly = true,
                             modifier = Modifier
                                 .width(20.dp)
                                 .height(33.dp)
