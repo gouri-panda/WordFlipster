@@ -41,6 +41,7 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Divider
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -243,20 +244,24 @@ fun WordRow(
     ) {
         val coroutineScope = rememberCoroutineScope()
         val shakeOffset = remember { Animatable(0f) }
+        var isAnimating = remember { mutableStateOf(false) } // Flag to control animation
+
 
         suspend fun triggerShakeAnimation() {
+            isAnimating.value = true
             shakeOffset.animateTo(
-                targetValue = 10f, // Shake distance
-                animationSpec = tween(durationMillis = 50, easing = LinearEasing)
+                targetValue = 1f, // Shake distance
+                animationSpec = tween(durationMillis = 10, easing = LinearEasing)
             )
             shakeOffset.animateTo(
-                targetValue = -10f,
-                animationSpec = tween(durationMillis = 50, easing = LinearEasing)
+                targetValue = -1f,
+                animationSpec = tween(durationMillis = 10, easing = LinearEasing)
             )
             shakeOffset.animateTo(
                 targetValue = 0f,
-                animationSpec = tween(durationMillis = 50, easing = LinearEasing)
+                animationSpec = tween(durationMillis = 10, easing = LinearEasing)
             )
+            isAnimating.value = false
         }
 
 
@@ -291,11 +296,15 @@ fun WordRow(
                     ) {
                         BasicTextField(
                             value = if(currentWrongChar.isNotEmpty() && isFocused){
+                                if(!isAnimating.value) {
                                 coroutineScope.launch {
-                                    delay(1000)
+                                    triggerShakeAnimation()
+                                    delay(50)
                                     hideTextAfterAnimation()
                                 }
+                                    }
                                 currentWrongChar
+
                             } else userInput[charIndex],
                             onValueChange = { input ->
                                 if (input.length <= 1) {
