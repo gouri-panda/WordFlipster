@@ -206,7 +206,14 @@ fun QuoteDisplaySection(
                 userInputs[wordIndex][charIndex] = ""
                 currentFocusIndex.value -= 1
             }
-        }, {}, disabledKeys = listOf("W"), keyBackgrounds = mapOf("E" to Color.Green, "H" to Color.Green))
+        }, onEnterPress = {
+            val nextFocus = currentFocusIndex.value + 1
+            if (nextFocus < hiddenIndices.size) {
+                currentFocusIndex.value = nextFocus
+            }else if(nextFocus == hiddenIndices.size) {
+                currentFocusIndex.value = 0 // Todo: fix this not move to 0 position but to the next focus index
+            }
+        }, disabledKeys = listOf("W"), keyBackgrounds = mapOf("E" to Color.Green, "H" to Color.Green))
     }
 }
 
