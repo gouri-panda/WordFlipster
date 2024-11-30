@@ -1,5 +1,6 @@
 package com.javix.wordflipster
 
+import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -273,7 +274,7 @@ fun WordRow(
                         color = if (shouldHide) Color(0xFFF5F5F5) else Color.Transparent,
                         shape = RoundedCornerShape(8.dp)
                     )
-                    .clickable { if (shouldHide) onBoxClick(wordIndex, charIndex) },
+                   ,
                 contentAlignment = Alignment.Center
             ) {
                 if (shouldHide) {
@@ -317,7 +318,10 @@ fun WordRow(
                         )
                         Divider(
                             modifier = Modifier
-                                .width(18.dp),
+                                .width(18.dp)
+                                .clickable {
+                                    if (shouldHide) onBoxClick(wordIndex, charIndex) // Todo:: Add this in more appropriate place
+                                },
                             color = Color.Black // Choose your desired color
                         )
 
@@ -329,6 +333,9 @@ fun WordRow(
                             fontSize = 12.sp,
                             color = Color.Gray,
                             modifier = Modifier.padding(start = 4.dp)
+                                .clickable {
+                                    if (shouldHide) onBoxClick(wordIndex, charIndex)
+                                }
                         )
                     }
 
