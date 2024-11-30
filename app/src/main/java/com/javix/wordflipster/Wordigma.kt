@@ -34,20 +34,12 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalTextInputService
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -186,11 +178,17 @@ fun QuoteDisplaySection(
         CustomKeyboard(onKeyPress = { char ->
             if (currentFocusIndex.value < hiddenIndices.size) {
                 val (wordIndex, charIndex, _) = hiddenIndices[currentFocusIndex.value]
+                val actualChar = words[wordIndex][charIndex]
+
                 if (userInputs[wordIndex][charIndex].isEmpty()) { // Prevent overwriting existing input
                     userInputs[wordIndex][charIndex] = char.toString()
-                    val nextFocus = currentFocusIndex.value + 1
-                    if (nextFocus <= hiddenIndices.size) {
-                        currentFocusIndex.value = nextFocus
+                    if(userInputs[wordIndex][charIndex] == actualChar.toString()) {
+                        val nextFocus = currentFocusIndex.value + 1
+                        if (nextFocus <= hiddenIndices.size) {
+                            currentFocusIndex.value = nextFocus
+                        }
+                    } else {
+                        userInputs[wordIndex][charIndex] = ""
                     }
                 }
             }
