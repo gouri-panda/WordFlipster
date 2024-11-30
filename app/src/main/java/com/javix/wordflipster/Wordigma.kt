@@ -327,7 +327,8 @@ fun WordRow(
                                 mapping
                             )[0].toString(), // Hint (letter position)
                             fontSize = 12.sp,
-                            color = Color.Gray
+                            color = Color.Gray,
+                            modifier = Modifier.padding(start = 8.dp)
                         )
                     }
 
