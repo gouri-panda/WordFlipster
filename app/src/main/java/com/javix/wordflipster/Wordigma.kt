@@ -34,8 +34,11 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.Divider
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -235,7 +238,7 @@ fun WordRow(
     hideTextAfterAnimation:() -> Unit
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(0.dp), // Adjusted spacing for a more natural look
+        horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
         val coroutineScope = rememberCoroutineScope()
@@ -304,21 +307,22 @@ fun WordRow(
                             },
                             singleLine = true,
                             modifier = Modifier
-                                .width(25.dp)
+                                .width(22.dp)
                                 .height(33.dp)
                                 .offset(x = if (shouldHide && isFocused && currentWrongChar.isNotEmpty()) shakeOffset.value.dp else 0.dp)
                                 .fillMaxWidth()
-                                .padding(top = 18.dp, bottom =0.dp),
-                            textStyle = TextStyle(
-                                fontSize = 16.sp,
-                                color = Color.Black,
+                                .padding( bottom =0.dp, start = 4.dp, top = 8.dp),
+                                    textStyle = TextStyle(
+                                fontSize = 18.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.Black,
                                 textAlign = TextAlign.Center
                             )
                         )
-                        Text(
-                            text = "_____",
-                            fontSize = 12.sp,
-                            color = Color.Gray
+                        Divider(
+                            modifier = Modifier
+                                .width(25.dp),
+                            color = Color.Black // Choose your desired color
                         )
 
                         Text(
@@ -346,12 +350,16 @@ fun WordRow(
                                 text = char.toString(),
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 18.sp,
-                                color = Color.Black
+                                color = Color.Black,
+                                modifier = Modifier
+                                    .width(22.dp)
+                                    .height(33.dp)
+                                .padding( bottom =0.dp, start = 4.dp, top = 8.dp)
                             )
-                            Text(
-                                text = "_____",
-                                fontSize = 12.sp,
-                                color = Color.Gray
+                            Divider(
+                                modifier = Modifier
+                                    .width(25.dp), // Makes the line span the entire width
+                                color = Color.Black // Choose your desired color
                             )
                             Text(
                                 text = encodeWord(
@@ -440,17 +448,17 @@ fun CustomKeyboard(
 
                     ) // Adjust start padding based on row index
                     .padding(top = 2.dp, bottom = 2.dp),
-                horizontalArrangement = Arrangement.spacedBy(2.dp) // Adjust space between buttons
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 row.forEach { key ->
                     when (key) {
                         "Back" -> ActionKeyButton(
-                            icon = Icons.Default.ArrowBack, // Backspace icon
+                            icon = Icons.AutoMirrored.Filled.ArrowBack, // Backspace icon
                             modifier = Modifier.weight(1f),
                             onClick = { onBackspacePress() }
                         )
                         "Enter" -> ActionKeyButton(
-                            icon = Icons.Default.ArrowForward, // Enter icon
+                            icon = Icons.AutoMirrored.Filled.ArrowForward, // Enter icon
                             modifier = Modifier.weight(1f),
                             onClick = { onEnterPress() }
                         )
