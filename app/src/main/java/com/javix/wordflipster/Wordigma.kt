@@ -438,7 +438,7 @@ fun TopInfoSection(lives: Int, mistakes: Int, level: Int) {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = "❤️ $lives", style = MaterialTheme.typography.h6)
+//        Text(text = "❤️ $lives", style = MaterialTheme.typography.h6) // Todo: Add this When we'll  implement AD
         Text(text = "Mistakes: ${"✗".repeat(mistakes)}${"○".repeat(3 - mistakes)}", style = MaterialTheme.typography.h6)
         Text(text = "Level $level", style = MaterialTheme.typography.h6)
     }
