@@ -1,5 +1,6 @@
 package com.javix.wordflipster
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
@@ -41,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -61,6 +63,7 @@ import kotlin.random.Random
 
 @Composable
 fun WordigmaScreen(navHostController: NavHostController) {
+    val context = LocalContext.current
 
     BackHandler {
         navHostController.popBackStack()
@@ -101,7 +104,12 @@ fun WordigmaScreen(navHostController: NavHostController) {
         }, levelCompleteListener = {
             mapping.value = getMapping()
             mistakes.value = 0
-            level.value += 1
+            if(level.value < quotes.size - 1) {
+                level.value += 1
+            } else if(level.value == quotes.size -1) {
+                Toast.makeText(context, "Congratulations! You've completed the challenge.", Toast.LENGTH_SHORT).show()
+                level.value = 0
+            }
         })
     }
 
