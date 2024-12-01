@@ -40,9 +40,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -438,8 +442,32 @@ fun TopInfoSection(lives: Int, mistakes: Int, level: Int) {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+
 //        Text(text = "❤️ $lives", style = MaterialTheme.typography.h6) // Todo: Add this When we'll  implement AD
-        Text(text = "Mistakes: ${"✗".repeat(mistakes)}${"○".repeat(3 - mistakes)}", style = MaterialTheme.typography.h6)
+        Row(
+                modifier = Modifier.weight(1f), // Take available space
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+        ) {
+        val mistakeSymbols = buildAnnotatedString {
+            repeat(mistakes) {
+                withStyle(style = SpanStyle(color = Color.Red)) {
+                    append("✗")
+                }
+            }
+            repeat(3 - mistakes) {
+                withStyle(style = SpanStyle(color = Color.Gray)) {
+                    append("○")
+                }
+            }
+        }
+        Text(
+            text = AnnotatedString("Mistakes: ", spanStyles = listOf()) + mistakeSymbols,
+            style = MaterialTheme.typography.h6,
+            textAlign = TextAlign.Center
+        )
+    }
+
         Text(text = "Level $level", style = MaterialTheme.typography.h6)
     }
 }
@@ -466,9 +494,7 @@ fun previewWordgimaMainScreen() {
             )
         )
     )
-//    WordigmaScreen(wordsWithHints =sampleWords ) { _, _ ->
-//
-//    }
+    WordigmaScreen()
 }
 
 @Composable
