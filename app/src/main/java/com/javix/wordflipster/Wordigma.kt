@@ -250,7 +250,7 @@ fun QuoteDisplaySection(
             }else if(nextFocus == hiddenIndices.size) {
                 currentFocusIndex.value = 0 // Todo: fix this not move to 0 position but to the next focus index
             }
-        }, disabledKeys = listOf("W"), keyBackgrounds = mapOf(*keyMappedColors(commonDistinctLetters).toTypedArray()))
+        }, keyBackgrounds = mapOf(*keyMappedColors(commonDistinctLetters).toTypedArray()))
     }
 }
 fun keyMappedColors(keys: List<Char>): List<Pair<String, Color>> {
