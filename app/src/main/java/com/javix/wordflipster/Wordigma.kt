@@ -91,6 +91,8 @@ fun QuoteDisplaySection(
         .take(commonLetterCount)
         .map { it.first }
 
+    val commonDistinctLetters = commonLetters.distinct()
+
     val hiddenIndices = words.flatMapIndexed { wordIndex, word ->
         word.mapIndexedNotNull { charIndex, char ->
             if (commonLetters.contains(char.lowercaseChar())) Triple(wordIndex, charIndex, word) else null
@@ -214,7 +216,12 @@ fun QuoteDisplaySection(
             }else if(nextFocus == hiddenIndices.size) {
                 currentFocusIndex.value = 0 // Todo: fix this not move to 0 position but to the next focus index
             }
-        }, disabledKeys = listOf("W"), keyBackgrounds = mapOf("E" to Color.Green, "H" to Color.Green))
+        }, disabledKeys = listOf("W"), keyBackgrounds = mapOf(*keyMappedColors(commonDistinctLetters).toTypedArray()))
+    }
+}
+fun keyMappedColors(keys: List<Char>): List<Pair<String, Color>> {
+    return keys.mapNotNull { char ->
+        char.toUpperCase().toString() to Color.Green
     }
 }
 
