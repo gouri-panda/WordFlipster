@@ -1,5 +1,6 @@
 package com.javix.wordflipster
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -50,6 +51,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.javix.wordflipster.Navigation.WordFlipsterNavigationSetup
 import com.javix.wordflipster.ui.theme.WordFlipsterTheme
@@ -58,10 +60,11 @@ import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 @Composable
-fun WordigmaScreen(
-//    wordsWithHints: List<WordWithHints>, // List of words and hints
-//    onLetterInput: (String, Int) -> Unit // Callback for user input
-) {
+fun WordigmaScreen(navHostController: NavHostController) {
+
+    BackHandler {
+        navHostController.popBackStack()
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -494,7 +497,6 @@ fun previewWordgimaMainScreen() {
             )
         )
     )
-    WordigmaScreen()
 }
 
 @Composable

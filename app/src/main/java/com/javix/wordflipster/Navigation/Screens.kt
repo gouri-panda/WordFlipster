@@ -24,4 +24,6 @@ sealed class Screens(val route: String) {
     }
     data object WordCrypticOnboarding: Screens("wordCrypticOnboarding")
 
+    data object WordigmaScreen: Screens("wordigmaScreen")
+
 }

@@ -99,6 +99,8 @@ fun WelcomeScreenComposeWrapper(navController: NavHostController) {
             navController.navigate(Screens.WordShuffleOnboarding.route)
         } else if (gameType.name == navController.context.getString(R.string.word_cryptic)) {
             navController.navigate(Screens.WordCrypticOnboarding.route)
+        } else if (gameType.name == navController.context.getString(R.string.word_code)) {
+            navController.navigate(Screens.WordigmaScreen.route)
         }
     }
 }
