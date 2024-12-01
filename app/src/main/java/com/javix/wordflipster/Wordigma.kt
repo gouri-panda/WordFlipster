@@ -1,6 +1,5 @@
 package com.javix.wordflipster
 
-import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -32,6 +31,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,14 +46,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
+import com.javix.wordflipster.Navigation.WordFlipsterNavigationSetup
+import com.javix.wordflipster.ui.theme.WordFlipsterTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 @Composable
 fun WordigmaScreen(
-    wordsWithHints: List<WordWithHints>, // List of words and hints
-    onLetterInput: (String, Int) -> Unit // Callback for user input
+//    wordsWithHints: List<WordWithHints>, // List of words and hints
+//    onLetterInput: (String, Int) -> Unit // Callback for user input
 ) {
     Column(
         modifier = Modifier
@@ -61,18 +64,40 @@ fun WordigmaScreen(
             .padding(top = 16.dp, bottom = 16.dp, start = 8.dp, end = 8.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        val currentFocusIndex = remember { mutableStateOf(0) }
-        val inputLetter = remember { mutableStateOf("") }
+        val mistakes = remember { mutableStateOf(0) }
+        val level  = remember { mutableStateOf(1)}
 
         val mapping = remember {mutableStateOf(getMapping()) }
-        TopInfoSection(lives = 7, mistakes = 1, level = 1)
+        TopInfoSection(lives = 7, mistakes = mistakes.value, level = level.value)
+        val quotes = arrayListOf<String>()
+        quotes.add("WHERE THERE IS LOVE THERE IS LIFE")
+        quotes.add("DREAM BIG AND DARE TO FAIL.")
+        quotes.add("BE THE CHANGE.")
+        quotes.add("LIVE AND LET LIVE.")
+        quotes.add("THIS TOO SHALL PASS.")
+        quotes.add("NEVER GIVE UP.")
+        quotes.add("SIMPLE IS BEAUTIFUL.")
+        quotes.add("TIME HEALS ALL WOUNDS.")
+        quotes.add("LESS IS MORE.")
+        quotes.add("STAY POSITIVE.")
+        quotes.add("HOPE NEVER DIES.")
 
-        QuoteDisplaySection(quote = "WHERE THERE IS LOVE THERE IS LIFE.", maxRowLength = 13, mapping = mapping.value) {
+        QuoteDisplaySection(quote = quotes[level.value], maxRowLength = 13, mapping = mapping.value, onLetterInputSubmit =  { correct ->
+            if (!correct) {
+                if (mistakes.value < 3) {
+                    mistakes.value += 1
+                } else if(mistakes.value == 3) {
+                    mistakes.value = 0
+                }
+            }
 
-        }
-
-
+        }, levelCompleteListener = {
+            mapping.value = getMapping()
+            mistakes.value = 0
+            level.value += 1
+        })
     }
+
 
 }@Composable
 fun QuoteDisplaySection(
@@ -80,7 +105,8 @@ fun QuoteDisplaySection(
     commonLetterCount: Int = 2,
     maxRowLength: Int,
     mapping: Map<Int, Char>,
-    onLetterInput: (Char) -> Unit
+    onLetterInputSubmit: (Boolean) -> Unit,
+    levelCompleteListener: () -> Unit
 ) {
     val words = quote.split(" ")
     val letterFrequency = words.joinToString("").groupingBy { it.lowercaseChar() }.eachCount()
@@ -93,24 +119,24 @@ fun QuoteDisplaySection(
 
     val commonDistinctLetters = commonLetters.distinct()
 
-    val hiddenIndices = words.flatMapIndexed { wordIndex, word ->
+    var hiddenIndices = words.flatMapIndexed { wordIndex, word ->
         word.mapIndexedNotNull { charIndex, char ->
             if (commonLetters.contains(char.lowercaseChar())) Triple(wordIndex, charIndex, word) else null
         }
     }
 
-    val userInputs = remember {
+    var userInputs = remember(quote) {
         words.map { word ->
             word.map { char -> if (commonLetters.contains(char.lowercaseChar())) "" else char.toString() }.toMutableList()
         }
     }
 
     // Track the current focus globally
-    val currentFocusIndex = remember { mutableStateOf(0) }
+    val currentFocusIndex = remember(quote) { mutableStateOf(0) }
 
-    val currentWrongChar = remember { mutableStateOf("") }
+    val currentWrongChar = remember(quote) { mutableStateOf("") }
 
-    val rows = mutableListOf<List<Int>>()
+    var rows = mutableListOf<List<Int>>()
     var currentRow = mutableListOf<Int>()
     var currentLength = 0
 
@@ -197,9 +223,13 @@ fun QuoteDisplaySection(
                         if (nextFocus <= hiddenIndices.size) {
                             currentFocusIndex.value = nextFocus
                         }
+                        if(checkAllTheInputsCompleted(userInputs)) {
+                            levelCompleteListener()
+                        }
                     } else {
                         currentWrongChar.value = userInputs[wordIndex][charIndex]
                         userInputs[wordIndex][charIndex] = ""
+                        onLetterInputSubmit(false)
                     }
                 }
             }
@@ -307,7 +337,7 @@ fun WordRow(
                                     }
                                 currentWrongChar
 
-                            } else userInput[charIndex],
+                            } else if (charIndex < userInput.size) userInput[charIndex] else "",
                             onValueChange = { input ->
                                 if (input.length <= 1) {
                                     val wordIdx =
@@ -323,7 +353,7 @@ fun WordRow(
                                 .height(33.dp)
                                 .offset(x = if (shouldHide && isFocused && currentWrongChar.isNotEmpty()) shakeOffset.value.dp else 0.dp)
                                 .fillMaxWidth()
-                                .padding( bottom =0.dp, start = 4.dp, top = 8.dp),
+                                .padding(bottom = 0.dp, start = 4.dp, top = 8.dp),
                                     textStyle = TextStyle(
                                 fontSize = 18.sp,
                                         fontWeight = FontWeight.Bold,
@@ -335,7 +365,10 @@ fun WordRow(
                             modifier = Modifier
                                 .width(18.dp)
                                 .clickable {
-                                    if (shouldHide) onBoxClick(wordIndex, charIndex) // Todo:: Add this in more appropriate place
+                                    if (shouldHide) onBoxClick(
+                                        wordIndex,
+                                        charIndex
+                                    ) // Todo:: Add this in more appropriate place
                                 },
                             color = Color.Black // Choose your desired color
                         )
@@ -347,7 +380,8 @@ fun WordRow(
                             )[0].toString(), // Hint (letter position)
                             fontSize = 12.sp,
                             color = Color.Gray,
-                            modifier = Modifier.padding(start = 4.dp)
+                            modifier = Modifier
+                                .padding(start = 4.dp)
                                 .clickable {
                                     if (shouldHide) onBoxClick(wordIndex, charIndex)
                                 }
@@ -372,7 +406,7 @@ fun WordRow(
                                 modifier = Modifier
                                     .width(20.dp)
                                     .height(33.dp)
-                                .padding( bottom =0.dp, start = 4.dp, top = 8.dp)
+                                    .padding(bottom = 0.dp, start = 4.dp, top = 8.dp)
                             )
                             Divider(
                                 modifier = Modifier
@@ -432,9 +466,9 @@ fun previewWordgimaMainScreen() {
             )
         )
     )
-    WordigmaScreen(wordsWithHints =sampleWords ) { _, _ ->
-
-    }
+//    WordigmaScreen(wordsWithHints =sampleWords ) { _, _ ->
+//
+//    }
 }
 
 @Composable
@@ -676,3 +710,14 @@ private fun getMapping(): Map<Int, Char> {
     }
     return mapping
 }
+
+private fun checkAllTheInputsCompleted(userInputs: List<MutableList<String>>): Boolean {
+    for (word in userInputs) {
+        if (word.any { it.isEmpty() }) {
+            return false
+        }
+    }
+    return true
+}
+
+
