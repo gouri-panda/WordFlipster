@@ -39,6 +39,8 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.CircularProgressIndicator
@@ -68,6 +70,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -262,7 +265,7 @@ private fun InputWordWrapperView(
                     keyboardType = KeyboardType.Text,
                     capitalization = KeyboardCapitalization.Characters
                 ),
-                charColor = Color.Blue,
+                charColor = Color.Black,
                 correctWord = word,
                 isVibrationEnabled = isVibrationEnabled,
                 onValueChange = { value ->
@@ -326,8 +329,8 @@ fun InputWordView(
 
                     // Set color based on correctness, default to a neutral color for empty boxes
                     val borderColor = when {
-                        inputChar == null -> Color.Gray  // Default color for empty boxes
-                        isCorrectChar -> Color.Blue      // Blue if correct
+                        inputChar == null -> Color(0xFFBBA67A)  // Default color for empty boxes
+                        isCorrectChar -> Color(0xFFBBA67A)      // Green if correct
                         else -> {
                             // Trigger vibration if input is incorrect
                             if (isVibrationEnabled) {
@@ -396,14 +399,20 @@ private fun CharView(
         Modifier
             .size(containerSize)
             .border(
-                width = 1.dp,
+                width = 2.dp,
                 color = containerColor,
                 shape = RoundedCornerShape(containerRadius)
             )
             .scale(scale)
-            .padding(bottom = 4.dp)
-            .clip(RoundedCornerShape(containerRadius))
-            .background(charBackground)
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFFDCC49A), // Slightly darker at the top
+                        Color(0xFFF5E1B8)  // Lighter at the bottom
+                    )
+                ),
+                shape = RoundedCornerShape(8.dp)
+            )
 
 
     Column(
@@ -419,8 +428,12 @@ private fun CharView(
             text = char,
             color = charColor,
             modifier = modifier.wrapContentHeight(),
-            style = MaterialTheme.typography.body1,
-            fontSize = charSize,
+            style = TextStyle(
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                textAlign = TextAlign.Center
+            ),
             textAlign = TextAlign.Center,
         )
     }
