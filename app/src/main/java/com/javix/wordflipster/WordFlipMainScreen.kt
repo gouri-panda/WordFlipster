@@ -66,6 +66,8 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -438,32 +440,37 @@ fun WordGridWithWoodenTiles(word: List<String>) { // Here a letter is a string
             word.forEach { letter ->
                 LazyRow(
                     modifier = Modifier.padding(8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     items(letter.length) { index ->
                         Box(
                             modifier = Modifier
                                 .size(50.dp)
-                                .border(1.dp, Color(0xFF8B4513)) // Border color for wooden effect
-                                .background(
-                                    Brush.linearGradient(
-                                        colors = listOf(
-                                            Color(0xFFDEB887),
-                                            Color(0xFFA0522D)
-                                        ) // Simulating wood
-                                    )
+                                .border(
+                                    width = 2.dp,
+                                    color = Color(0xFFBBA67A), // Border color to match the style
+                                    shape = RoundedCornerShape(8.dp)
                                 )
-                                .shadow(
-                                    4.dp,
-                                    shape = RoundedCornerShape(4.dp)
-                                ), // Add a shadow for 3D effect
+                                .background(
+                                    brush = Brush.verticalGradient(
+                                        colors = listOf(
+                                            Color(0xFFF5E1B8),  // Lighter at the bottom
+                                            Color(0xFFDCC49A) // Slightly darker at the top
+                                        )
+                                    ),
+                                    shape = RoundedCornerShape(8.dp)
+                                ),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = letter[index].toString(),
-                                style = MaterialTheme.typography.h5,
-                                color = Color.Black,
-                                modifier = Modifier.padding(4.dp) // Adjust text positioning
+                                style = TextStyle(
+                                    fontSize = 28.sp, // Adjust to match the image's text size
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black, // Text color
+                                    fontFamily = FontFamily.Serif // Optional: Use a serif font if needed
+                                ),
+                                modifier = Modifier.padding(4.dp)
                             )
                         }
                     }
