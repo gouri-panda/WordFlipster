@@ -18,6 +18,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,6 +26,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -112,18 +116,12 @@ fun GameTypeList(gameTypes: List<GameType>, onGameTypeSelected: (GameType) -> Un
     Box(
         modifier = Modifier
             .fillMaxSize()
-//            .background( // todo Add if necessary
-//                brush = Brush.verticalGradient(
-//                    colors = listOf(Color(0xFF003366), Color(0xFF336699)),
-//                    startY = 500f
-//                )
-//            )
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(bottom = 60.dp),
-            verticalArrangement = Arrangement.Bottom
+            verticalArrangement = Arrangement.Top
         ) {
             // Title with Animated Visibility
             AnimatedVisibility(
@@ -145,18 +143,17 @@ fun GameTypeList(gameTypes: List<GameType>, onGameTypeSelected: (GameType) -> Un
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(24.dp)
-//                    .background(
-////                        Brush.horizontalGradient(
-////                            colors = listOf(Color(0xFF336699), Color(0xFF003366)),
-////                        )
-//                    )
             )
 
             // Staggered Slide-In Animation for Cards
-            LazyRow(
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2), // Two columns
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
+                    .fillMaxSize()
+                    .padding(16.dp),
+                contentPadding = PaddingValues(8.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 itemsIndexed(gameTypes) { index, gameType ->
                     GameTypeCard(
