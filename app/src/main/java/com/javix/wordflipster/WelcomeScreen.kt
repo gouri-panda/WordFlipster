@@ -50,6 +50,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
@@ -75,10 +76,14 @@ class WelcomeScreen: ComponentActivity() {
         setContent {
             WordFlipsterTheme {
                 val navController = rememberNavController()
+                val systemUiController = rememberSystemUiController()
+
+                // Change the status bar color to something darker for better contrast
+                systemUiController.setSystemBarsColor(color = Color.Black)
                 Scaffold(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = 32.dp),
+                        .padding(top = 16.dp),
                 ) { innerPadding ->
                     WordFlipsterNavigationSetup(navController)
                 }

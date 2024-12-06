@@ -107,6 +107,9 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     implementation("androidx.compose.animation:animation:1.6.0")
 
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.29.0-alpha")
+
+
 
 
 
