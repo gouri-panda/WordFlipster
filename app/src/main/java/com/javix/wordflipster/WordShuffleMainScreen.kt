@@ -40,111 +40,119 @@ import com.javix.wordflipster.ui.theme.WordFlipsterTheme
 
 @Composable
 fun WordShuffleMainScreen(navController: NavController, category: String) {
-    var showDialog by remember { mutableStateOf(false) }
-    BackHandler {
-        showDialog = true
-    }
-    val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(
-        LocalContext.current.applicationContext, category = category
-    ) { challenge ->
-        finishChallenge(challenge, navController)
-    }
-    )
-
-    val charLists = homeViewModel.getCharList()
-    homeViewModel.updateCurrentScreen(Screens.WordShuffleMainScreen)
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = { Text("Exit Game?") },
-            text = { Text("Are you sure you want to exit? Your progress will be lost.") },
-            confirmButton = {
-                TextButton(onClick = {
-                    showDialog = false
-                    navController.popBackStack()
-                }) {
-                    Text("Yes")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDialog = false }) {
-                    Text("No")
-                }
-            }
+    BaseScreen {
+        var showDialog by remember { mutableStateOf(false) }
+        BackHandler {
+            showDialog = true
+        }
+        val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(
+            LocalContext.current.applicationContext, category = category
+        ) { challenge ->
+            finishChallenge(challenge, navController)
+        }
         )
-    }
-    if (!homeViewModel.isLoading.value) {
-        Box(
-            modifier = Modifier
-                .padding(8.dp)
-                .padding(WindowInsets.ime.asPaddingValues())
-        ) {
-            Column(
+
+        val charLists = homeViewModel.getCharList()
+        homeViewModel.updateCurrentScreen(Screens.WordShuffleMainScreen)
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text("Exit Game?") },
+                text = { Text("Are you sure you want to exit? Your progress will be lost.") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        showDialog = false
+                        navController.popBackStack()
+                    }) {
+                        Text("Yes")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDialog = false }) {
+                        Text("No")
+                    }
+                }
+            )
+        }
+        if (!homeViewModel.isLoading.value) {
+            Box(
                 modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .fillMaxSize()
+                    .padding(8.dp)
+                    .padding(WindowInsets.ime.asPaddingValues())
             ) {
-                val currentScreen = remember { mutableStateOf(Screens.WordShuffleMainScreen) }
-
-                TopBar(navController, screen = currentScreen.value) {} // Todo show dialog button exit if necessary
-
-
-                TimerAndCorrectObjectsWithTimerWrapper(
-                    homeViewModel
-                )
-
-                Box(
+                Column(
                     modifier = Modifier
+                        .align(Alignment.TopEnd)
                         .fillMaxSize()
-                        .padding(bottom = 32.dp),
-                    contentAlignment = Alignment.Center
                 ) {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        val correctWord = charLists[homeViewModel.currentWordIndex.collectAsState().value]
-                        val shuffledWord = correctWord.shuffled()
-                        WordGridWithWoodenTiles(shuffledWord)
-                        ArrowButton()
-                        InputWordWrapperView(
-                            shuffledWord = shuffledWord,
-                            correctWord= correctWord,
-                            currentWordIndex = homeViewModel.currentWordIndex.collectAsState().value,
-                            isVibrationEnabled = homeViewModel.isVibrationEnabled()
-                        ) { count, isCorrectWord ->
-                            homeViewModel.currentWordIndex.value = count
-                            homeViewModel.updateTotalWords(homeViewModel.totalWords.value + 1)
-                            if (isCorrectWord) {
-                                homeViewModel.updateCorrectWords(homeViewModel.wordsSolved.value + 1)
-                            }
-                        }
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Button(onClick = {
-                                homeViewModel.currentWordIndex.value += 1
-                                homeViewModel.updateTotalWords(homeViewModel.totalWords.value + 1)
+                    val currentScreen = remember { mutableStateOf(Screens.WordShuffleMainScreen) }
 
-                            },
-                                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue),
-                            ) {
-                                Text("Next", color = Color.White)
-                            }
-                            Button(onClick = {
-                                homeViewModel.finishGame { challenge ->
-                                    finishChallenge(challenge, navController)
+                    TopBar(
+                        navController,
+                        screen = currentScreen.value
+                    ) {} // Todo show dialog button exit if necessary
+
+
+                    TimerAndCorrectObjectsWithTimerWrapper(
+                        homeViewModel
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(bottom = 32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            val correctWord =
+                                charLists[homeViewModel.currentWordIndex.collectAsState().value]
+                            val shuffledWord = correctWord.shuffled()
+                            WordGridWithWoodenTiles(shuffledWord)
+                            ArrowButton()
+                            InputWordWrapperView(
+                                shuffledWord = shuffledWord,
+                                correctWord = correctWord,
+                                currentWordIndex = homeViewModel.currentWordIndex.collectAsState().value,
+                                isVibrationEnabled = homeViewModel.isVibrationEnabled()
+                            ) { count, isCorrectWord ->
+                                homeViewModel.currentWordIndex.value = count
+                                homeViewModel.updateTotalWords(homeViewModel.totalWords.value + 1)
+                                if (isCorrectWord) {
+                                    homeViewModel.updateCorrectWords(homeViewModel.wordsSolved.value + 1)
                                 }
-                            },
-                                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue),
-                            ) {
-                                Text("Finish", color = Color.White)
+                            }
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Button(
+                                    onClick = {
+                                        homeViewModel.currentWordIndex.value += 1
+                                        homeViewModel.updateTotalWords(homeViewModel.totalWords.value + 1)
+
+                                    },
+                                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue),
+                                ) {
+                                    Text("Next", color = Color.White)
+                                }
+                                Button(
+                                    onClick = {
+                                        homeViewModel.finishGame { challenge ->
+                                            finishChallenge(challenge, navController)
+                                        }
+                                    },
+                                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue),
+                                ) {
+                                    Text("Finish", color = Color.White)
+                                }
                             }
                         }
                     }
                 }
             }
+        } else {
+            CircularLoadingIndicator()
         }
-    } else {
-        CircularLoadingIndicator()
     }
 }
 private fun finishChallenge(

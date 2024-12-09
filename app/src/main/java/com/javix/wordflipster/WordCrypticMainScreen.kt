@@ -3,22 +3,16 @@ package com.javix.wordflipster
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
@@ -26,11 +20,7 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Slider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -41,13 +31,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.gson.Gson
@@ -58,164 +44,171 @@ import kotlin.random.Random
 
 
 @Composable
-fun WordCrypticMainScreen(navController: NavController, category: String) {
-    var showDialog by remember { mutableStateOf(false) }
-    var encodedWord by remember { mutableStateOf("") }
-    var decodeWord by remember { mutableStateOf("") }
-    var hintLevel by remember { mutableStateOf(1)}
-    val context = LocalContext.current
-    BackHandler {
-        showDialog = true
-    }
-    val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(
-        LocalContext.current.applicationContext, category = category
-    ) { challenge ->
-        finishChallenge(challenge, navController)
-    }
-    )
-
-    val charLists = homeViewModel.getCharList()
-    homeViewModel.updateCurrentScreen(Screens.WordCrypticMainScreen)
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = { Text("Exit Game?") },
-            text = { Text("Are you sure you want to exit? Your progress will be lost.") },
-            confirmButton = {
-                TextButton(onClick = {
-                    showDialog = false
-                    navController.popBackStack()
-                }) {
-                    Text("Yes")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDialog = false }) {
-                    Text("No")
-                }
-            }
+fun WordCrypticMainScreen(navController: NavController, category: String){
+    BaseScreen {
+        var showDialog by remember { mutableStateOf(false) }
+        var encodedWord by remember { mutableStateOf("") }
+        var decodeWord by remember { mutableStateOf("") }
+        var hintLevel by remember { mutableStateOf(1) }
+        val context = LocalContext.current
+        BackHandler {
+            showDialog = true
+        }
+        val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(
+            LocalContext.current.applicationContext, category = category
+        ) { challenge ->
+            finishChallenge(challenge, navController)
+        }
         )
-    }
-    if (!homeViewModel.isLoading.value) {
-        Box(
-            modifier = Modifier
-                .padding(8.dp)
-                .padding(WindowInsets.ime.asPaddingValues())
-        ) {
-            Column(
+
+        val charLists = homeViewModel.getCharList()
+        homeViewModel.updateCurrentScreen(Screens.WordCrypticMainScreen)
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text("Exit Game?") },
+                text = { Text("Are you sure you want to exit? Your progress will be lost.") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        showDialog = false
+                        navController.popBackStack()
+                    }) {
+                        Text("Yes")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDialog = false }) {
+                        Text("No")
+                    }
+                }
+            )
+        }
+        if (!homeViewModel.isLoading.value) {
+            Box(
                 modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .fillMaxSize()
+                    .padding(8.dp)
+                    .padding(WindowInsets.ime.asPaddingValues())
             ) {
-                val currentScreen = remember { mutableStateOf(homeViewModel.currentScreen.value) }
-
-                TopBar(
-                    navController,
-                    screen = currentScreen.value
-                ) {} // Todo show dialog button exit if necessary
-
-
-                TimerAndCorrectObjectsWithTimerWrapper(
-                    homeViewModel
-                )
-
-                Box(
+                Column(
                     modifier = Modifier
+                        .align(Alignment.TopEnd)
                         .fillMaxSize()
-                        .padding(bottom = 32.dp),
-                    contentAlignment = Alignment.Center
                 ) {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        val correctWord =
-                            charLists[homeViewModel.currentWordIndex.collectAsState().value]
-                        val encoder = encodeWordWithRandomShift(correctWord.joinToString(""))
-                        encodedWord = encoder.first
-                        decodeWord = correctWord.joinToString("")
-                        val shift = encoder.second
-                        Log.d("WordCrypticMainScreen", "correctWord: $correctWord")
-                        Log.d("WordCrypticMainScreen", "shift: $shift")
-                        val charList = encodedWord.map {
-                            it.toString().uppercase(
-                                Locale.getDefault()
-                            )
-                        }
-                        WordGridWithWoodenTiles(charList)
-                        ArrowButton()
-                        InputWordWrapperView(
-                            crypticWord = charList,
-                            correctWord = correctWord,
-                            currentWordIndex = homeViewModel.currentWordIndex.collectAsState().value,
-                            isVibrationEnabled = homeViewModel.isVibrationEnabled()
-                        ) { count, isCorrectWord ->
-                            homeViewModel.currentWordIndex.value = count
-                            hintLevel = 1
-                            homeViewModel.updateTotalWords(homeViewModel.totalWords.value + 1)
-                            if (isCorrectWord) {
-                                homeViewModel.updateCorrectWords(homeViewModel.wordsSolved.value + 1)
-                            }
-                        }
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Button(
-                                onClick = {
-                                    homeViewModel.currentWordIndex.value += 1
-                                    hintLevel = 1
-                                    homeViewModel.updateTotalWords(homeViewModel.totalWords.value + 1)
+                    val currentScreen =
+                        remember { mutableStateOf(homeViewModel.currentScreen.value) }
 
-                                },
-                                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue),
-                            ) {
-                                Text("Next", color = Color.White)
-                            }
-                            Button(
-                                onClick = {
-                                    homeViewModel.finishGame { challenge ->
-                                        finishChallenge(challenge, navController)
-                                    }
-                                },
-                                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue),
-                            ) {
-                                Text("Finish", color = Color.White)
-                            }
-                            androidx.compose.material.IconButton(
-                                onClick = {
-                                    val wordPatternHInt =
-                                        provideWordPatternHint(encodedWord, decodeWord, hintLevel)
-                                    hintLevel++
-                                    Toast.makeText(context, wordPatternHInt, Toast.LENGTH_SHORT)
-                                        .show()
-                                },
-                                // Padding from the top and left
-                            ) {
-                                androidx.compose.material.Icon(
-                                    imageVector = Icons.Default.Search,
-                                    contentDescription = "Home",
-                                    tint = Color.Blue
+                    TopBar(
+                        navController,
+                        screen = currentScreen.value
+                    ) {} // Todo show dialog button exit if necessary
+
+
+                    TimerAndCorrectObjectsWithTimerWrapper(
+                        homeViewModel
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(bottom = 32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            val correctWord =
+                                charLists[homeViewModel.currentWordIndex.collectAsState().value]
+                            val encoder = encodeWordWithRandomShift(correctWord.joinToString(""))
+                            encodedWord = encoder.first
+                            decodeWord = correctWord.joinToString("")
+                            val shift = encoder.second
+                            Log.d("WordCrypticMainScreen", "correctWord: $correctWord")
+                            Log.d("WordCrypticMainScreen", "shift: $shift")
+                            val charList = encodedWord.map {
+                                it.toString().uppercase(
+                                    Locale.getDefault()
                                 )
                             }
+                            WordGridWithWoodenTiles(charList)
+                            ArrowButton()
+                            InputWordWrapperView(
+                                crypticWord = charList,
+                                correctWord = correctWord,
+                                currentWordIndex = homeViewModel.currentWordIndex.collectAsState().value,
+                                isVibrationEnabled = homeViewModel.isVibrationEnabled()
+                            ) { count, isCorrectWord ->
+                                homeViewModel.currentWordIndex.value = count
+                                hintLevel = 1
+                                homeViewModel.updateTotalWords(homeViewModel.totalWords.value + 1)
+                                if (isCorrectWord) {
+                                    homeViewModel.updateCorrectWords(homeViewModel.wordsSolved.value + 1)
+                                }
+                            }
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Button(
+                                    onClick = {
+                                        homeViewModel.currentWordIndex.value += 1
+                                        hintLevel = 1
+                                        homeViewModel.updateTotalWords(homeViewModel.totalWords.value + 1)
+
+                                    },
+                                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue),
+                                ) {
+                                    Text("Next", color = Color.White)
+                                }
+                                Button(
+                                    onClick = {
+                                        homeViewModel.finishGame { challenge ->
+                                            finishChallenge(challenge, navController)
+                                        }
+                                    },
+                                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue),
+                                ) {
+                                    Text("Finish", color = Color.White)
+                                }
+                                androidx.compose.material.IconButton(
+                                    onClick = {
+                                        val wordPatternHInt =
+                                            provideWordPatternHint(
+                                                encodedWord,
+                                                decodeWord,
+                                                hintLevel
+                                            )
+                                        hintLevel++
+                                        Toast.makeText(context, wordPatternHInt, Toast.LENGTH_SHORT)
+                                            .show()
+                                    },
+                                    // Padding from the top and left
+                                ) {
+                                    androidx.compose.material.Icon(
+                                        imageVector = Icons.Default.Search,
+                                        contentDescription = "Home",
+                                        tint = Color.Blue
+                                    )
+                                }
+                            }
+
                         }
 
                     }
-
-                    }
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp, bottom = 16.dp)
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        modifier = Modifier.align(Alignment.BottomEnd)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp, bottom = 16.dp)
                     ) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            modifier = Modifier.align(Alignment.BottomEnd)
+                        ) {
 
+                        }
                     }
                 }
             }
+        } else {
+            CircularLoadingIndicator()
         }
-    } else {
-        CircularLoadingIndicator()
     }
 }
 private fun finishChallenge(

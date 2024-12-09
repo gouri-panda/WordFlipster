@@ -39,8 +39,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.CircularProgressIndicator
@@ -51,7 +49,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -70,7 +67,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -79,7 +75,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.gson.Gson
@@ -90,97 +85,103 @@ import kotlinx.coroutines.flow.filter
 
 @Composable
 fun WordFlipMainScreen(navController: NavController, category: String) {
-    var showDialog by remember { mutableStateOf(false) }
-    BackHandler {
-        showDialog = true
-    }
-    val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(
-        LocalContext.current.applicationContext, category = category
-    ) { challenge ->
-        finishChallenge(challenge, navController)
-    }
-    )
-
-    val charLists = homeViewModel.getCharList()
-    homeViewModel.updateCurrentScreen(Screens.WordFlipHomeScreen)
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = { Text("Exit Game?") },
-            text = { Text("Are you sure you want to exit? Your progress will be lost.") },
-            confirmButton = {
-                TextButton(onClick = {
-                    showDialog = false
-                    navController.popBackStack()
-                }) {
-                    Text("Yes")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDialog = false }) {
-                    Text("No")
-                }
-            }
+    BaseScreen {
+        var showDialog by remember { mutableStateOf(false) }
+        BackHandler {
+            showDialog = true
+        }
+        val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(
+            LocalContext.current.applicationContext, category = category
+        ) { challenge ->
+            finishChallenge(challenge, navController)
+        }
         )
-    }
-    if (!homeViewModel.isLoading.value) {
-        Box(
-            modifier = Modifier
-                .padding(8.dp)
-                .padding(WindowInsets.ime.asPaddingValues())
-        ) {
-            Column(
+
+        val charLists = homeViewModel.getCharList()
+        homeViewModel.updateCurrentScreen(Screens.WordFlipHomeScreen)
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text("Exit Game?") },
+                text = { Text("Are you sure you want to exit? Your progress will be lost.") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        showDialog = false
+                        navController.popBackStack()
+                    }) {
+                        Text("Yes")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDialog = false }) {
+                        Text("No")
+                    }
+                }
+            )
+        }
+        if (!homeViewModel.isLoading.value) {
+            Box(
                 modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .fillMaxSize()
+                    .padding(8.dp)
+                    .padding(WindowInsets.ime.asPaddingValues())
             ) {
-                TopBar(navController, screen = Screens.WordFlipHomeScreen) {} // Todo show dialog button exit if necessary
-
-
-                TimerAndCorrectObjectsWithTimerWrapper(
-                    homeViewModel
-                )
-
-                Box(
+                Column(
                     modifier = Modifier
+                        .align(Alignment.TopEnd)
                         .fillMaxSize()
-                        .padding(bottom = 32.dp),
-                    contentAlignment = Alignment.Center
                 ) {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                    TopBar(
+                        navController,
+                        screen = Screens.WordFlipHomeScreen
+                    ) {} // Todo show dialog button exit if necessary
+
+
+                    TimerAndCorrectObjectsWithTimerWrapper(
+                        homeViewModel
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(bottom = 32.dp),
+                        contentAlignment = Alignment.Center
                     ) {
-                        WordGridWithWoodenTiles(charLists[homeViewModel.currentWordIndex.collectAsState().value])
-                        ArrowButton()
-                        InputWordWrapperView(
-                            charLists[homeViewModel.currentWordIndex.collectAsState().value],
-                            currentWordIndex = homeViewModel.currentWordIndex.collectAsState().value,
-                            isVibrationEnabled = homeViewModel.isVibrationEnabled()
-                        ) { count, isCorrectWord ->
-                            homeViewModel.currentWordIndex.value = count
-                            homeViewModel.updateTotalWords(homeViewModel.totalWords.value + 1)
-                            if (isCorrectWord) {
-                                homeViewModel.updateCorrectWords(homeViewModel.wordsSolved.value + 1)
-                            }
-                        }
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Button(onClick = {
-                                homeViewModel.finishGame { challenge ->
-                                    finishChallenge(challenge, navController)
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            WordGridWithWoodenTiles(charLists[homeViewModel.currentWordIndex.collectAsState().value])
+                            ArrowButton()
+                            InputWordWrapperView(
+                                charLists[homeViewModel.currentWordIndex.collectAsState().value],
+                                currentWordIndex = homeViewModel.currentWordIndex.collectAsState().value,
+                                isVibrationEnabled = homeViewModel.isVibrationEnabled()
+                            ) { count, isCorrectWord ->
+                                homeViewModel.currentWordIndex.value = count
+                                homeViewModel.updateTotalWords(homeViewModel.totalWords.value + 1)
+                                if (isCorrectWord) {
+                                    homeViewModel.updateCorrectWords(homeViewModel.wordsSolved.value + 1)
                                 }
-                            },
-                                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue),
-                            ) {
-                                Text("Finish", color = Color.White)
+                            }
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Button(
+                                    onClick = {
+                                        homeViewModel.finishGame { challenge ->
+                                            finishChallenge(challenge, navController)
+                                        }
+                                    },
+                                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue),
+                                ) {
+                                    Text("Finish", color = Color.White)
+                                }
                             }
                         }
                     }
                 }
             }
+        } else {
+            CircularLoadingIndicator()
         }
-    } else {
-        CircularLoadingIndicator()
     }
 }
 
