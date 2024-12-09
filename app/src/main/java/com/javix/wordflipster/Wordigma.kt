@@ -129,7 +129,7 @@ fun WordigmaScreen(navHostController: NavHostController) {
 
 
 }@Composable
-fun QuoteDisplaySection(
+private fun QuoteDisplaySection(
     quote: String,
     commonLetterCount: Int = 2,
     maxRowLength: Int,
@@ -285,7 +285,7 @@ fun keyMappedColors(keys: List<Char>): List<Pair<String, Color>> {
 }
 
 @Composable
-fun WordRow(
+private fun WordRow(
     word: String,
     commonLetters: List<Char>,
     userInput: List<String>,
@@ -753,7 +753,7 @@ private fun decodeWord(
     println("Decoded Word: ${decodedWord.joinToString("")}")
 }
 
-private fun encodeWord(
+fun encodeWord(
     message: String,
     mapping: Map<Int, Char>
 ): List<Int> {
@@ -765,7 +765,7 @@ private fun encodeWord(
     return encodedWord
 }
 
-private fun getMapping(): Map<Int, Char> {
+fun getMapping(): Map<Int, Char> {
     // Use a randomized base letter
     val random = Random(System.currentTimeMillis())
     val baseChar = 'A' + random.nextInt(0, 26) // Random base letter
@@ -778,7 +778,7 @@ private fun getMapping(): Map<Int, Char> {
     return mapping
 }
 
-private fun checkAllTheInputsCompleted(userInputs: List<MutableList<String>>): Boolean {
+fun checkAllTheInputsCompleted(userInputs: List<MutableList<String>>): Boolean {
     for (word in userInputs) {
         if (word.any { it.isEmpty() }) {
             return false
