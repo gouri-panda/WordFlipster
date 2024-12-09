@@ -138,7 +138,7 @@ fun GameTypeList(gameTypes: List<GameType>, onGameTypeSelected: (GameType) -> Un
                     style = MaterialTheme.typography.headlineSmall,
                     color = Color.Black,
                     modifier = Modifier
-                        .padding(16.dp)
+                        .padding(top = 64.dp, start = 16.dp)
                         .align(Alignment.CenterHorizontally)
                 )
             }
