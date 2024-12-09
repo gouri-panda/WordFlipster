@@ -83,7 +83,7 @@ class WelcomeScreen: ComponentActivity() {
                 Scaffold(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = 16.dp),
+                        .padding(top = 32.dp),
                 ) { innerPadding ->
                     WordFlipsterNavigationSetup(navController)
                 }

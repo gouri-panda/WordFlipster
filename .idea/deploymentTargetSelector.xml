@@ -5,16 +5,19 @@
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="previewWordgimaMainScreen">
+      <SelectionState runConfigName="PreviewStyledLetterBoxesRowWithGradient">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="WordigmaScreen">
+      <SelectionState runConfigName="PreviewStyledLetterBoxesRow">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="PuzzleScreen">
+      <SelectionState runConfigName="PreviewLetterInputBoxesRowWithGradient">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="previewText">
+      <SelectionState runConfigName="PreviewLetterInputBoxesRowWithFeedback">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="ChallengeCompleteScreenWrapper">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
