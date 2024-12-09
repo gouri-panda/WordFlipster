@@ -8,6 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import com.javix.wordflipster.ui.theme.darkColorCustomColor
+import com.javix.wordflipster.ui.theme.lightColorCustomColor
+import com.javix.wordflipster.ui.theme.mediumColorCustomColor
+import com.javix.wordflipster.ui.theme.wordgimaBackgroundScreen
 
 @Composable
 fun BaseScreen(
@@ -27,9 +31,9 @@ fun BaseScreen(
 //                    ) // Todo experiment with those
 
                     listOf(
-                        Color(0xFFBBDEFB),
-                        Color(0xFF64B5F6),
-                        Color(0xFF2196F3),
+                        lightColorCustomColor,
+                        mediumColorCustomColor,
+                        darkColorCustomColor,
                     )
 
                 )
@@ -38,3 +42,27 @@ fun BaseScreen(
         content()
     }
 }
+
+@Composable
+fun WordigmaBaseScreen(
+    modifier: Modifier = Modifier,
+    content: @Composable BoxScope.() -> Unit
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    colors =
+                    listOf(
+                        wordgimaBackgroundScreen,
+                        wordgimaBackgroundScreen
+                    )
+
+                )
+            )
+    ) {
+        content()
+    }
+}
+

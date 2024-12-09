@@ -27,19 +27,19 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Divider
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -54,63 +54,77 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import com.javix.wordflipster.Navigation.WordFlipsterNavigationSetup
-import com.javix.wordflipster.ui.theme.WordFlipsterTheme
+import com.javix.wordflipster.ui.theme.fooCustomKeyboardContentColor
+import com.javix.wordflipster.ui.theme.fooCustomKeyboardKeyButtonBackgroundColor
+import com.javix.wordflipster.ui.theme.foocustomKeyboardBackgroundColor
+import com.javix.wordflipster.ui.theme.wordgimaBackgroundScreen
+import com.javix.wordflipster.ui.theme.wordgimaQuoteTextColor
+import com.javix.wordflipster.ui.theme.wordgimaTextColor
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 @Composable
 fun WordigmaScreen(navHostController: NavHostController) {
-    val context = LocalContext.current
+    WordigmaBaseScreen {
+        val context = LocalContext.current
 
-    BackHandler {
-        navHostController.popBackStack()
-    }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 16.dp, bottom = 16.dp, start = 8.dp, end = 8.dp),
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-        val mistakes = remember { mutableStateOf(0) }
-        val level  = remember { mutableStateOf(1)}
+        BackHandler {
+            navHostController.popBackStack()
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 16.dp, bottom = 0.dp, start = 0.dp, end = 0.dp),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            val mistakes = remember { mutableStateOf(0) }
+            val level = remember { mutableStateOf(1) }
 
-        val mapping = remember {mutableStateOf(getMapping()) }
-        TopInfoSection(lives = 7, mistakes = mistakes.value, level = level.value)
-        val quotes = arrayListOf<String>()
-        quotes.add("WHERE THERE IS LOVE THERE IS LIFE")
-        quotes.add("DREAM BIG AND DARE TO FAIL.")
-        quotes.add("BE THE CHANGE.")
-        quotes.add("LIVE AND LET LIVE.")
-        quotes.add("THIS TOO SHALL PASS.")
-        quotes.add("NEVER GIVE UP.")
-        quotes.add("SIMPLE IS BEAUTIFUL.")
-        quotes.add("TIME HEALS ALL WOUNDS.")
-        quotes.add("LESS IS MORE.")
-        quotes.add("STAY POSITIVE.")
-        quotes.add("HOPE NEVER DIES.")
+            val mapping = remember { mutableStateOf(getMapping()) }
+            TopInfoSection(lives = 7, mistakes = mistakes.value, level = level.value)
+            val quotes = arrayListOf<String>()
+            quotes.add("WHERE THERE IS LOVE THERE IS LIFE")
+            quotes.add("DREAM BIG AND DARE TO FAIL.")
+            quotes.add("BE THE CHANGE.")
+            quotes.add("LIVE AND LET LIVE.")
+            quotes.add("THIS TOO SHALL PASS.")
+            quotes.add("NEVER GIVE UP.")
+            quotes.add("SIMPLE IS BEAUTIFUL.")
+            quotes.add("TIME HEALS ALL WOUNDS.")
+            quotes.add("LESS IS MORE.")
+            quotes.add("STAY POSITIVE.")
+            quotes.add("HOPE NEVER DIES.")
 
-        QuoteDisplaySection(quote = quotes[level.value], maxRowLength = 13, mapping = mapping.value, onLetterInputSubmit =  { correct ->
-            if (!correct) {
-                if (mistakes.value < 3) {
-                    mistakes.value += 1
-                } else if(mistakes.value == 3) {
+            QuoteDisplaySection(
+                quote = quotes[level.value],
+                maxRowLength = 13,
+                mapping = mapping.value,
+                onLetterInputSubmit = { correct ->
+                    if (!correct) {
+                        if (mistakes.value < 3) {
+                            mistakes.value += 1
+                        } else if (mistakes.value == 3) {
+                            mistakes.value = 0
+                        }
+                    }
+
+                },
+                levelCompleteListener = {
+                    mapping.value = getMapping()
                     mistakes.value = 0
-                }
-            }
-
-        }, levelCompleteListener = {
-            mapping.value = getMapping()
-            mistakes.value = 0
-            if(level.value < quotes.size - 1) {
-                level.value += 1
-            } else if(level.value == quotes.size -1) {
-                Toast.makeText(context, "Congratulations! You've completed the challenge.", Toast.LENGTH_SHORT).show()
-                level.value = 0
-            }
-        })
+                    if (level.value < quotes.size - 1) {
+                        level.value += 1
+                    } else if (level.value == quotes.size - 1) {
+                        Toast.makeText(
+                            context,
+                            "Congratulations! You've completed the challenge.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        level.value = 0
+                    }
+                })
+        }
     }
 
 
@@ -319,20 +333,16 @@ fun WordRow(
 
             Box(
                 modifier = Modifier
-                    .padding(1.dp)
+                    .padding(0.dp)
                     .border(
-                        width = if (shouldHide && isFocused) 2.dp else 1.dp,
+                        width = if (isFocused) 2.dp else 1.dp,
                         color = when {
                             shouldHide && isFocused && currentWrongChar.isNotEmpty() -> Color.Red
                             shouldHide && isFocused -> Color.Green
-                            shouldHide -> Color.White
+                            shouldHide -> wordgimaBackgroundScreen
                             else -> Color.Transparent
                         },
-                        shape = RoundedCornerShape(8.dp)
-                    )
-                    .background(
-                        color = if (shouldHide) Color(0xFFF5F5F5) else Color.Transparent,
-                        shape = RoundedCornerShape(8.dp)
+                        shape = RoundedCornerShape(4.dp)
                     )
                    ,
                 contentAlignment = Alignment.Center
@@ -364,15 +374,15 @@ fun WordRow(
                             singleLine = true,
                             readOnly = true,
                             modifier = Modifier
-                                .width(20.dp)
+                                .width(18.dp)
                                 .height(33.dp)
                                 .offset(x = if (shouldHide && isFocused && currentWrongChar.isNotEmpty()) shakeOffset.value.dp else 0.dp)
                                 .fillMaxWidth()
-                                .padding(bottom = 0.dp, start = 4.dp, top = 8.dp),
+                                .padding(bottom = 0.dp, start = 0.dp, top = 8.dp),
                                     textStyle = TextStyle(
                                 fontSize = 18.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = Color.Black,
+                                        color = wordgimaQuoteTextColor,
                                 textAlign = TextAlign.Center
                             )
                         )
@@ -385,7 +395,7 @@ fun WordRow(
                                         charIndex
                                     ) // Todo:: Add this in more appropriate place
                                 },
-                            color = Color.Black // Choose your desired color
+                            color = wordgimaQuoteTextColor
                         )
 
                         Text(
@@ -394,7 +404,7 @@ fun WordRow(
                                 mapping
                             )[0].toString(), // Hint (letter position)
                             fontSize = 12.sp,
-                            color = Color.Gray,
+                            color = wordgimaQuoteTextColor,
                             modifier = Modifier
                                 .padding(start = 4.dp)
                                 .clickable {
@@ -409,7 +419,7 @@ fun WordRow(
                             text = char.toString(),
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp,
-                            color = Color.Black
+                            color = wordgimaQuoteTextColor
                         )
                     }else {
                         Column {
@@ -417,16 +427,16 @@ fun WordRow(
                                 text = char.toString(),
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 18.sp,
-                                color = Color.Black,
+                                color = wordgimaQuoteTextColor,
                                 modifier = Modifier
-                                    .width(20.dp)
+                                    .width(18.dp)
                                     .height(33.dp)
-                                    .padding(bottom = 0.dp, start = 4.dp, top = 8.dp)
+                                    .padding(bottom = 0.dp, start = 0.dp, top = 8.dp)
                             )
                             Divider(
                                 modifier = Modifier
                                     .width(18.dp), // Makes the line span the entire width
-                                color = Color.Black // Choose your desired color
+                                color = wordgimaQuoteTextColor
                             )
                             Text(
                                 text = encodeWord(
@@ -434,7 +444,7 @@ fun WordRow(
                                     mapping
                                 )[0].toString(), // Hint (letter position)
                                 fontSize = 12.sp,
-                                color = Color.Gray,
+                                color = wordgimaQuoteTextColor,
                                 modifier = Modifier.padding(start = 4.dp)
                             )
                         }
@@ -450,7 +460,9 @@ fun WordRow(
 @Composable
 fun TopInfoSection(lives: Int, mistakes: Int, level: Int) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start =8.dp, end = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
 
@@ -467,7 +479,7 @@ fun TopInfoSection(lives: Int, mistakes: Int, level: Int) {
                 }
             }
             repeat(3 - mistakes) {
-                withStyle(style = SpanStyle(color = Color.Gray)) {
+                withStyle(style = SpanStyle(color = wordgimaQuoteTextColor)) {
                     append("○")
                 }
             }
@@ -475,11 +487,12 @@ fun TopInfoSection(lives: Int, mistakes: Int, level: Int) {
         Text(
             text = AnnotatedString("Mistakes: ", spanStyles = listOf()) + mistakeSymbols,
             style = MaterialTheme.typography.h6,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            color = wordgimaQuoteTextColor
         )
     }
 
-        Text(text = "Level $level", style = MaterialTheme.typography.h6)
+        Text(text = "Level $level", style = MaterialTheme.typography.h6, color = wordgimaQuoteTextColor)
     }
 }
 
@@ -524,7 +537,8 @@ fun CustomKeyboard(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(0.dp),
+            .background(foocustomKeyboardBackgroundColor)
+            .padding(bottom = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         keys.forEachIndexed { rowIndex, row ->
@@ -534,22 +548,21 @@ fun CustomKeyboard(
                     .padding(
                         start =
                         if (rowIndex == 2) 4.dp else (rowIndex * 16).dp, // Reduce padding for the 3rd row
-                        end = if (rowIndex == 2) 4.dp else (rowIndex * 16).dp // Reduce padding for the 3rd row
+                        end = if (rowIndex == 2) 4.dp else (rowIndex * 16).dp, // Reduce padding for the 3rd row
 
                     ) // Adjust start padding based on row index
-                    .padding(top = 2.dp, bottom = 2.dp),
+                    .padding(top = 2.dp, bottom = 4.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 row.forEach { key ->
                     val isDisabled = disabledKeys.contains(key)
-                    val backgroundColor = keyBackgrounds[key] ?: Color.Black // Default background  content color
+                    val backgroundColor = keyBackgrounds[key] ?: fooCustomKeyboardKeyButtonBackgroundColor // Default background  content color
 
                     when (key) {
                         "Back" -> ActionKeyButton(
                             icon = Icons.AutoMirrored.Filled.ArrowBack,
                             modifier = Modifier
-                                .weight(1f)
-                                .background(if (isDisabled) Color.LightGray else Color.White),
+                                .background(if (isDisabled) Color.LightGray else backgroundColor),
                             onClick = {
                                 if (!isDisabled) onBackspacePress()
                             },
@@ -558,8 +571,9 @@ fun CustomKeyboard(
                         "Enter" -> ActionKeyButton(
                             icon = Icons.AutoMirrored.Filled.ArrowForward,
                             modifier = Modifier
-                                .weight(1f)
-                                .background(if (isDisabled) Color.LightGray else Color.White),
+                                .background(if (isDisabled) Color.LightGray else backgroundColor)
+                                .clip(RoundedCornerShape(8.dp))
+                                .shadow(4.dp, RoundedCornerShape(8.dp)),
                             onClick = {
                                 if (!isDisabled) onEnterPress()
                             },
@@ -571,6 +585,7 @@ fun CustomKeyboard(
                                 if (!isDisabled) onKeyPress(key)
                             },
                             backgroundContentColor = backgroundColor,
+                            contentColor = fooCustomKeyboardContentColor,
                             isDisabled = isDisabled
                         )
                     }
@@ -582,22 +597,38 @@ fun CustomKeyboard(
 
 
 @Composable
-fun KeyButton(key: String, onKeyPress: () -> Unit, backgroundContentColor: Color, isDisabled: Boolean) {
+fun KeyButton(key: String, onKeyPress: () -> Unit, backgroundContentColor: Color, contentColor: Color,isDisabled: Boolean) {
         Button(
             onClick = onKeyPress,
             modifier = Modifier
                 .width(30.dp)
-                .height(50.dp)
+                .height(45.dp)
                 .padding(0.dp),
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = Color.White,
-                contentColor = backgroundContentColor
+                backgroundColor = backgroundContentColor,
+                contentColor = contentColor
             ),
+            shape = RoundedCornerShape(8.dp), // Rounded corners for modern look
+            elevation = ButtonDefaults.elevation(4.dp),
             enabled = !isDisabled,
-            contentPadding = PaddingValues(0.dp) // Remove extra padding within button
-        ) {
-            Text(text = key, style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold))
-        }
+            contentPadding = PaddingValues(0.dp), // Remove extra padding within button
+            content = {
+                    Box(
+                        contentAlignment = Alignment.Center, // Center the text in the box
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            text = key,
+                            style = TextStyle(
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                lineHeight = 18.sp
+                            ),
+                            modifier = Modifier.padding(0.dp) // Ensure no extra padding for the text
+                        )
+                    }
+            }
+        )
 
 }
 
@@ -606,13 +637,13 @@ fun ActionKeyButton(icon: ImageVector,modifier: Modifier = Modifier, onClick: ()
             Button(
                 onClick = onClick,
                 modifier = modifier
-                    .width(35.dp)
-                    .height(50.dp)
-                    .padding(top = 4.dp, bottom = 0.dp, start = 2.dp, end = 2.dp),
+                    .width(45.dp)
+                    .height(50.dp),
                 colors = ButtonDefaults.buttonColors(
-                    backgroundColor = Color.Gray,
-                    contentColor = Color.White
+                    backgroundColor = fooCustomKeyboardKeyButtonBackgroundColor,
+                    contentColor = fooCustomKeyboardContentColor
                 ),
+                elevation = ButtonDefaults.elevation(4.dp),
                 enabled = enabled,
                 contentPadding = PaddingValues(0.dp) // Remove extra padding within button
             ) {
