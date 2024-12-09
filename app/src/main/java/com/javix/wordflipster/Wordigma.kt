@@ -462,7 +462,7 @@ fun TopInfoSection(lives: Int, mistakes: Int, level: Int) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start =8.dp, end = 8.dp),
+            .padding(start =8.dp, end = 8.dp, top = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
 
