@@ -39,6 +39,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextGranularity.Companion.Word
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -50,6 +51,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.javix.wordflipster.ui.theme.wordgimaBackgroundScreen
 import com.javix.wordflipster.ui.theme.wordgimaQuoteTextColor
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -109,6 +112,8 @@ fun PhraseInputSection(
     correctUserInputs: MutableState<Set<String>>,
     onLetterInputSubmit: (Int,Int, String) -> Unit
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val focusManager = LocalFocusManager.current
     val focusRequesters = remember {
         phrases.map { phrase ->
             List(phrase.second.length) { FocusRequester() }
@@ -134,7 +139,10 @@ fun PhraseInputSection(
                                 .padding(4.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            val input = if(correctUserInputs.value.contains(char.uppercaseChar().toString())) char.uppercaseChar().toString() else phraseInputs[phraseIndex][charIndex]
+                            val input = if(correctUserInputs.value.contains(char.uppercaseChar().toString())) {
+                                phraseInputs[phraseIndex][charIndex] = char.uppercaseChar().toString()
+                                char.uppercaseChar().toString()
+                            } else phraseInputs[phraseIndex][charIndex]
                             BasicTextField(
                                 value = input,
                                 onValueChange = {input ->
@@ -144,8 +152,18 @@ fun PhraseInputSection(
                                                 .uppercase(Locale.getDefault()) == input) {
                                             val nextIndex = charIndex + 1
                                             if (nextIndex < targetWord.length) {
-                                                // Move to the next box in the same word
-                                                focusRequesters[phraseIndex][nextIndex].requestFocus()
+                                                // Move to the next box in the same word If it's not empty
+                                                var nextFocusBoxIndex = nextIndex
+                                                while(correctUserInputs.value.contains(phraseInputs[phraseIndex][nextFocusBoxIndex]) && nextFocusBoxIndex <= targetWord.length) {
+                                                    nextFocusBoxIndex += 1
+                                                }
+                                                if (nextFocusBoxIndex == targetWord.length){
+                                                    coroutineScope.launch {
+                                                        focusManager.clearFocus()
+                                                    }
+                                                }
+                                                focusRequesters[phraseIndex][nextFocusBoxIndex].requestFocus() //TODO:// Fix the last word's last letter
+
                                             } else {
                                                 // Move to the first box of the next word
                                                 val nextPhraseIndex = phraseIndex + 1
