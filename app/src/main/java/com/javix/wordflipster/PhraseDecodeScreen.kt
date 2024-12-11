@@ -20,14 +20,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,7 +42,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextGranularity.Companion.Word
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,6 +52,7 @@ import com.javix.wordflipster.ui.theme.wordgimaBackgroundScreen
 import com.javix.wordflipster.ui.theme.wordgimaQuoteTextColor
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Locale
 import kotlin.text.Typography.quote
 
 @Preview(showBackground = true)
@@ -59,7 +66,7 @@ fun PhraseDecodeScreen() {
     val phraseInputs = remember {
         phrases.map { it.second.map { "" }.toMutableStateList() }
     }.toMutableList()
-    val correctUserInputs: MutableSet<String> = mutableSetOf() // Track user-guessed letters
+    val correctUserInputs = remember { mutableStateOf(setOf<String>()) } // Track user-guessed letters
 
     Column(
         modifier = Modifier
@@ -70,9 +77,10 @@ fun PhraseDecodeScreen() {
         TopInfoSection(lives = 7, mistakes = 1, level = 1)
         Spacer(modifier = Modifier.weight(1f))
         QuoteDisplaySection(
-            quote = "DREAM BIG AND DARE TO FAIL",
+            quote = "DREAM BIG AND DARE TO FAIL CAT",
             maxRowLength = 15,
             mapping = mapping.value,
+            correctUserInputs = correctUserInputs,
             onLetterInputSubmit = {}
         ) {
 
@@ -81,12 +89,13 @@ fun PhraseDecodeScreen() {
         PhraseInputSection(
             phrases = phrases,
             phraseInputs = phraseInputs,
+            correctUserInputs = correctUserInputs,
             onLetterInputSubmit = { phraseIndex,charIndex, input ->
                 val targetWord = phrases[phraseIndex].second
-                if (targetWord[charIndex].toString() == input) {
+                if (targetWord[charIndex].uppercaseChar().toString() == input) {
                     phraseInputs[phraseIndex][charIndex] = input
-                    correctUserInputs.add(input)
-                     Log.d("pDecoder", "correct word $input")
+                    correctUserInputs.value += input
+                     Log.d("pDecoder", "correct word $input and ${correctUserInputs.value.toList()}")
                 }
             }
         )
@@ -97,6 +106,7 @@ fun PhraseDecodeScreen() {
 fun PhraseInputSection(
     phrases: List<Pair<String, String>>,
     phraseInputs: List<MutableList<String>>,
+    correctUserInputs: MutableState<Set<String>>,
     onLetterInputSubmit: (Int,Int, String) -> Unit
 ) {
     val focusRequesters = remember {
@@ -124,12 +134,14 @@ fun PhraseInputSection(
                                 .padding(4.dp),
                             contentAlignment = Alignment.Center
                         ) {
+                            val input = if(correctUserInputs.value.contains(char.uppercaseChar().toString())) char.uppercaseChar().toString() else phraseInputs[phraseIndex][charIndex]
                             BasicTextField(
-                                value = phraseInputs[phraseIndex][charIndex],
-                                onValueChange = { input ->
+                                value = input,
+                                onValueChange = {input ->
                                     if (input.length <= 1) {
                                         // Move focus to the next box if correct
-                                        if (targetWord[charIndex].toString() == input) {
+                                        if (targetWord[charIndex].toString()
+                                                .uppercase(Locale.getDefault()) == input) {
                                             val nextIndex = charIndex + 1
                                             if (nextIndex < targetWord.length) {
                                                 // Move to the next box in the same word
@@ -152,6 +164,10 @@ fun PhraseInputSection(
                                     }
                                 },
                                 modifier = Modifier.focusRequester(focusRequesters[phraseIndex][charIndex]),
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    capitalization = KeyboardCapitalization.Characters // Forces all input to be capital letters
+                                ),
+                                keyboardActions = KeyboardActions.Default,
                                 textStyle = TextStyle(
                                     fontSize = 16.sp,
                                     textAlign = TextAlign.Center,
@@ -172,6 +188,7 @@ private fun QuoteDisplaySection(
     commonLetterCount: Int = 2,
     maxRowLength: Int,
     mapping: Map<Int, Char>,
+    correctUserInputs: MutableState<Set<String>>,
     onLetterInputSubmit: (Boolean) -> Unit,
     levelCompleteListener: () -> Unit
 ) {
@@ -236,6 +253,7 @@ private fun QuoteDisplaySection(
                         hiddenIndices = hiddenIndices.filter { it.first == wordIndex },
                         currentFocusIndex = currentFocusIndex.value,
                         mapping = mapping,
+                        correctUserInputs = correctUserInputs,
                         globalHiddenIndices = hiddenIndices,
                         focusRequesters = globalFocusRequesters,
                         wordIndex = wordIndex,
@@ -274,6 +292,7 @@ private fun Word(
     currentFocusIndex: Int,
     focusRequesters: List<FocusRequester>,
     currentWrongChar: String,
+    correctUserInputs: MutableState<Set<String>>,
     globalHiddenIndices: List<Triple<Int, Int, String>>,
     wordIndex: Int,
     onValueChange: (Int, Int, String) -> Unit,
@@ -331,18 +350,13 @@ private fun Word(
                 Column(
                     verticalArrangement = Arrangement.spacedBy(0.dp)
                 ) {
+                    val inputValue = when {
+                        currentWrongChar.isNotEmpty() && isFocused && !isAnimating.value -> currentWrongChar
+                        correctUserInputs.value.contains(char.toString()) -> char.toString()
+                        else -> ""  // Empty input when neither condition is met
+                    }
                     BasicTextField(
-                        value = if (currentWrongChar.isNotEmpty() && isFocused) {
-                            if (!isAnimating.value) {
-                                coroutineScope.launch {
-                                    triggerShakeAnimation()
-                                    delay(50)
-                                    hideTextAfterAnimation()
-                                }
-                            }
-                            currentWrongChar
-
-                        } else userInput[charIndex],
+                        value = inputValue,
                         onValueChange = { input ->
                             if (input.length <= 1) {
 
@@ -372,6 +386,10 @@ private fun Word(
                                     onBoxClick(wordIndex, charIndex)
                                 }
                             },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            capitalization = KeyboardCapitalization.Characters // Forces all input to be capital letters
+                        ),
+                        keyboardActions = KeyboardActions.Default,
                         textStyle = TextStyle(
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
