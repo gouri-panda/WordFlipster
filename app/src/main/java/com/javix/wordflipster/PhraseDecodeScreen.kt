@@ -59,18 +59,6 @@ fun PhraseDecodeScreen() {
     val phraseInputs = remember {
         phrases.map { it.second.map { "" }.toMutableStateList() }
     }.toMutableList()
-////    val phraseInputs = remember {
-////        mutableStateListOf(
-////            *phrases.map { phrase ->
-////                phrase.second.map { "" }.toMutableList()
-////            }.toTypedArray()
-////        )
-////    }
-//    val phraseInputs = remember {
-//        phrases.map { phrase ->
-//            phrase.second.map { mutableStateOf("") }
-//        }
-//    }
     val correctUserInputs: MutableSet<String> = mutableSetOf() // Track user-guessed letters
 
     Column(
@@ -111,6 +99,11 @@ fun PhraseInputSection(
     phraseInputs: List<MutableList<String>>,
     onLetterInputSubmit: (Int,Int, String) -> Unit
 ) {
+    val focusRequesters = remember {
+        phrases.map { phrase ->
+            List(phrase.second.length) { FocusRequester() }
+        }
+    }
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.Start,
@@ -135,9 +128,30 @@ fun PhraseInputSection(
                                 value = phraseInputs[phraseIndex][charIndex],
                                 onValueChange = { input ->
                                     if (input.length <= 1) {
+                                        // Move focus to the next box if correct
+                                        if (targetWord[charIndex].toString() == input) {
+                                            val nextIndex = charIndex + 1
+                                            if (nextIndex < targetWord.length) {
+                                                // Move to the next box in the same word
+                                                focusRequesters[phraseIndex][nextIndex].requestFocus()
+                                            } else {
+                                                // Move to the first box of the next word
+                                                val nextPhraseIndex = phraseIndex + 1
+                                                if (nextPhraseIndex < phrases.size) {
+                                                    val nextWordInputs = phraseInputs[nextPhraseIndex]
+                                                    val nextFocusBoxIndex = nextWordInputs.indexOfFirst { it.isEmpty() }
+                                                    if (nextFocusBoxIndex != -1) {
+                                                        // Focus the first empty box in the next word
+                                                        focusRequesters[nextPhraseIndex][nextFocusBoxIndex].requestFocus()
+                                                    }
+                                                }
+                                            }
+                                        }
                                         onLetterInputSubmit(phraseIndex, charIndex, input)
+
                                     }
                                 },
+                                modifier = Modifier.focusRequester(focusRequesters[phraseIndex][charIndex]),
                                 textStyle = TextStyle(
                                     fontSize = 16.sp,
                                     textAlign = TextAlign.Center,
