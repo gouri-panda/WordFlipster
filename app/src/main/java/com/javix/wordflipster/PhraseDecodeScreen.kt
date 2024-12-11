@@ -1,5 +1,6 @@
 package com.javix.wordflipster
 
+import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -28,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -61,6 +63,7 @@ fun PhraseDecodeScreen() {
         }
     }
 }
+
 @Composable
 private fun QuoteDisplaySection(
     quote: String,
@@ -71,25 +74,17 @@ private fun QuoteDisplaySection(
     levelCompleteListener: () -> Unit
 ) {
     val words = quote.split(" ")
-    val letterFrequency = words.joinToString("").groupingBy { it.lowercaseChar() }.eachCount()
-    val commonLetters = letterFrequency
-        .filter { it.key.isLetter() }
-        .toList()
-        .sortedByDescending { it.second }
-        .take(commonLetterCount)
-        .map { it.first }
 
-    val commonDistinctLetters = commonLetters.distinct()
 
     var hiddenIndices = words.flatMapIndexed { wordIndex, word ->
         word.mapIndexedNotNull { charIndex, char ->
-            if (commonLetters.contains(char.lowercaseChar())) Triple(wordIndex, charIndex, word) else null
+            Triple(wordIndex, charIndex, word)
         }
     }
 
     var userInputs = remember(quote) {
         words.map { word ->
-            word.map { char -> if (commonLetters.contains(char.lowercaseChar())) "" else char.toString() }.toMutableList()
+            word.map { char -> "" }.toMutableList()
         }
     }
 
@@ -98,9 +93,11 @@ private fun QuoteDisplaySection(
 
     val currentWrongChar = remember(quote) { mutableStateOf("") }
 
+
     var rows = mutableListOf<List<Int>>()
     var currentRow = mutableListOf<Int>()
     var currentLength = 0
+    val globalFocusRequesters = remember { List(hiddenIndices.size) { FocusRequester() } }
 
     // Group words into rows based on the max row length
     for ((index, word) in words.withIndex()) {
@@ -131,25 +128,19 @@ private fun QuoteDisplaySection(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 for (wordIndex in row) {
-                    WordRow(
+                    Word(
                         word = words[wordIndex],
-                        commonLetters = commonLetters,
                         userInput = userInputs[wordIndex],
                         hiddenIndices = hiddenIndices.filter { it.first == wordIndex },
                         currentFocusIndex = currentFocusIndex.value,
                         mapping = mapping,
                         globalHiddenIndices = hiddenIndices,
+                        focusRequesters = globalFocusRequesters,
                         wordIndex = wordIndex,
                         currentWrongChar = currentWrongChar.value,
                         onValueChange = { wordIdx, charIdx, input ->
-                            if (input.length == 1) {
+                            if (input.length <= 1) {
                                 userInputs[wordIdx][charIdx] = input
-                                val nextFocus = hiddenIndices.indexOfFirst {
-                                    it.first == wordIdx && it.second == charIdx
-                                } + 1
-                                if (nextFocus < hiddenIndices.size) {
-                                    currentFocusIndex.value = nextFocus
-                                }
                             }
                         },
                         onBoxClick = { wordIdx, charIdx ->
@@ -173,21 +164,20 @@ private fun QuoteDisplaySection(
 
 
 @Composable
-private fun WordRow(
+private fun Word(
     word: String,
-    commonLetters: List<Char>,
     userInput: List<String>,
     mapping: Map<Int, Char>,
     hiddenIndices: List<Triple<Int, Int, String>>,
     currentFocusIndex: Int,
+    focusRequesters: List<FocusRequester>,
     currentWrongChar: String,
     globalHiddenIndices: List<Triple<Int, Int, String>>,
     wordIndex: Int,
     onValueChange: (Int, Int, String) -> Unit,
     onBoxClick: (Int, Int) -> Unit,
-    hideTextAfterAnimation:() -> Unit
+    hideTextAfterAnimation: () -> Unit
 ) {
-    val focusRequesters = remember { List(word.length) { FocusRequester() } }
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(0.dp), // Adjusted spacing for a more natural look
@@ -217,7 +207,8 @@ private fun WordRow(
 
 
         word.forEachIndexed { charIndex, char ->
-            val globalIndex = globalHiddenIndices.indexOfFirst { it.first == wordIndex && it.second == charIndex }
+            val globalIndex =
+                globalHiddenIndices.indexOfFirst { it.first == wordIndex && it.second == charIndex }
             val isFocused = currentFocusIndex == globalIndex
 
             Box(
@@ -232,73 +223,86 @@ private fun WordRow(
                         },
                         shape = RoundedCornerShape(4.dp)
                     )
-                    .focusRequester(focusRequesters[charIndex])
-                ,
+                    .focusRequester(focusRequesters[globalIndex]),
                 contentAlignment = Alignment.Center
             ) {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(0.dp)
-                    ) {
-                        BasicTextField(
-                            value = if(currentWrongChar.isNotEmpty() && isFocused){
-                                if(!isAnimating.value) {
-                                    coroutineScope.launch {
-                                        triggerShakeAnimation()
-                                        delay(50)
-                                        hideTextAfterAnimation()
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(0.dp)
+                ) {
+                    BasicTextField(
+                        value = if (currentWrongChar.isNotEmpty() && isFocused) {
+                            if (!isAnimating.value) {
+                                coroutineScope.launch {
+                                    triggerShakeAnimation()
+                                    delay(50)
+                                    hideTextAfterAnimation()
+                                }
+                            }
+                            currentWrongChar
+
+                        } else userInput[charIndex],
+                        onValueChange = { input ->
+                            if (input.length <= 1) {
+
+                                val wordIdx =
+                                    hiddenIndices.firstOrNull { it.second == charIndex }?.first
+                                        ?: return@BasicTextField
+
+                                // Focus transitions
+                                if (input.isNotEmpty()) {
+                                    if (globalIndex < focusRequesters.size - 1) {
+                                        focusRequesters[globalIndex + 1].requestFocus()
                                     }
                                 }
-                                currentWrongChar
-
-                            } else  "",
-                            onValueChange = { input ->
-                                if (input.length <= 1) {
-                                    val wordIdx =
-                                        hiddenIndices.firstOrNull { it.second == charIndex }?.first
-                                            ?: return@BasicTextField
                                     onValueChange(wordIdx, charIndex, input)
-                                }
-                            },
-                            singleLine = true,
-                            modifier = Modifier
-                                .width(18.dp)
-                                .height(33.dp)
-                                .offset(x = if (isFocused && currentWrongChar.isNotEmpty()) shakeOffset.value.dp else 0.dp)
-                                .fillMaxWidth()
-                                .padding(bottom = 0.dp, start = 0.dp, top = 8.dp),
-                            textStyle = TextStyle(
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = wordgimaQuoteTextColor,
-                                textAlign = TextAlign.Center
-                            )
-                        )
-                        Divider(
-                            modifier = Modifier
-                                .width(18.dp)
-                                .clickable {
-                                    onBoxClick(
-                                        wordIndex,
-                                        charIndex
-                                    ) // Todo:: Add this in more appropriate place
-                                },
-                            color = wordgimaQuoteTextColor
-                        )
-
-                        Text(
-                            text = encodeWord(
-                                char.toString(),
-                                mapping
-                            )[0].toString(), // Hint (letter position)
-                            fontSize = 12.sp,
-                            color = wordgimaQuoteTextColor,
-                            modifier = Modifier
-                                .padding(start = 4.dp)
-                                .clickable {
+                            }
+                        },
+                        singleLine = true,
+                        modifier = Modifier
+                            .width(18.dp)
+                            .height(33.dp)
+                            .offset(x = if (isFocused && currentWrongChar.isNotEmpty()) shakeOffset.value.dp else 0.dp)
+                            .fillMaxWidth()
+                            .padding(bottom = 0.dp, start = 0.dp, top = 8.dp)
+                            .focusRequester(focusRequesters[globalIndex])
+                            .onFocusChanged {
+                                if (it.isFocused) {
                                     onBoxClick(wordIndex, charIndex)
                                 }
+                            },
+                        textStyle = TextStyle(
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = wordgimaQuoteTextColor,
+                            textAlign = TextAlign.Center
                         )
-                    }
+                    )
+                    Divider(
+                        modifier = Modifier
+                            .width(18.dp)
+                            .clickable {
+                                onBoxClick(
+                                    wordIndex,
+                                    charIndex
+                                ) // Todo:: Add this in more appropriate place
+                            },
+                        color = wordgimaQuoteTextColor
+                    )
+
+                    Text(
+                        text = encodeWord(
+                            char.toString(),
+                            mapping
+                        )[0].toString(), // Hint (letter position)
+                        fontSize = 12.sp,
+                        color = wordgimaQuoteTextColor,
+                        modifier = Modifier
+                            .padding(start = 4.dp)
+                            .clickable {
+                                onBoxClick(wordIndex, charIndex)
+                            }
+                    )
+                }
             }
         }
     }
