@@ -5,19 +5,19 @@
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="PreviewStyledLetterBoxesRowWithGradient">
+      <SelectionState runConfigName="PuzzleGame">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="PreviewLetterInputBoxesRowWithGradient">
+      <SelectionState runConfigName="PuzzleGame2">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="PreviewLetterInputBoxesRowWithFeedback">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="ChallengeCompleteScreenWrapper">
+      <SelectionState runConfigName="PreviewPuzzleGame">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="PhraseDecodeScreen">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="PhraseDecodeScreen2">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
