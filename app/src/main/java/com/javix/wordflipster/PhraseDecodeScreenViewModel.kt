@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -24,7 +25,7 @@ class PhraseDecodeScreenViewModel(application: Application) : AndroidViewModel(a
 
     private fun loadPhrases(context: Context) {
         // Simulate loading data from a JSON file or API
-            viewModelScope.launch {
+            viewModelScope.launch(Dispatchers.IO) {
                 val json = context.assets.open("clues.json").bufferedReader().use { it.readText() }
                 val type = object : TypeToken<List<List<String>>>() {}.type
                 val phraseList: List<List<String>> = Gson().fromJson(json, type)
@@ -32,7 +33,7 @@ class PhraseDecodeScreenViewModel(application: Application) : AndroidViewModel(a
                 // Map and select random 15 phrases
                 _phrases.value = phraseList
                     .map { Phrase(it[0], it[1]) }
-                    .distinct()
+                    .toSet()  // Automatically removes duplicates
                     .shuffled()
                     .take(15)
             }
