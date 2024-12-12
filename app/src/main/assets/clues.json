@@ -196,10 +196,6 @@
         "Indigo"
     ],
     [
-        "A machine for making ice cream",
-        "Ice cream maker"
-    ],
-    [
         "A type of dog that herds sheep",
         "Collie"
     ],
@@ -39875,7 +39871,6 @@
     [ "The actor who played the titular character in 'Sherlock Holmes'",  "Robert"],
     [ "The fictional planet in 'Star Wars'",  "Tatooine"],
     [ "The year the movie 'The Godfather' was released",  "1972"],
-    [ "The first 'Harry Potter' book's title",  "Harry Potter and the Philosopher's Stone"],
     [ "Director of the 'Matrix' trilogy",  "Wachowskis"],
     [ "The fictional country in 'Black Panther'",  "Wakanda"],
     [ "The actor who voiced Darth Vader in 'Star Wars'",  "James"],
@@ -40092,7 +40087,7 @@
     ["A tool used for gardening", "Hoe"],
     ["The opposite of 'open'", "Closed"],
     ["A type of animal with scales", "Reptile"],
-    ["A sweet frozen dessert", "Ice cream"],
+    ["A sweet frozen dessert", "Icecream"],
     ["A person who studies insects", "Entomologist"],
     ["A bird known for its white feathers", "Swan"],
     ["A place where ships are built", "Shipyard"],
