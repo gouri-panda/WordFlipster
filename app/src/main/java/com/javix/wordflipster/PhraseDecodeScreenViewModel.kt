@@ -32,6 +32,7 @@ class PhraseDecodeScreenViewModel(application: Application) : AndroidViewModel(a
                 // Map and select random 15 phrases
                 _phrases.value = phraseList
                     .map { Phrase(it[0], it[1]) }
+                    .distinct()
                     .shuffled()
                     .take(15)
             }
@@ -56,11 +57,16 @@ class PhraseDecodeScreenViewModel(application: Application) : AndroidViewModel(a
     }
     // Function to get valid phrases where all answer letters are in the quote
     fun getValidPhrases(phrases: List<Phrase>): List<Phrase> {
-        val randomPhrases = phrases.shuffled().take(15) // Select 15 random phrases from the list
+        // Select 15 random phrases from the list
+        val randomPhrases = phrases.shuffled().take(15)
+
+        // Remove duplicates by converting the list to a set
+        val uniquePhrases = randomPhrases.toSet()
+
         val validPhrases = mutableListOf<Phrase>()
         var validLetters = mutableSetOf<Char>()
 
-        for (phrase in randomPhrases) {
+        for (phrase in uniquePhrases) {
             val answerLetters = phrase.answer.toUpperCase().toSet()
             if (validLetters.containsAll(answerLetters)) {
                 validPhrases.add(phrase)
@@ -74,4 +80,16 @@ class PhraseDecodeScreenViewModel(application: Application) : AndroidViewModel(a
 data class Phrase(
     val clue: String,
     val answer: String
-)
+) {
+    // Override equals and hashCode to compare both clue and answer
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
+        other as Phrase
+        return clue == other.clue && answer == other.answer
+    }
+
+    override fun hashCode(): Int {
+        return 31 * clue.hashCode() + answer.hashCode()
+    }
+}
