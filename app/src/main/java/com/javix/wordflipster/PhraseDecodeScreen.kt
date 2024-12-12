@@ -61,48 +61,54 @@ import kotlin.text.Typography.quote
 @Preview(showBackground = true)
 @Composable
 fun PhraseDecodeScreen() {
-    val mapping = remember { mutableStateOf(getMapping()) }
-    val phrases = listOf(
-        "Not a dog" to "cat",
-        "American autumn" to "fall"
-    )
-    val phraseInputs = remember {
-        phrases.map { it.second.map { "" }.toMutableStateList() }
-    }.toMutableList()
-    val correctUserInputs = remember { mutableStateOf(setOf<String>()) } // Track user-guessed letters
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 16.dp, bottom = 0.dp, start = 0.dp, end = 0.dp),
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-        TopInfoSection(lives = 7, mistakes = 1, level = 1)
-        Spacer(modifier = Modifier.weight(1f))
-        QuoteDisplaySection(
-            quote = "DREAM BIG AND DARE TO FAIL CAT",
-            maxRowLength = 15,
-            mapping = mapping.value,
-            correctUserInputs = correctUserInputs,
-            onLetterInputSubmit = {}
-        ) {
-
-        }
-        Spacer(modifier = Modifier.weight(1f))
-        PhraseInputSection(
-            phrases = phrases,
-            phraseInputs = phraseInputs,
-            correctUserInputs = correctUserInputs,
-            onLetterInputSubmit = { phraseIndex,charIndex, input ->
-                val targetWord = phrases[phraseIndex].second
-                if (targetWord[charIndex].uppercaseChar().toString() == input) {
-                    phraseInputs[phraseIndex][charIndex] = input
-                    correctUserInputs.value += input
-                     Log.d("pDecoder", "correct word $input and ${correctUserInputs.value.toList()}")
-                }
-            }
+    WordigmaBaseScreen {
+        val mapping = remember { mutableStateOf(getMapping()) }
+        val phrases = listOf(
+            "Not a dog" to "cat",
+            "American autumn" to "fall"
         )
-        Spacer(modifier = Modifier.weight(1f))
+        val phraseInputs = remember {
+            phrases.map { it.second.map { "" }.toMutableStateList() }
+        }.toMutableList()
+        val correctUserInputs =
+            remember { mutableStateOf(setOf<String>()) } // Track user-guessed letters
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 16.dp, bottom = 0.dp, start = 0.dp, end = 0.dp),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            TopInfoSection(lives = 7, mistakes = 1, level = 1)
+            Spacer(modifier = Modifier.weight(1f))
+            QuoteDisplaySection(
+                quote = "DREAM BIG AND DARE TO FAIL CAT",
+                maxRowLength = 15,
+                mapping = mapping.value,
+                correctUserInputs = correctUserInputs,
+                onLetterInputSubmit = {}
+            ) {
+
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            PhraseInputSection(
+                phrases = phrases,
+                phraseInputs = phraseInputs,
+                correctUserInputs = correctUserInputs,
+                onLetterInputSubmit = { phraseIndex, charIndex, input ->
+                    val targetWord = phrases[phraseIndex].second
+                    if (targetWord[charIndex].uppercaseChar().toString() == input) {
+                        phraseInputs[phraseIndex][charIndex] = input
+                        correctUserInputs.value += input
+                        Log.d(
+                            "pDecoder",
+                            "correct word $input and ${correctUserInputs.value.toList()}"
+                        )
+                    }
+                }
+            )
+            Spacer(modifier = Modifier.weight(1f))
+        }
     }
 }
 @Composable
@@ -129,7 +135,16 @@ fun PhraseInputSection(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = phrase, fontSize = 16.sp)
+                Text(text = phrase,
+                    fontSize = 16.sp,
+                    modifier = Modifier.padding(16.dp),
+                    style = MaterialTheme.typography.body1.copy(
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 18.sp,
+                        color = MaterialTheme.colors.onSurface
+                    ),
+                )
+                Spacer(modifier = Modifier.weight(1f))
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     targetWord.forEachIndexed { charIndex, char ->
                         Box(
@@ -195,6 +210,7 @@ fun PhraseInputSection(
                         }
                     }
                 }
+                Spacer(modifier = Modifier.weight(1f))
             }
         }
     }
