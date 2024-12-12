@@ -114,6 +114,7 @@ fun PhraseDecodeScreen() {
                         phrases = viewModel.phrases.value,
                         phraseInputs = phraseInputs,
                         correctUserInputs = correctUserInputs,
+                        mapping = mapping.value,
                         onLetterInputSubmit = { phraseIndex, charIndex, input ->
                             val targetWord = viewModel.phrases.value[phraseIndex].answer
                             if (targetWord[charIndex].uppercaseChar().toString() == input) {
@@ -138,6 +139,7 @@ fun PhraseInputSection(
     phrases: List<Phrase>,
     phraseInputs: List<MutableList<String>>,
     correctUserInputs: MutableState<Set<String>>,
+    mapping: Map<Int, Char>,
     onLetterInputSubmit: (Int,Int, String) -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -176,68 +178,89 @@ fun PhraseInputSection(
                     modifier = Modifier.padding(end = 8.dp)
                 ) {
                     targetWord.forEachIndexed { charIndex, char ->
-                        Box(
-                            modifier = Modifier
-                                .size(32.dp)
-                                .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
-                                .padding(4.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            val input = if(correctUserInputs.value.contains(char.uppercaseChar().toString())) {
-                                phraseInputs[phraseIndex][charIndex] = char.uppercaseChar().toString()
+
+                            val input = if (correctUserInputs.value.contains(
+                                    char.uppercaseChar().toString()
+                                )
+                            ) {
+                                phraseInputs[phraseIndex][charIndex] =
+                                    char.uppercaseChar().toString()
                                 char.uppercaseChar().toString()
                             } else phraseInputs[phraseIndex][charIndex]
-                            BasicTextField(
-                                value = input,
-                                onValueChange = {input ->
-                                    if (input.length <= 1) {
-                                        // Move focus to the next box if correct
-                                        if (targetWord[charIndex].toString()
-                                                .uppercase(Locale.getDefault()) == input) {
-                                            val nextIndex = charIndex + 1
-                                            if (nextIndex < targetWord.length) {
-                                                // Move to the next box in the same word If it's not empty
-                                                var nextFocusBoxIndex = nextIndex
+
+                            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
+                                        .padding(4.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    BasicTextField(
+                                        value = input,
+                                        onValueChange = { input ->
+                                            if (input.length <= 1) {
+                                                // Move focus to the next box if correct
+                                                if (targetWord[charIndex].toString()
+                                                        .uppercase(Locale.getDefault()) == input
+                                                ) {
+                                                    val nextIndex = charIndex + 1
+                                                    if (nextIndex < targetWord.length) {
+                                                        // Move to the next box in the same word If it's not empty
+                                                        var nextFocusBoxIndex = nextIndex
 //                                                while(correctUserInputs.value.contains(phraseInputs[phraseIndex][nextFocusBoxIndex]) && nextFocusBoxIndex <= targetWord.length) {
 //                                                    nextFocusBoxIndex += 1
 //                                                } // Todo fix this
-                                                if (nextFocusBoxIndex == targetWord.length){
-                                                    coroutineScope.launch {
-                                                        focusManager.clearFocus()
-                                                    }
-                                                }
-                                                focusRequesters[phraseIndex][nextFocusBoxIndex].requestFocus() //TODO:// Fix the last word's last letter
+                                                        if (nextFocusBoxIndex == targetWord.length) {
+                                                            coroutineScope.launch {
+                                                                focusManager.clearFocus()
+                                                            }
+                                                        }
+                                                        focusRequesters[phraseIndex][nextFocusBoxIndex].requestFocus() //TODO:// Fix the last word's last letter
 
-                                            } else {
-                                                // Move to the first box of the next word
-                                                val nextPhraseIndex = phraseIndex + 1
-                                                if (nextPhraseIndex < phrases.size) {
-                                                    val nextWordInputs = phraseInputs[nextPhraseIndex]
-                                                    val nextFocusBoxIndex = nextWordInputs.indexOfFirst { it.isEmpty() }
-                                                    if (nextFocusBoxIndex != -1) {
-                                                        // Focus the first empty box in the next word
-                                                        focusRequesters[nextPhraseIndex][nextFocusBoxIndex].requestFocus()
+                                                    } else {
+                                                        // Move to the first box of the next word
+                                                        val nextPhraseIndex = phraseIndex + 1
+                                                        if (nextPhraseIndex < phrases.size) {
+                                                            val nextWordInputs =
+                                                                phraseInputs[nextPhraseIndex]
+                                                            val nextFocusBoxIndex =
+                                                                nextWordInputs.indexOfFirst { it.isEmpty() }
+                                                            if (nextFocusBoxIndex != -1) {
+                                                                // Focus the first empty box in the next word
+                                                                focusRequesters[nextPhraseIndex][nextFocusBoxIndex].requestFocus()
+                                                            }
+                                                        }
                                                     }
                                                 }
+                                                onLetterInputSubmit(phraseIndex, charIndex, input)
+
                                             }
-                                        }
-                                        onLetterInputSubmit(phraseIndex, charIndex, input)
-
-                                    }
-                                },
-                                modifier = Modifier.focusRequester(focusRequesters[phraseIndex][charIndex]),
-                                keyboardOptions = KeyboardOptions.Default.copy(
-                                    capitalization = KeyboardCapitalization.Characters // Forces all input to be capital letters
-                                ),
-                                keyboardActions = KeyboardActions.Default,
-                                textStyle = TextStyle(
-                                    fontSize = 16.sp,
-                                    textAlign = TextAlign.Center,
-                                    color = Color.Black
+                                        },
+                                        modifier = Modifier.focusRequester(focusRequesters[phraseIndex][charIndex]),
+                                        keyboardOptions = KeyboardOptions.Default.copy(
+                                            capitalization = KeyboardCapitalization.Characters // Forces all input to be capital letters
+                                        ),
+                                        keyboardActions = KeyboardActions.Default,
+                                        textStyle = TextStyle(
+                                            fontSize = 16.sp,
+                                            textAlign = TextAlign.Center,
+                                            color = Color.Black
+                                        )
+                                    )
+                                }
+                                Text(
+                                    text =  encodeWord(
+                                        char.uppercaseChar().toString(),
+                                        mapping
+                                    )[0].toString(), // Hint (letter position)
+                                    fontSize = 12.sp,
+                                    color = Color.Black,
+                                    modifier = Modifier
+                                        .padding(start = 8.dp)
                                 )
-                            )
+                            }
                         }
-                    }
                 }
                 Spacer(modifier = Modifier.weight(1f))
             }
