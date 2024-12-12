@@ -1,6 +1,7 @@
 package com.javix.wordflipster
 
 import android.util.Log
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -31,12 +32,14 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,6 +48,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextGranularity.Companion.Word
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -55,6 +59,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.javix.wordflipster.ui.theme.wordgimaBackgroundScreen
 import com.javix.wordflipster.ui.theme.wordgimaQuoteTextColor
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -87,35 +92,41 @@ fun PhraseDecodeScreen() {
 
             }
             Spacer(modifier = Modifier.weight(1f))
-            if (phrasesState.isEmpty()) {
-                Text("Loading phrases...")
-            } else {
-                // Prepare phrase inputs and track correct user inputs
-                val phraseInputs = remember {
-                    phrasesState.map { it.answer.map { "" }.toMutableStateList() }
-                }.toMutableList()
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center // Center content in the screen
+            ) {
+                if (phrasesState.isEmpty()) {
+                    AnimatedLoadingText()
+                } else {
+                    // Prepare phrase inputs and track correct user inputs
+                    val phraseInputs = remember {
+                        phrasesState.map { it.answer.map { "" }.toMutableStateList() }
+                    }.toMutableList()
 
-                // Generate a valid set of phrases where all answer letters are in the quote
-                val validPhrases = viewModel.getValidPhrases(phrasesState)
+                    // Generate a valid set of phrases where all answer letters are in the quote
+                    val validPhrases = viewModel.getValidPhrases(phrasesState)
 
-                // Generate a quote based on valid phrases
-                val quote = viewModel.generateQuote(validPhrases)
-                PhraseInputSection(
-                    phrases = viewModel.phrases.value,
-                    phraseInputs = phraseInputs,
-                    correctUserInputs = correctUserInputs,
-                    onLetterInputSubmit = { phraseIndex, charIndex, input ->
-                        val targetWord = viewModel.phrases.value[phraseIndex].answer
-                        if (targetWord[charIndex].uppercaseChar().toString() == input) {
-                            phraseInputs[phraseIndex][charIndex] = input
-                            correctUserInputs.value += input
-                            Log.d(
-                                "pDecoder",
-                                "correct word $input and ${correctUserInputs.value.toList()}"
-                            )
+                    // Generate a quote based on valid phrases
+                    val quote = viewModel.generateQuote(validPhrases)
+                    PhraseInputSection(
+                        phrases = viewModel.phrases.value,
+                        phraseInputs = phraseInputs,
+                        correctUserInputs = correctUserInputs,
+                        onLetterInputSubmit = { phraseIndex, charIndex, input ->
+                            val targetWord = viewModel.phrases.value[phraseIndex].answer
+                            if (targetWord[charIndex].uppercaseChar().toString() == input) {
+                                phraseInputs[phraseIndex][charIndex] = input
+                                correctUserInputs.value += input
+                                Log.d(
+                                    "pDecoder",
+                                    "correct word $input and ${correctUserInputs.value.toList()}"
+                                )
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
             Spacer(modifier = Modifier.weight(1f))
         }
@@ -478,4 +489,24 @@ private fun Word(
             }
         }
     }
+}
+@Composable
+fun AnimatedLoadingText() {
+    val loadingTexts = listOf("Loading phrases.", "Loading phrases..", "Loading phrases...")
+    var currentIndex by remember { mutableStateOf(0) }
+
+    // Use LaunchedEffect to update the index periodically
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(100L) // Change text every 500 milliseconds
+            currentIndex = (currentIndex + 1) % loadingTexts.size
+        }
+    }
+
+    Text(
+        text = loadingTexts[currentIndex],
+        style = MaterialTheme.typography.h6,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.animateContentSize()
+    )
 }
