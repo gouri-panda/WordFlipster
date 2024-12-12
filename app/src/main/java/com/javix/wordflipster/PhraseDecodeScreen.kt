@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -27,6 +29,8 @@ import androidx.compose.material.Text
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +53,7 @@ import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.javix.wordflipster.ui.theme.wordgimaBackgroundScreen
 import com.javix.wordflipster.ui.theme.wordgimaQuoteTextColor
 import kotlinx.coroutines.CoroutineScope
@@ -62,14 +67,16 @@ import kotlin.text.Typography.quote
 @Composable
 fun PhraseDecodeScreen() {
     WordigmaBaseScreen {
+        val viewModel: PhraseDecodeScreenViewModel = viewModel()
+        val phrasesState by viewModel.phrases.collectAsState()
         val mapping = remember { mutableStateOf(getMapping()) }
-        val phrases = listOf(
-            "Not a dog" to "cat",
-            "American autumn" to "fall"
-        )
-        val phraseInputs = remember {
-            phrases.map { it.second.map { "" }.toMutableStateList() }
-        }.toMutableList()
+//        val phrases = listOf(
+//            "Not a dog" to "cat",
+//            "American autumn" to "fall"
+//        )
+//        val phraseInputs = remember {
+//            phrases.map { it.second.map { "" }.toMutableStateList() }
+//        }.toMutableList()
         val correctUserInputs =
             remember { mutableStateOf(setOf<String>()) } // Track user-guessed letters
 
@@ -91,29 +98,43 @@ fun PhraseDecodeScreen() {
 
             }
             Spacer(modifier = Modifier.weight(1f))
-            PhraseInputSection(
-                phrases = phrases,
-                phraseInputs = phraseInputs,
-                correctUserInputs = correctUserInputs,
-                onLetterInputSubmit = { phraseIndex, charIndex, input ->
-                    val targetWord = phrases[phraseIndex].second
-                    if (targetWord[charIndex].uppercaseChar().toString() == input) {
-                        phraseInputs[phraseIndex][charIndex] = input
-                        correctUserInputs.value += input
-                        Log.d(
-                            "pDecoder",
-                            "correct word $input and ${correctUserInputs.value.toList()}"
-                        )
+            if (phrasesState.isEmpty()) {
+                Text("Loading phrases...")
+            } else {
+                // Prepare phrase inputs and track correct user inputs
+                val phraseInputs = remember {
+                    phrasesState.map { it.answer.map { "" }.toMutableStateList() }
+                }.toMutableList()
+
+                // Generate a valid set of phrases where all answer letters are in the quote
+                val validPhrases = viewModel.getValidPhrases(phrasesState)
+
+                // Generate a quote based on valid phrases
+                val quote = viewModel.generateQuote(validPhrases)
+                PhraseInputSection(
+                    phrases = viewModel.phrases.value,
+                    phraseInputs = phraseInputs,
+                    correctUserInputs = correctUserInputs,
+                    onLetterInputSubmit = { phraseIndex, charIndex, input ->
+                        val targetWord = viewModel.phrases.value[phraseIndex].answer
+                        if (targetWord[charIndex].uppercaseChar().toString() == input) {
+                            phraseInputs[phraseIndex][charIndex] = input
+                            correctUserInputs.value += input
+                            Log.d(
+                                "pDecoder",
+                                "correct word $input and ${correctUserInputs.value.toList()}"
+                            )
+                        }
                     }
-                }
-            )
+                )
+            }
             Spacer(modifier = Modifier.weight(1f))
         }
     }
 }
 @Composable
 fun PhraseInputSection(
-    phrases: List<Pair<String, String>>,
+    phrases: List<Phrase>,
     phraseInputs: List<MutableList<String>>,
     correctUserInputs: MutableState<Set<String>>,
     onLetterInputSubmit: (Int,Int, String) -> Unit
@@ -122,15 +143,15 @@ fun PhraseInputSection(
     val focusManager = LocalFocusManager.current
     val focusRequesters = remember {
         phrases.map { phrase ->
-            List(phrase.second.length) { FocusRequester() }
+            List(phrase.answer.length) { FocusRequester() }
         }
     }
-    Column(
+    LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.Start,
         modifier = Modifier.fillMaxWidth()
     ) {
-        phrases.forEachIndexed { phraseIndex, (phrase, targetWord) ->
+        itemsIndexed(phrases)  { phraseIndex, (phrase, targetWord) ->
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -169,9 +190,9 @@ fun PhraseInputSection(
                                             if (nextIndex < targetWord.length) {
                                                 // Move to the next box in the same word If it's not empty
                                                 var nextFocusBoxIndex = nextIndex
-                                                while(correctUserInputs.value.contains(phraseInputs[phraseIndex][nextFocusBoxIndex]) && nextFocusBoxIndex <= targetWord.length) {
-                                                    nextFocusBoxIndex += 1
-                                                }
+//                                                while(correctUserInputs.value.contains(phraseInputs[phraseIndex][nextFocusBoxIndex]) && nextFocusBoxIndex <= targetWord.length) {
+//                                                    nextFocusBoxIndex += 1
+//                                                } // Todo fix this
                                                 if (nextFocusBoxIndex == targetWord.length){
                                                     coroutineScope.launch {
                                                         focusManager.clearFocus()
