@@ -416,7 +416,7 @@ private fun Word(
                     val inputValue = when {
                         currentWrongChar.isNotEmpty() && isFocused && !isAnimating.value -> currentWrongChar
                         correctUserInputs.value.contains(char.toString()) -> char.toString()
-                        else -> ""  // Empty input when neither condition is met
+                        else -> userInput[charIndex]  // Empty input when neither condition is met
                     }
                     BasicTextField(
                         value = inputValue,
