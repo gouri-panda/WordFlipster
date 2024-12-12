@@ -323,7 +323,10 @@ private fun QuoteDisplaySection(
                         currentWrongChar = currentWrongChar.value,
                         onValueChange = { wordIdx, charIdx, input ->
                             if (input.length <= 1) {
-                                userInputs[wordIdx][charIdx] = input
+                                if (words[wordIdx][charIdx].uppercaseChar().toString() == input) {
+                                    userInputs[wordIdx][charIdx] = input
+                                    correctUserInputs.value += input
+                                }
                             }
                         },
                         onBoxClick = { wordIdx, charIdx ->
@@ -428,7 +431,7 @@ private fun Word(
                                         ?: return@BasicTextField
 
                                 // Focus transitions
-                                if (input.isNotEmpty()) {
+                                if (input.isNotEmpty() && input == char.toString()) {
                                     if (globalIndex < focusRequesters.size - 1) {
                                         focusRequesters[globalIndex + 1].requestFocus()
                                     }
