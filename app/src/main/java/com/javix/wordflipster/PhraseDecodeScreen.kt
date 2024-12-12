@@ -251,7 +251,7 @@ fun PhraseInputSection(
                                 }
                                 Text(
                                     text =  encodeWord(
-                                        char.uppercaseChar().toString(),
+                                        char.toString(),
                                         mapping
                                     )[0].toString(), // Hint (letter position)
                                     fontSize = 12.sp,

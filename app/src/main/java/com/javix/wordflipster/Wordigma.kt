@@ -1,5 +1,6 @@
 package com.javix.wordflipster
 
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
@@ -758,8 +759,10 @@ fun encodeWord(
     mapping: Map<Int, Char>
 ): List<Int> {
     // Encode the message
+    if (message == "") return listOf(-1)
     val encodedWord = message.map { char ->
-        mapping.entries.find { it.value == char }?.key ?: error("Letter not found with $char")
+        val capChar = char.uppercaseChar()
+        mapping.entries.find { it.value == capChar }?.key ?: -1
     }
     println("Encoded Word: $encodedWord")
     return encodedWord
