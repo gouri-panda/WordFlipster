@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -158,7 +159,10 @@ fun PhraseInputSection(
             ) {
                 Text(text = phrase,
                     fontSize = 16.sp,
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .width(100.dp)
+                        .wrapContentWidth(),
                     style = MaterialTheme.typography.body1.copy(
                         fontWeight = FontWeight.Medium,
                         fontSize = 18.sp,
