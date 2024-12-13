@@ -144,10 +144,9 @@ fun PhraseInputSection(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
-    // Initialize FocusRequesters for each phrase
-    val focusRequesters = phrases.map { phrase ->
-        remember {
-            phrase.answer.map { FocusRequester() }
+    val focusRequesters = remember { // Todo fix: sometimes it leads to crash for uninitialize foucsrequster
+        phrases.map { phrase ->
+            List(phrase.answer.length) { FocusRequester() }
         }
     }
 
@@ -198,7 +197,7 @@ fun PhraseInputSection(
                             phraseInputs[phraseIndex][charIndex] =
                                 char.uppercaseChar().toString()
                             char.uppercaseChar().toString()
-                        } else phraseInputs[phraseIndex][charIndex]
+                        } else "" //Todo: show wrong letter
 
                         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                             Box(
@@ -261,6 +260,7 @@ fun PhraseInputSection(
         }
     }
 }
+
 
 
 
