@@ -1,6 +1,5 @@
 package com.javix.wordflipster
 
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
@@ -55,12 +54,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.google.gson.Gson
 import com.javix.wordflipster.ui.theme.fooCustomKeyboardContentColor
 import com.javix.wordflipster.ui.theme.fooCustomKeyboardKeyButtonBackgroundColor
 import com.javix.wordflipster.ui.theme.foocustomKeyboardBackgroundColor
 import com.javix.wordflipster.ui.theme.wordgimaBackgroundScreen
 import com.javix.wordflipster.ui.theme.wordgimaQuoteTextColor
-import com.javix.wordflipster.ui.theme.wordgimaTextColor
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.random.Random
@@ -81,31 +80,30 @@ fun WordigmaScreen(navHostController: NavHostController) {
         ) {
             val isCompleteScreen = remember { mutableStateOf(false) }
             val mistakes = remember { mutableStateOf(0) }
-            val level = remember { mutableStateOf(0) }
+            val currentLevel = remember { mutableStateOf(1) }
 
             val mapping = remember { mutableStateOf(getMapping()) }
-            val quotes = arrayListOf<String>()
-            quotes.add("WHERE THERE IS LOVE THERE IS LIFE")
-            quotes.add("DREAM BIG AND DARE TO FAIL.")
-            quotes.add("BE THE CHANGE.")
-            quotes.add("LIVE AND LET LIVE.")
-            quotes.add("THIS TOO SHALL PASS.")
-            quotes.add("NEVER GIVE UP.")
-            quotes.add("SIMPLE IS BEAUTIFUL.")
-            quotes.add("TIME HEALS ALL WOUNDS.")
-            quotes.add("LESS IS MORE.")
-            quotes.add("STAY POSITIVE.")
-            quotes.add("HOPE NEVER DIES.")
-            if (isCompleteScreen.value) {
-                PhraseEndingScreen(level = level.value, quote = quotes[level.value] , timer = "1:40") {
-                    level.value += 1
-                    isCompleteScreen.value = false
-                }
+
+            val jsonString = loadJSONFromAsset(context, "quotes_and_authores.json")
+            var level: Level?
+
+            val gson = Gson()
+                val jsonResponse = gson.fromJson(jsonString, JsonResponse::class.java)
+
+                // Accessing level 1 details
+                 level = jsonResponse.levels.find { it.level == currentLevel.value }
+                if (isCompleteScreen.value) {
+                    level?.details?.let {
+                        PhraseEndingScreen(level = level) {
+                            currentLevel.value += 1
+                            isCompleteScreen.value = false
+                        }
+                    }
             } else {
-                TopInfoSection(lives = 7, mistakes = mistakes.value, level = level.value)
+                TopInfoSection(lives = 7, mistakes = mistakes.value, level = currentLevel.value)
 
                 QuoteDisplaySection(
-                    quote = quotes[level.value],
+                    quote = level?.details?.quote ?: "ANYTHING THAT CAN GO WRONG WILL GO WRONG", // ;))
                     maxRowLength = 13,
                     mapping = mapping.value,
                     onLetterInputSubmit = { correct ->
@@ -121,16 +119,16 @@ fun WordigmaScreen(navHostController: NavHostController) {
                     levelCompleteListener = {
                         mapping.value = getMapping()
                         mistakes.value = 0
-                        if (level.value < quotes.size - 1) {
+                        if (currentLevel.value < jsonResponse.levels.size - 1) {
                             isCompleteScreen.value = true
 
-                        } else if (level.value == quotes.size - 1) {
+                        } else if (currentLevel.value == jsonResponse.levels.size ) {
                             Toast.makeText(
                                 context,
                                 "Congratulations! You've completed the challenge.",
                                 Toast.LENGTH_SHORT
                             ).show()
-                            level.value = 0
+                            currentLevel.value = 1 // Go Back to Level 1 if we run out
                         }
                     })
             }

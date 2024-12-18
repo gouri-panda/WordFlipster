@@ -21,10 +21,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.w3c.dom.Text
 
 @Composable
-fun PhraseEndingScreen(level: Int, quote: String, timer: String, onNextButtonClickListener:(Int) -> Unit) {
+fun PhraseEndingScreen(level: Level, onNextButtonClickListener:(Level) -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -44,7 +43,7 @@ fun PhraseEndingScreen(level: Int, quote: String, timer: String, onNextButtonCli
                     .padding(12.dp)
             ) {
                 Text(
-                    text = "Level $level",
+                    text = "Level ${level.level}",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF7E5A87)
@@ -61,7 +60,7 @@ fun PhraseEndingScreen(level: Int, quote: String, timer: String, onNextButtonCli
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        text = quote,
+                        text = level.details.quote,
                         fontSize = 18.sp,
                         textAlign = TextAlign.Center,
                         lineHeight = 28.sp,
@@ -69,7 +68,7 @@ fun PhraseEndingScreen(level: Int, quote: String, timer: String, onNextButtonCli
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                     Text(
-                        text = "Marilyn Monroe\nAmerican actress, 1926-1962",
+                        text = "${level.details.title}\n, ${level.details.born}-${level.details.death}",
                         fontSize = 14.sp,
                         color = Color.Gray,
                         textAlign = TextAlign.Center

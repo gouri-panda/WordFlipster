@@ -1,13 +1,636 @@
-[
-  {"quote": "Dream big and fail.", "author": "Norman D."},
-  {"quote": "Success is not the key to happiness. Happiness is the key to success.", "author": "Albert Schweitzer"},
-  {"quote": "The only way to do great work is to love what you do.", "author": "Steve Jobs"},
-  {"quote": "In the end, we will remember not the words of our enemies, but the silence of our friends.", "author": "Martin Luther King Jr."},
-  {"quote": "To be yourself in a world that is constantly trying to make you something else is the greatest accomplishment.", "author": "Ralph Waldo Emerson"},
-  {"quote": "The future belongs to those who believe in the beauty of their dreams.", "author": "Eleanor Roosevelt"},
-  {"quote": "The only thing we have to fear is fear itself.", "author": "Franklin D. Roosevelt"},
-  {"quote": "You must be the change you wish to see in the world.", "author": "Mahatma Gandhi"},
-  {"quote": "It is never too late to be what you might have been.", "author": "George Eliot"},
-  {"quote": "Life is what happens when you're busy making other plans.", "author": "John Lennon"},
-]
+{
+  "levels": [
+    {
+      "level": 1,
+      "details": {
+        "quote": "NEVER GIVE UP",
+        "title": "Winston Churchill",
+        "born": "1874",
+        "death": "1965"
+      }
+    },
+    {
+      "level": 2,
+      "details": {
+        "quote": "SUCCESS IS NOT FINAL FAILURE IS NOT FATAL",
+        "title": "Winston Churchill",
+        "born": "1874",
+        "death": "1965"
+      }
+    },
+    {
+      "level": 3,
+      "details": {
+        "quote": "THE ONLY LIMIT TO OUR REALIZATION OF TOMORROW IS OUR DOUBTS OF TODAY",
+        "title": "Franklin D Roosevelt",
+        "born": "1882",
+        "death": "1945"
+      }
+    },
+    {
+      "level": 4,
+      "details": {
+        "quote": "IN THE MIDDLE OF DIFFICULTY LIES OPPORTUNITY",
+        "title": "Albert Einstein",
+        "born": "1879",
+        "death": "1955"
+      }
+    },
+    {
+      "level": 5,
+      "details": {
+        "quote": "TO BE YOURSELF IN A WORLD THAT IS CONSTANTLY TRYING TO MAKE YOU SOMETHING ELSE IS THE GREATEST ACCOMPLISHMENT",
+        "title": "Ralph Waldo Emerson",
+        "born": "1803",
+        "death": "1882"
+      }
+    },
+    {
+      "level": 6,
+      "details": {
+        "quote": "DO NOT GO WHERE THE PATH MAY LEAD GO INSTEAD WHERE THERE IS NO PATH AND LEAVE A TRAIL",
+        "title": "Ralph Waldo Emerson",
+        "born": "1803",
+        "death": "1882"
+      }
+    },
+    {
+      "level": 7,
+      "details": {
+        "quote": "THE JOURNEY OF A THOUSAND MILES BEGINS WITH ONE STEP",
+        "title": "Lao Tzu",
+        "born": "601 BC",
+        "death": "531 BC"
+      }
+    },
+    {
+      "level": 8,
+      "details": {
+        "quote": "THAT WHICH DOES NOT KILL US MAKES US STRONGER",
+        "title": "Friedrich Nietzsche",
+        "born": "1844",
+        "death": "1900"
+      }
+    },
+    {
+      "level": 9,
+      "details": {
+        "quote": "LIFE IS WHAT HAPPENS WHEN YOU ARE BUSY MAKING OTHER PLANS",
+        "title": "John Lennon",
+        "born": "1940",
+        "death": "1980"
+      }
+    },
+    {
+      "level": 10,
+      "details": {
+        "quote": "THE PURPOSE OF OUR LIVES IS TO BE HAPPY",
+        "title": "Dalai Lama",
+        "born": "1935",
+        "death": ""
+      }
+    },
+    {
+      "level": 11,
+      "details": {
+        "quote": "GET BUSY LIVING OR GET BUSY DYING",
+        "title": "Stephen King",
+        "born": "1947",
+        "death": ""
+      }
+    },
+    {
+      "level": 12,
+      "details": {
+        "quote": "YOU ONLY LIVE ONCE BUT IF YOU DO IT RIGHT ONCE IS ENOUGH",
+        "title": "Mae West",
+        "born": "1893",
+        "death": "1980"
+      }
+    },
+    {
+      "level": 13,
+      "details": {
+        "quote": "THE BEST WAY TO PREDICT YOUR FUTURE IS TO CREATE IT",
+        "title": "Abraham Lincoln",
+        "born": "1809",
+        "death": "1865"
+      }
+    },
+    {
+      "level": 14,
+      "details": {
+        "quote": "IF YOU TELL THE TRUTH YOU DO NOT HAVE TO REMEMBER ANYTHING",
+        "title": "Mark Twain",
+        "born": "1835",
+        "death": "1910"
+      }
+    },
+    {
+      "level": 15,
+      "details": {
+        "quote": "THE GREATEST GLORY IN LIVING LIES NOT IN NEVER FALLING BUT IN RISING EVERY TIME WE FALL",
+        "title": "Nelson Mandela",
+        "born": "1918",
+        "death": "2013"
+      }
+    },
+    {
+      "level": 16,
+      "details": {
+        "quote": "WHAT YOU GET BY ACHIEVING YOUR GOALS IS NOT AS IMPORTANT AS WHAT YOU BECOME BY ACHIEVING YOUR GOALS",
+        "title": "Zig Ziglar",
+        "born": "1926",
+        "death": "2012"
+      }
+    },
+    {
+      "level": 17,
+      "details": {
+        "quote": "YOU MISS 100 PERCENT OF THE SHOTS YOU DO NOT TAKE",
+        "title": "Wayne Gretzky",
+        "born": "1961",
+        "death": ""
+      }
+    },
+    {
+      "level": 18,
+      "details": {
+        "quote": "THE BEST WAY TO GET STARTED IS TO QUIT TALKING AND BEGIN DOING",
+        "title": "Walt Disney",
+        "born": "1901",
+        "death": "1966"
+      }
+    },
+    {
+      "level": 19,
+      "details": {
+        "quote": "DO NOT WATCH THE CLOCK DO WHAT IT DOES KEEP GOING",
+        "title": "Sam Levenson",
+        "born": "1911",
+        "death": "1980"
+      }
+    },
+    {
+      "level": 20,
+      "details": {
+        "quote": "ACT AS IF WHAT YOU DO MAKES A DIFFERENCE IT DOES",
+        "title": "William James",
+        "born": "1842",
+        "death": "1910"
+      }
+    },
+    {
+      "level": 21,
+      "details": {
+        "quote": "BE THE CHANGE THAT YOU WISH TO SEE IN THE WORLD",
+        "title": "Mahatma Gandhi",
+        "born": "1869",
+        "death": "1948"
+      }
+    },
+    {
+      "level": 22,
+      "details": {
+        "quote": "HAPPINESS IS NOT SOMETHING READY MADE IT COMES FROM YOUR OWN ACTIONS",
+        "title": "Dalai Lama",
+        "born": "1935",
+        "death": ""
+      }
+    },
+    {
+      "level": 23,
+      "details": {
+        "quote": "DO WHAT YOU CAN WITH ALL YOU HAVE WHEREVER YOU ARE",
+        "title": "Theodore Roosevelt",
+        "born": "1858",
+        "death": "1919"
+      }
+    },
+    {
+      "level": 24,
+      "details": {
+        "quote": "BELIEVE YOU CAN AND YOU ARE HALFWAY THERE",
+        "title": "Theodore Roosevelt",
+        "born": "1858",
+        "death": "1919"
+      }
+    },
+    {
+      "level": 25,
+      "details": {
+        "quote": "THE ONLY WAY TO DO GREAT WORK IS TO LOVE WHAT YOU DO",
+        "title": "Steve Jobs",
+        "born": "1955",
+        "death": "2011"
+      }
+    },
+    {
+      "level": 26,
+      "details": {
+        "quote": "CHANGE YOUR LIFE TODAY DO NOT GAMBLE ON THE FUTURE ACT NOW WITHOUT DELAY",
+        "title": "Simone de Beauvoir",
+        "born": "1908",
+        "death": "1986"
+      }
+    },
+    {
+      "level": 27,
+      "details": {
+        "quote": "DO NOT WAIT THE TIME WILL NEVER BE JUST RIGHT",
+        "title": "Napoleon Hill",
+        "born": "1883",
+        "death": "1970"
+      }
+    },
+    {
+      "level": 28,
+      "details": {
+        "quote": "THE FUTURE BELONGS TO THOSE WHO BELIEVE IN THE BEAUTY OF THEIR DREAMS",
+        "title": "Eleanor Roosevelt",
+        "born": "1884",
+        "death": "1962"
+      }
+    },
+    {
+      "level": 29,
+      "details": {
+        "quote": "IT ALWAYS SEEMS IMPOSSIBLE UNTIL IT IS DONE",
+        "title": "Nelson Mandela",
+        "born": "1918",
+        "death": "2013"
+      }
+    },
+    {
+      "level": 30,
+      "details": {
+        "quote": "WITH THE NEW DAY COMES NEW STRENGTH AND NEW THOUGHTS",
+        "title": "Eleanor Roosevelt",
+        "born": "1884",
+        "death": "1962"
+      }
+    },
+    {
+      "level": 31,
+      "details": {
+        "quote": "IT IS OUR CHOICES THAT SHOW WHAT WE TRULY ARE FAR MORE THAN OUR ABILITIES",
+        "title": "J K Rowling",
+        "born": "1965",
+        "death": ""
+      }
+    },
+    {
+      "level": 32,
+      "details": {
+        "quote": "WHAT LIES BEHIND US AND WHAT LIES BEFORE US ARE TINY MATTERS COMPARED TO WHAT LIES WITHIN US",
+        "title": "Ralph Waldo Emerson",
+        "born": "1803",
+        "death": "1882"
+      }
+    },
+    {
+      "level": 33,
+      "details": {
+        "quote": "THE ONLY WAY TO HAVE A FRIEND IS TO BE ONE",
+        "title": "Ralph Waldo Emerson",
+        "born": "1803",
+        "death": "1882"
+      }
+    },
+    {
+      "level": 34,
+      "details": {
+        "quote": "IF YOU CAN DREAM IT YOU CAN DO IT",
+        "title": "Walt Disney",
+        "born": "1901",
+        "death": "1966"
+      }
+    },
+    {
+      "level": 35,
+      "details": {
+        "quote": "EVERY STRIKE BRINGS ME CLOSER TO THE NEXT HOME RUN",
+        "title": "Babe Ruth",
+        "born": "1895",
+        "death": "1948"
+      }
+    },
+    {
+      "level": 36,
+      "details": {
+        "quote": "DO NOT JUDGE EACH DAY BY THE HARVEST YOU REAP BUT BY THE SEEDS THAT YOU PLANT",
+        "title": "Robert Louis Stevenson",
+        "born": "1850",
+        "death": "1894"
+      }
+    },
+    {
+      "level": 37,
+      "details": {
+        "quote": "EVERYTHING YOU CAN IMAGINE IS REAL",
+        "title": "Pablo Picasso",
+        "born": "1881",
+        "death": "1973"
+      }
+    },
+    {
+      "level": 38,
+      "details": {
+        "quote": "IT DOES NOT MATTER HOW SLOWLY YOU GO AS LONG AS YOU DO NOT STOP",
+        "title": "Confucius",
+        "born": "551 BC",
+        "death": "479 BC"
+      }
+    },
+    {
+      "level": 39,
+      "details": {
+        "quote": "YOUR LIFE DOES NOT GET BETTER BY CHANCE IT GETS BETTER BY CHANGE",
+        "title": "Jim Rohn",
+        "born": "1930",
+        "death": "2009"
+      }
+    },
+    {
+      "level": 40,
+      "details": {
+        "quote": "THE BEST TIME TO PLANT A TREE WAS 20 YEARS AGO THE SECOND BEST TIME IS NOW",
+        "title": "Chinese Proverb",
+        "born": "",
+        "death": ""
+      }
+    },
+    {
+      "level": 41,
+      "details": {
+        "quote": "IN THE END, WE ONLY REGRET THE CHANCES WE DID NOT TAKE",
+        "title": "Lewis Carroll",
+        "born": "1832",
+        "death": "1898"
+      }
+    },
+    {
+      "level": 42,
+      "details": {
+        "quote": "IT IS NEVER TOO LATE TO BE WHAT YOU MIGHT HAVE BEEN",
+        "title": "George Eliot",
+        "born": "1819",
+        "death": "1880"
+      }
+    },
+    {
+      "level": 43,
+      "details": {
+        "quote": "THE PURPOSE OF LIFE IS NOT TO BE HAPPY IT IS TO BE USEFUL TO BE HONORABLE TO BE COMPASSIONATE TO HAVE IT MAKE SOME DIFFERENCE THAT YOU HAVE LIVED AND LIVED WELL",
+        "title": "Ralph Waldo Emerson",
+        "born": "1803",
+        "death": "1882"
+      }
+    },
+    {
+      "level": 44,
+      "details": {
+        "quote": "LIFE IS NOT MEASURED BY THE NUMBER OF BREATHS WE TAKE BUT BY THE MOMENTS THAT TAKE OUR BREATH AWAY",
+        "title": "Anonymous",
+        "born": "",
+        "death": ""
+      }
+    },
+    {
+      "level": 45,
+      "details": {
+        "quote": "DO NOT GO WHERE THE PATH MAY LEAD GO INSTEAD WHERE THERE IS NO PATH AND LEAVE A TRAIL",
+        "title": "Ralph Waldo Emerson",
+        "born": "1803",
+        "death": "1882"
+      }
+    },
+    {
+      "level": 46,
+      "details": {
+        "quote": "THE BEST WAY TO PREDICT YOUR FUTURE IS TO CREATE IT",
+        "title": "Abraham Lincoln",
+        "born": "1809",
+        "death": "1865"
+      }
+    },
+    {
+      "level": 47,
+      "details": {
+        "quote": "THE ONLY LIMIT TO OUR REALIZATION OF TOMORROW IS OUR DOUBTS OF TODAY",
+        "title": "Franklin D. Roosevelt",
+        "born": "1882",
+        "death": "1945"
+      }
+    },
+    {
+      "level": 48,
+      "details": {
+        "quote": "SUCCESS IS NOT FINAL FAILURE IS NOT FATAL IT IS THE COURAGE TO CONTINUE THAT COUNTS",
+        "title": "Winston Churchill",
+        "born": "1874",
+        "death": "1965"
+      }
+    },
+    {
+      "level": 49,
+      "details": {
+        "quote": "LIFE IS 10 PERCENT WHAT HAPPENS TO US AND 90 PERCENT HOW WE REACT TO IT",
+        "title": "Charles R. Swindoll",
+        "born": "1934",
+        "death": ""
+      }
+    },
+    {
+      "level": 50,
+      "details": {
+        "quote": "DO NOT WAIT FOR OPPORTUNITY CREATE IT",
+        "title": "Anonymous",
+        "born": "",
+        "death": ""
+      }
+    },
+    {
+      "level": 51,
+      "details": {
+        "quote": "SUCCESS USUALLY COMES TO THOSE WHO ARE TOO BUSY TO BE LOOKING FOR IT",
+        "title": "Henry David Thoreau",
+        "born": "1817",
+        "death": "1862"
+      }
+    },
+    {
+      "level": 52,
+      "details": {
+        "quote": "ACT AS IF WHAT YOU DO MAKES A DIFFERENCE IT DOES",
+        "title": "William James",
+        "born": "1842",
+        "death": "1910"
+      }
+    },
+    {
+      "level": 53,
+      "details": {
+        "quote": "NEVER DREAM ABOUT SUCCESS WORK FOR IT",
+        "title": "Anonymous",
+        "born": "",
+        "death": ""
+      }
+    },
+    {
+      "level": 54,
+      "details": {
+        "quote": "THE ONLY WAY TO DO GREAT WORK IS TO LOVE WHAT YOU DO",
+        "title": "Steve Jobs",
+        "born": "1955",
+        "death": "2011"
+      }
+    },
+    {
+      "level": 55,
+      "details": {
+        "quote": "IN ORDER TO SUCCEED WE MUST FIRST BELIEVE THAT WE CAN",
+        "title": "Nikos Kazantzakis",
+        "born": "1883",
+        "death": "1957"
+      }
+    },
+    {
+      "level": 56,
+      "details": {
+        "quote": "LIFE IS EITHER A DARING ADVENTURE OR NOTHING AT ALL",
+        "title": "Helen Keller",
+        "born": "1880",
+        "death": "1968"
+      }
+    },
+    {
+      "level": 57,
+      "details": {
+        "quote": "THE BIGGEST RISK IS NOT TAKING ANY RISK",
+        "title": "Mark Zuckerberg",
+        "born": "1984",
+        "death": ""
+      }
+    },
+    {
+      "level": 58,
+      "details": {
+        "quote": "TO LIVE IS THE RAREST THING IN THE WORLD MOST PEOPLE EXIST THAT IS ALL",
+        "title": "Oscar Wilde",
+        "born": "1854",
+        "death": "1900"
+      }
+    },
+    {
+      "level": 59,
+      "details": {
+        "quote": "INSPIRATION EXISTS BUT IT HAS TO FIND YOU WORKING",
+        "title": "Pablo Picasso",
+        "born": "1881",
+        "death": "1973"
+      }
+    },
+    {
+      "level": 60,
+      "details": {
+        "quote": "YOUR TIME IS LIMITED SO DO NOT WASTE IT LIVING SOMEONE ELSE'S LIFE",
+        "title": "Steve Jobs",
+        "born": "1955",
+        "death": "2011"
+      }
+    },
+    {
+      "level": 61,
+      "details": {
+        "quote": "IF YOU CAN DREAM IT YOU CAN DO IT",
+        "title": "Walt Disney",
+        "born": "1901",
+        "death": "1966"
+      }
+    },
+    {
+      "level": 62,
+      "details": {
+        "quote": "HAPPINESS IS NOT SOMETHING READY MADE IT COMES FROM YOUR OWN ACTIONS",
+        "title": "Dalai Lama",
+        "born": "1935",
+        "death": ""
+      }
+    },
+    {
+      "level": 63,
+      "details": {
+        "quote": "WHEN YOU COME OUT OF THE STORM YOU WON'T BE THE SAME PERSON WHO WENT IN",
+        "title": "Haruki Murakami",
+        "born": "1949",
+        "death": ""
+      }
+    },
+    {
+      "level": 64,
+      "details": {
+        "quote": "DO NOT WAIT FOR THE PERFECT MOMENT TAKE THE MOMENT AND MAKE IT PERFECT",
+        "title": "Anonymous",
+        "born": "",
+        "death": ""
+      }
+    },
+    {
+      "level": 65,
+      "details": {
+        "quote": "WHAT YOU GET BY ACHIEVING YOUR GOALS IS NOT AS IMPORTANT AS WHAT YOU BECOME BY ACHIEVING YOUR GOALS",
+        "title": "Zig Ziglar",
+        "born": "1926",
+        "death": "2012"
+      }
+    },
+    {
+      "level": 66,
+      "details": {
+        "quote": "THE SECRET OF GETTING AHEAD IS GETTING STARTED",
+        "title": "Mark Twain",
+        "born": "1835",
+        "death": "1910"
+      }
+    },
+    {
+      "level": 67,
+      "details": {
+        "quote": "FAILURE IS NOT THE OPPOSITE OF SUCCESS IT IS PART OF SUCCESS",
+        "title": "Arianna Huffington",
+        "born": "1950",
+        "death": ""
+      }
+    },
+    {
+      "level": 68,
+      "details": {
+        "quote": "IF YOU CAN'T FLY THEN RUN IF YOU CAN'T RUN THEN WALK IF YOU CAN'T WALK THEN CRAWL BUT WHATEVER YOU DO YOU HAVE TO KEEP MOVING FORWARD",
+        "title": "Martin Luther King Jr.",
+        "born": "1929",
+        "death": "1968"
+      }
+    },
+    {
+      "level": 69,
+      "details": {
+        "quote": "LIFE IS WHAT WE MAKE IT ALWAYS HAS BEEN ALWAYS WILL BE",
+        "title": "Grandma Moses",
+        "born": "1860",
+        "death": "1961"
+      }
+    },
+    {
+      "level": 70,
+      "details": {
+        "quote": "SUCCESS IS NOT HOW HIGH YOU HAVE CLIMBED, BUT HOW YOU MAKE A POSITIVE DIFFERENCE TO THE WORLD",
+        "title": "Roy T. Bennett",
+        "born": "",
+        "death": ""
+      }
+    }
+    ]
+  }
+
 
