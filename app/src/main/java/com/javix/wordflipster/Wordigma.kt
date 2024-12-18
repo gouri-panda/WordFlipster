@@ -79,11 +79,11 @@ fun WordigmaScreen(navHostController: NavHostController) {
                 .padding(top = 16.dp, bottom = 0.dp, start = 0.dp, end = 0.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
+            val isCompleteScreen = remember { mutableStateOf(false) }
             val mistakes = remember { mutableStateOf(0) }
-            val level = remember { mutableStateOf(1) }
+            val level = remember { mutableStateOf(0) }
 
             val mapping = remember { mutableStateOf(getMapping()) }
-            TopInfoSection(lives = 7, mistakes = mistakes.value, level = level.value)
             val quotes = arrayListOf<String>()
             quotes.add("WHERE THERE IS LOVE THERE IS LIFE")
             quotes.add("DREAM BIG AND DARE TO FAIL.")
@@ -96,35 +96,44 @@ fun WordigmaScreen(navHostController: NavHostController) {
             quotes.add("LESS IS MORE.")
             quotes.add("STAY POSITIVE.")
             quotes.add("HOPE NEVER DIES.")
+            if (isCompleteScreen.value) {
+                PhraseEndingScreen(level = level.value, quote = quotes[level.value] , timer = "1:40") {
+                    level.value += 1
+                    isCompleteScreen.value = false
+                }
+            } else {
+                TopInfoSection(lives = 7, mistakes = mistakes.value, level = level.value)
 
-            QuoteDisplaySection(
-                quote = quotes[level.value],
-                maxRowLength = 13,
-                mapping = mapping.value,
-                onLetterInputSubmit = { correct ->
-                    if (!correct) {
-                        if (mistakes.value < 3) {
-                            mistakes.value += 1
-                        } else if (mistakes.value == 3) {
-                            mistakes.value = 0
+                QuoteDisplaySection(
+                    quote = quotes[level.value],
+                    maxRowLength = 13,
+                    mapping = mapping.value,
+                    onLetterInputSubmit = { correct ->
+                        if (!correct) {
+                            if (mistakes.value < 3) {
+                                mistakes.value += 1
+                            } else if (mistakes.value == 3) {
+                                mistakes.value = 0
+                            }
                         }
-                    }
 
-                },
-                levelCompleteListener = {
-                    mapping.value = getMapping()
-                    mistakes.value = 0
-                    if (level.value < quotes.size - 1) {
-                        level.value += 1
-                    } else if (level.value == quotes.size - 1) {
-                        Toast.makeText(
-                            context,
-                            "Congratulations! You've completed the challenge.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        level.value = 0
-                    }
-                })
+                    },
+                    levelCompleteListener = {
+                        mapping.value = getMapping()
+                        mistakes.value = 0
+                        if (level.value < quotes.size - 1) {
+                            isCompleteScreen.value = true
+
+                        } else if (level.value == quotes.size - 1) {
+                            Toast.makeText(
+                                context,
+                                "Congratulations! You've completed the challenge.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            level.value = 0
+                        }
+                    })
+            }
         }
     }
 
@@ -463,7 +472,7 @@ fun TopInfoSection(lives: Int, mistakes: Int, level: Int) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start =8.dp, end = 8.dp, top = 16.dp),
+            .padding(start = 8.dp, end = 8.dp, top = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
 
