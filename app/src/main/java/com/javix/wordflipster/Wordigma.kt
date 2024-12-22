@@ -55,6 +55,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.google.gson.Gson
 import com.javix.wordflipster.ui.theme.CustomKeyboardContentColor
@@ -70,7 +71,7 @@ import kotlin.random.Random
 fun WordigmaScreen(navHostController: NavHostController) {
     WordigmaBaseScreen {
         val context = LocalContext.current
-
+        val viewModel: WordigmaViewModel = viewModel()
         BackHandler {
             navHostController.popBackStack()
         }
@@ -96,6 +97,7 @@ fun WordigmaScreen(navHostController: NavHostController) {
                  level = jsonResponse.levels.find { it.level == currentLevel.value }
                 if (isCompleteScreen.value) {
                     level?.details?.let {
+                        viewModel.createChallengeEntity(level)
                         PhraseEndingScreen(level = level) {
                             currentLevel.value += 1
                             isCompleteScreen.value = false
@@ -123,6 +125,7 @@ fun WordigmaScreen(navHostController: NavHostController) {
                         mistakes.value = 0
                         if (currentLevel.value < jsonResponse.levels.size - 1) {
                             isCompleteScreen.value = true
+
 
                         } else if (currentLevel.value == jsonResponse.levels.size ) {
                             Toast.makeText(
