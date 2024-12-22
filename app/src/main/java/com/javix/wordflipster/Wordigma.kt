@@ -21,8 +21,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
@@ -193,58 +197,74 @@ private fun QuoteDisplaySection(
 
     Column(
         modifier = Modifier
+            .padding(top =8.dp)
             .fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.weight(1f)) // Push content downward
+        val dynamicWeight = if (quote.length > maxRowLength * 3) 0.001f else 1f
 
-        // Render rows of words
-        for (row in rows) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(32.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                for (wordIndex in row) {
-                    WordRow(
-                        word = words[wordIndex],
-                        commonLetters = commonLetters,
-                        userInput = userInputs[wordIndex],
-                        hiddenIndices = hiddenIndices.filter { it.first == wordIndex },
-                        currentFocusIndex = currentFocusIndex.value,
-                        mapping = mapping,
-                        globalHiddenIndices = hiddenIndices,
-                        wordIndex = wordIndex,
-                        currentWrongChar = currentWrongChar.value,
-                        onValueChange = { wordIdx, charIdx, input ->
-                            if (input.length == 1) {
-                                userInputs[wordIdx][charIdx] = input
-                                val nextFocus = hiddenIndices.indexOfFirst {
-                                    it.first == wordIdx && it.second == charIdx
-                                } + 1
-                                if (nextFocus < hiddenIndices.size) {
-                                    currentFocusIndex.value = nextFocus
+        Spacer(modifier = Modifier.weight(dynamicWeight)) // Push content downward
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .weight(1f) // Take up available space
+                .padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            items(rows) {row ->
+
+                // Render rows of words
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(32.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        for (wordIndex in row) {
+                            WordRow(
+                                word = words[wordIndex],
+                                commonLetters = commonLetters,
+                                userInput = userInputs[wordIndex],
+                                hiddenIndices = hiddenIndices.filter { it.first == wordIndex },
+                                currentFocusIndex = currentFocusIndex.value,
+                                mapping = mapping,
+                                globalHiddenIndices = hiddenIndices,
+                                wordIndex = wordIndex,
+                                currentWrongChar = currentWrongChar.value,
+                                onValueChange = { wordIdx, charIdx, input ->
+                                    if (input.length == 1) {
+                                        userInputs[wordIdx][charIdx] = input
+                                        val nextFocus = hiddenIndices.indexOfFirst {
+                                            it.first == wordIdx && it.second == charIdx
+                                        } + 1
+                                        if (nextFocus < hiddenIndices.size) {
+                                            currentFocusIndex.value = nextFocus
+                                        }
+                                    }
+                                },
+                                onBoxClick = { wordIdx, charIdx ->
+                                    val newFocusIndex = hiddenIndices.indexOfFirst {
+                                        it.first == wordIdx && it.second == charIdx
+                                    }
+                                    if (newFocusIndex != -1) {
+                                        currentFocusIndex.value = newFocusIndex
+                                    }
+                                },
+                                hideTextAfterAnimation = {
+                                    currentWrongChar.value = ""
                                 }
-                            }
-                        },
-                        onBoxClick = { wordIdx, charIdx ->
-                            val newFocusIndex = hiddenIndices.indexOfFirst {
-                                it.first == wordIdx && it.second == charIdx
-                            }
-                            if (newFocusIndex != -1) {
-                                currentFocusIndex.value = newFocusIndex
-                            }
-                        },
-                        hideTextAfterAnimation = {
-                            currentWrongChar.value = ""
+                            )
                         }
-                    )
-                }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+
             }
-            Spacer(modifier = Modifier.height(16.dp))
         }
 
-        Spacer(modifier = Modifier.weight(1f)) // Push content downward
+
+        Spacer(modifier = Modifier.weight(dynamicWeight)) // Push content downward
 
         // Render the custom keyboard
         CustomKeyboard(onKeyPress = { char ->
