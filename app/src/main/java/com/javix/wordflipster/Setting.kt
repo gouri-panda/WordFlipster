@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
@@ -30,27 +31,27 @@ fun SettingsScreen() {
     val vibrationEnabled by settingViewModel.vibrationEnabled.collectAsState()
 
     Column(modifier = Modifier.padding(16.dp)) {
-        Text(text = "Settings", style = MaterialTheme.typography.h5)
+        Text(text = "Settings", style = MaterialTheme.typography.h5, modifier = Modifier.padding(top = 16.dp))
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Music Toggle
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = "Music Audio")
-            Spacer(modifier = Modifier.weight(1f))
-            Switch(
-                checked = musicEnabled,
-                onCheckedChange = {
-                    settingViewModel.saveMusicPreference(it) // Save the preference
-                },
-                modifier = Modifier.padding(start = 16.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
+//        // Music Toggle // Todo:: Please enable music functions
+//        Row(
+//            modifier = Modifier.fillMaxWidth(),
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//            Text(text = "Music Audio")
+//            Spacer(modifier = Modifier.weight(1f))
+//            Switch(
+//                checked = musicEnabled,
+//                onCheckedChange = {
+//                    settingViewModel.saveMusicPreference(it) // Save the preference
+//                },
+//                modifier = Modifier.padding(start = 16.dp)
+//            )
+//        }
+//
+//        Spacer(modifier = Modifier.height(16.dp))
 
         // Vibration Toggle
         Row(
@@ -81,7 +82,7 @@ fun SettingsScreen() {
         Spacer(modifier = Modifier.height(16.dp))
 
         // Share App Button
-        Button(onClick = { onShareApp() }) {
+        Button(onClick = { shareApp(context) }) {
             Text(text = "Share the App")
         }
 
@@ -112,6 +113,11 @@ fun sendFeedback(context: Context) {
     context.startActivity(Intent.createChooser(emailIntent, "Send Feedback"))
 }
 
-fun onShareApp() {
-
+fun shareApp(context: Context) {
+    val appPackageName = context.packageName
+    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_TEXT, "Check out this app: https://play.google.com/store/apps/details?id=$appPackageName")
+    }
+    context.startActivity(Intent.createChooser(shareIntent, "Share via"))
 }
