@@ -8,7 +8,7 @@ import androidx.core.content.ContextCompat.getString
 
 @Composable
 fun gameTypes() = listOf(
-   wordigmaScreen, wordFlipGame, wordShuffleGame, wordCrypticGame
+   wordigmaScreen, wordFlipGame, wordShuffleGame, // Todo:: Add wordCrypticGame
 )
 
 
