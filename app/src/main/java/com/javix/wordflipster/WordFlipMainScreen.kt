@@ -171,6 +171,7 @@ fun WordFlipMainScreen(navController: NavController, category: String) {
                                         }
                                     },
                                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue),
+                                    shape = RoundedCornerShape(30)
                                 ) {
                                     Text("Finish", color = Color.White)
                                 }
@@ -453,13 +454,13 @@ fun WordGridWithWoodenTiles(word: List<String>) { // Here a letter is a string
         ) {
             word.forEach { letter ->
                 LazyRow(
-                    modifier = Modifier.padding(8.dp),
+                    modifier = Modifier.padding(2.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     items(letter.length) { index ->
                         Box(
                             modifier = Modifier
-                                .size(50.dp)
+                                .size(45.dp)
                                 .border(
                                     width = 2.dp,
                                     color = Color(0xFFBBA67A), // Border color to match the style
