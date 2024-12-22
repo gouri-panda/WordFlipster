@@ -23,10 +23,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
@@ -59,9 +57,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.google.gson.Gson
-import com.javix.wordflipster.ui.theme.fooCustomKeyboardContentColor
-import com.javix.wordflipster.ui.theme.fooCustomKeyboardKeyButtonBackgroundColor
-import com.javix.wordflipster.ui.theme.foocustomKeyboardBackgroundColor
+import com.javix.wordflipster.ui.theme.CustomKeyboardContentColor
+import com.javix.wordflipster.ui.theme.CustomKeyboardKeyButtonBackgroundColor
+import com.javix.wordflipster.ui.theme.CustomKeyboardBackgroundColor
 import com.javix.wordflipster.ui.theme.wordgimaBackgroundScreen
 import com.javix.wordflipster.ui.theme.wordgimaQuoteTextColor
 import kotlinx.coroutines.delay
@@ -565,7 +563,7 @@ fun CustomKeyboard(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(foocustomKeyboardBackgroundColor)
+            .background(CustomKeyboardBackgroundColor)
             .padding(bottom = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -584,7 +582,8 @@ fun CustomKeyboard(
             ) {
                 row.forEach { key ->
                     val isDisabled = disabledKeys.contains(key)
-                    val backgroundColor = keyBackgrounds[key] ?: fooCustomKeyboardKeyButtonBackgroundColor // Default background  content color
+                    val backgroundColor =  CustomKeyboardKeyButtonBackgroundColor // Default background  content color
+                    val contentColor = keyBackgrounds[key] ?: CustomKeyboardContentColor
 
                     when (key) {
                         "Back" -> ActionKeyButton(
@@ -612,8 +611,8 @@ fun CustomKeyboard(
                             onKeyPress = {
                                 if (!isDisabled) onKeyPress(key)
                             },
-                            backgroundContentColor = backgroundColor,
-                            contentColor = fooCustomKeyboardContentColor,
+                            backgroundColor = CustomKeyboardKeyButtonBackgroundColor,
+                            contentColor = contentColor,
                             isDisabled = isDisabled
                         )
                     }
@@ -625,7 +624,7 @@ fun CustomKeyboard(
 
 
 @Composable
-fun KeyButton(key: String, onKeyPress: () -> Unit, backgroundContentColor: Color, contentColor: Color,isDisabled: Boolean) {
+fun KeyButton(key: String, onKeyPress: () -> Unit, backgroundColor: Color, contentColor: Color, isDisabled: Boolean) {
         Button(
             onClick = onKeyPress,
             modifier = Modifier
@@ -633,7 +632,7 @@ fun KeyButton(key: String, onKeyPress: () -> Unit, backgroundContentColor: Color
                 .height(45.dp)
                 .padding(0.dp),
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = backgroundContentColor,
+                backgroundColor = backgroundColor,
                 contentColor = contentColor
             ),
             shape = RoundedCornerShape(8.dp), // Rounded corners for modern look
@@ -668,8 +667,8 @@ fun ActionKeyButton(icon: ImageVector,modifier: Modifier = Modifier, onClick: ()
                     .width(45.dp)
                     .height(50.dp),
                 colors = ButtonDefaults.buttonColors(
-                    backgroundColor = fooCustomKeyboardKeyButtonBackgroundColor,
-                    contentColor = fooCustomKeyboardContentColor
+                    backgroundColor = CustomKeyboardKeyButtonBackgroundColor,
+                    contentColor = CustomKeyboardContentColor
                 ),
                 elevation = ButtonDefaults.elevation(4.dp),
                 enabled = enabled,
