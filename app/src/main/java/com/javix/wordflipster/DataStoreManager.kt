@@ -21,6 +21,7 @@ open class DataStoreManager(context: Context) {
         val TOTAL_CORRECT_WORDS_KEY = intPreferencesKey("total_correct_words")
         val MUSIC_ENABLED = booleanPreferencesKey("music_enabled")
         val VIBRATION_ENABLED = booleanPreferencesKey("vibration_enabled")
+        val QUOTE_LEVEL = intPreferencesKey("quote_level")
     }
 
     open val letterCountFlow: Flow<Int> = dataStore.data
@@ -34,6 +35,10 @@ open class DataStoreManager(context: Context) {
         .map { preferences ->
             Log.d("DataStoreManager", "Emitted minute count: $preferences")
             preferences[MINUTE_COUNT_KEY] ?: 1 // Default to 1
+        }
+    open val quoteLevel: Flow<Int> = dataStore.data
+        .map { preferences ->
+            preferences[QUOTE_LEVEL] ?: 1
         }
 
     open val totalWords: Flow<Int> = dataStore.data.map { preference ->
@@ -58,6 +63,13 @@ open class DataStoreManager(context: Context) {
         dataStore.edit { preferences ->
             preferences[LETTER_COUNT_KEY] = count
         }
+    }
+
+    suspend fun saveQuoteLevel(level: Int) {
+        dataStore.edit {preferences ->
+            preferences[QUOTE_LEVEL] = level
+        }
+
     }
 
     suspend fun saveMinuteCount(count: Int) {

@@ -35,6 +35,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -71,10 +72,16 @@ import kotlin.random.Random
 fun WordigmaScreen(navHostController: NavHostController) {
     WordigmaBaseScreen {
         val context = LocalContext.current
-        val viewModel: WordigmaViewModel = viewModel()
+        val dataStoreManager = remember { DataStoreManager(context) }
+        val viewModel: WordigmaViewModel = viewModel(factory = WordgimaViewModelFactory(
+            context = LocalContext.current.applicationContext,
+            dataStoreManager = dataStoreManager
+        ))
         BackHandler {
             navHostController.popBackStack()
         }
+        viewModel.getCurrentLevel()
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -83,7 +90,7 @@ fun WordigmaScreen(navHostController: NavHostController) {
         ) {
             val isCompleteScreen = remember { mutableStateOf(false) }
             val mistakes = remember { mutableStateOf(0) }
-            val currentLevel = remember { mutableStateOf(1) }
+            val currentLevel = viewModel.level
 
             val mapping = remember { mutableStateOf(getMapping()) }
 
@@ -97,9 +104,9 @@ fun WordigmaScreen(navHostController: NavHostController) {
                  level = jsonResponse.levels.find { it.level == currentLevel.value }
                 if (isCompleteScreen.value) {
                     level?.details?.let {
+                        viewModel.saveLevel(level.level+1)
                         viewModel.createChallengeEntity(level)
                         PhraseEndingScreen(level = level) {
-                            currentLevel.value += 1
                             isCompleteScreen.value = false
                         }
                     }
@@ -133,7 +140,7 @@ fun WordigmaScreen(navHostController: NavHostController) {
                                 "Congratulations! You've completed the challenge.",
                                 Toast.LENGTH_SHORT
                             ).show()
-                            currentLevel.value = 1 // Go Back to Level 1 if we run out
+                            viewModel.updateLevel(1) // Go Back to Level 1 if we run out
                         }
                     })
             }
@@ -198,7 +205,7 @@ private fun QuoteDisplaySection(
 
     Column(
         modifier = Modifier
-            .padding(top =8.dp)
+            .padding(top = 8.dp)
             .fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
