@@ -63,7 +63,7 @@ fun ChallengeCompleteScreenWrapper(navController: NavController, challenge: Chal
         )
         ChallengeCompletionScreen(
             time = "${challenge.timeTaken / 60} Min",
-            averageTime = "${convertReadableTimeToString(calculateAverageTime(challenge.timeTaken * 1000, challenge.wordsSolved))} Sec / word",
+            averageTime = "${convertReadableTimeToString(calculateAverageTime(challenge.timeTaken * 1000, challenge.wordsSolved))} Sec/word",
             correctWords = challenge.wordsSolved,
             totalWords = challenge.totalWords,
             onPlayAgainClick = {
@@ -150,7 +150,7 @@ fun ChallengeCompletionScreen(
                         )
                     )
                     Text(
-                        text = "✅ Correct Words: $correctWords / $totalWords",
+                        text = "✅ Correct Words: $correctWords/ $totalWords",
                         style = MaterialTheme.typography.h6.copy(
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF0277BD)
