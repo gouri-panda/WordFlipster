@@ -5,7 +5,6 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -18,20 +17,20 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -43,19 +42,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.javix.wordflipster.Navigation.Screens
@@ -70,13 +70,20 @@ class WelcomeScreen: ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             WordFlipsterTheme {
-                val navController = rememberNavController()
-                Scaffold(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 32.dp),
-                ) { innerPadding ->
-                    WordFlipsterNavigationSetup(navController)
+                BaseScreen {
+                    val navController = rememberNavController()
+                    val systemUiController = rememberSystemUiController()
+
+                    // Change the status bar color to something darker for better contrast
+                    systemUiController.setSystemBarsColor(color = Color.Black)
+                    Scaffold(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 16.dp),
+                    ) { innerPadding ->
+                        TopBar(navController = navController){}
+                        WordFlipsterNavigationSetup(navController)
+                    }
                 }
             }
         }
@@ -88,82 +95,68 @@ class WelcomeScreen: ComponentActivity() {
 
 @Composable
 fun WelcomeScreenComposeWrapper(navController: NavHostController) {
-    TopBar(navController = navController) {}
-    GameTypeList(gameTypes = gameTypes()) { gameType ->
-        // Handle game type selection
-        if (gameType.name == navController.context.getString(R.string.word_flip)) {
-            navController.navigate(Screens.WordFlipOnboarding.route)
-        } else if (gameType.name == navController.context.getString(R.string.word_Chain)) {
-            navController.navigate(Screens.WordChainOnboarding.route)
-        } else if(gameType.name ==  navController.context.getString(R.string.word_shuffle)) {
-            navController.navigate(Screens.WordShuffleOnboarding.route)
-        } else if (gameType.name == navController.context.getString(R.string.word_cryptic)) {
-            navController.navigate(Screens.WordCrypticOnboarding.route)
+    BaseScreen {
+        GameTypeList(gameTypes = gameTypes(), navController) { gameType ->
+            // Handle game type selection
+            if (gameType.name == navController.context.getString(R.string.word_flip)) {
+                navController.navigate(Screens.WordFlipOnboarding.route)
+            } else if (gameType.name == navController.context.getString(R.string.word_Chain)) {
+                navController.navigate(Screens.WordChainOnboarding.route)
+            } else if (gameType.name == navController.context.getString(R.string.word_shuffle)) {
+                navController.navigate(Screens.WordShuffleOnboarding.route)
+            } else if (gameType.name == navController.context.getString(R.string.word_cryptic)) {
+                navController.navigate(Screens.WordCrypticOnboarding.route)
+            } else if (gameType.name == navController.context.getString(R.string.word_code)) {
+                navController.navigate(Screens.WordigmaScreen.route)
+            }
         }
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun GameTypeList(gameTypes: List<GameType>, onGameTypeSelected: (GameType) -> Unit) {
-    // Parallax background effect
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-//            .background( // todo Add if necessary
-//                brush = Brush.verticalGradient(
-//                    colors = listOf(Color(0xFF003366), Color(0xFF336699)),
-//                    startY = 500f
-//                )
-//            )
-    ) {
-        Column(
+fun GameTypeList(gameTypes: List<GameType>, navController: NavHostController, onGameTypeSelected: (GameType) -> Unit,) {
+    BaseScreen {
+        // Parallax background effect
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 60.dp),
-            verticalArrangement = Arrangement.Bottom
         ) {
-            // Title with Animated Visibility
-            AnimatedVisibility(
-                visible = true,
-                enter = fadeIn(animationSpec = tween(700))
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 60.dp),
+                verticalArrangement = Arrangement.Top
             ) {
-                Text(
-                    text = "Choose Your Game",
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = Color.Black,
+                // Title with Animated Visibility
+                TopBar(navController = navController) {}
+                AnimatedChooseYourGame()
+                // Wave Effect at the Bottom
+                Box(
                     modifier = Modifier
-                        .padding(16.dp)
-                        .align(Alignment.CenterHorizontally)
+                        .fillMaxWidth()
+                        .height(24.dp)
                 )
-            }
 
-            // Wave Effect at the Bottom
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(24.dp)
-//                    .background(
-////                        Brush.horizontalGradient(
-////                            colors = listOf(Color(0xFF336699), Color(0xFF003366)),
-////                        )
-//                    )
-            )
-
-            // Staggered Slide-In Animation for Cards
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                itemsIndexed(gameTypes) { index, gameType ->
-                    GameTypeCard(
-                        gameType = gameType,
-                        onGameTypeSelected = onGameTypeSelected,
-                        modifier = Modifier.animateItemPlacement(
-                            animationSpec = tween(200 * (index + 1))
+                // Staggered Slide-In Animation for Cards
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2), // Two columns
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    contentPadding = PaddingValues(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    itemsIndexed(gameTypes) { index, gameType ->
+                        GameTypeCard(
+                            gameType = gameType,
+                            onGameTypeSelected = onGameTypeSelected,
+                            modifier = Modifier.animateItemPlacement(
+                                animationSpec = tween(200 * (index + 1))
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
@@ -202,7 +195,6 @@ fun GameTypeCard(
             .shadow(
                 elevation = if (isSelected) 16.dp else 8.dp,
                 shape = RoundedCornerShape(16.dp),
-                ambientColor = if (isSelected) Color.White else Color.Transparent // Glow effect
             )
             .graphicsLayer {
                 scaleX = if (isSelected) 1.05f else 1f
@@ -221,8 +213,9 @@ fun GameTypeCard(
                     }
                 )
             },
-        colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.9f) else MaterialTheme.colorScheme.primaryContainer
+        colors  = CardDefaults.cardColors(
+            contentColor = Color.Black, // Brown for text and icon
+            containerColor = Color(0xFFE3F2FD) // Warm beige for a softer look
         ),
         shape = RoundedCornerShape(16.dp),
         onClick = {
@@ -270,10 +263,44 @@ fun GameTypeCard(
             Text(
                 text = gameType.name,
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                color = Color.Black,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 8.dp)
             )
         }
     }
 }
+
+@Composable
+fun AnimatedChooseYourGame() {
+    var isVisible by remember { mutableStateOf(false) }
+
+    // Trigger visibility change
+    LaunchedEffect(Unit) {
+        isVisible = true
+    }
+
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = fadeIn(animationSpec = tween(2000))
+    ) {
+        Box(
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Choose Your Game",
+                style = TextStyle(
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontStyle = FontStyle.Italic,
+                    textAlign = TextAlign.Center,
+                    color = Color.Black,
+                ),
+                modifier = Modifier
+                    .padding(top = 64.dp, start = 16.dp)
+                    .align(Alignment.Center)
+            )
+        }
+    }
+}
+

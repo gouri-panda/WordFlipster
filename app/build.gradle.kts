@@ -13,8 +13,8 @@ android {
         applicationId = "com.javix.wordflipster"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 3
+        versionName = "1.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.androidx.junit.ktx)
     testImplementation(libs.junit)
+    testImplementation(libs.junit.jupiter)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -106,6 +107,12 @@ dependencies {
 
     testImplementation(libs.kotlinx.coroutines.test)
     implementation("androidx.compose.animation:animation:1.6.0")
+
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.29.0-alpha")
+    implementation("androidx.media3:media3-exoplayer:1.1.0")
+    implementation("androidx.media3:media3-ui:1.1.0")
+
+
 
 
 

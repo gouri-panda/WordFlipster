@@ -1,0 +1,652 @@
+[
+    [
+        "A measurement of distance equal to 5,280 feet",
+        "Mile"
+    ],
+    [
+        "A large building for public entertainment or exhibitions",
+        "Arena"
+    ],
+    [
+        "A term for a public transport vehicle",
+        "Bus"
+    ],
+    [
+        "The process of growing plants",
+        "Gardening"
+    ],
+    [
+        "A basic shape with four sides",
+        "Square"
+    ],
+    [
+        "What comes after midnight?",
+        "Morning"
+    ],
+    [
+        "A bird often associated with wisdom",
+        "Owl"
+    ],
+    [
+        "The first month of the year",
+        "January"
+    ],
+    [
+        "A device for measuring time",
+        "Clock"
+    ],
+    [
+        "The process of turning a seed into a plant",
+        "Germination"
+    ],
+    [
+        "The fastest animal on land",
+        "Cheetah"
+    ],
+    [
+        "Not large but ____",
+        "Small"
+    ],
+    [
+        "The largest mammal",
+        "Blue Whale"
+    ],
+    [
+        "The type of tree that produces acorns",
+        "Oak"
+    ],
+    [
+        "A fruit that is yellow and often peeled",
+        "Banana"
+    ],
+    [
+        "A famous Italian food made with dough, cheese, and toppings",
+        "Pizza"
+    ],
+    [
+        "The liquid that makes up most of the Earth's surface",
+        "Water"
+    ],
+    [
+        "A popular social media platform with blue bird",
+        "Twitter"
+    ],
+    [
+        "A popular holiday in December",
+        "Christmas"
+    ],
+    [
+        "An animal that hops and carries its babies in a pouch",
+        "Kangaroo"
+    ],
+    [
+        "A human sense",
+        "Sight"
+    ],
+    [
+        "A famous mountain in the Himalayas",
+        "Mount Everest"
+    ],
+    [
+        "A mythical creature that breathes fire",
+        "Dragon"
+    ],
+    [
+        "The area of the Earth that receives direct sunlight",
+        "Equator"
+    ],
+    [
+        "A person who cuts hair professionally",
+        "Barber"
+    ],
+    [
+        "A famous ancient wonder",
+        "Giza"
+    ],
+    [
+        "The city known as the Big Apple",
+        "New York"
+    ],
+    [
+        "A type of boat",
+        "Ship"
+    ],
+    [
+        "A sharp tool used for cutting",
+        "Knife"
+    ],
+    [
+        "An edible, yellow fruit",
+        "Banana"
+    ],
+    [
+        "The most common color of the sky during the day",
+        "Blue"
+    ],
+    [
+        "A liquid used to quench thirst",
+        "Water"
+    ],
+    [
+        "A popular card game",
+        "Poker"
+    ],
+    [
+        "A language spoken in Brazil",
+        "Portuguese"
+    ],
+    [
+        "A popular video-sharing website",
+        "YouTube"
+    ],
+    [
+        "An insect that produces honey",
+        "Bee"
+    ],
+    [
+        "A kind of tree that produces syrup",
+        "Maple"
+    ],
+    [
+        "A famous sport involving a ball and a net",
+        "Basketball"
+    ],
+    [
+        "A tool for digging",
+        "Shovel"
+    ],
+    [
+        "The first planet from the sun",
+        "Mercury"
+    ],
+    [
+        "A body of water smaller than a sea",
+        "Lake"
+    ],
+    [
+        "A machine used for washing clothes",
+        "Washing machine"
+    ],
+    [
+        "A famous wizard who fought Voldemort",
+        "Harry Potter"
+    ],
+    [
+        "A unit of time, one-sixtieth of a minute",
+        "Second"
+    ],
+    [
+        "A fast, high-performance vehicle",
+        "Sports car"
+    ],
+    [
+        "A large body of water",
+        "Ocean"
+    ],
+    [
+        "A device used to connect to the internet",
+        "Router"
+    ],
+    [
+        "A type of dance that originated in Argentina",
+        "Tango"
+    ],
+    [
+        "A color between blue and purple",
+        "Indigo"
+    ],
+    [
+        "A type of dog that herds sheep",
+        "Collie"
+    ],
+    [
+        "A fruit that is often used in pies and crisps",
+        "Apple"
+    ],
+    [
+        "The process of breathing in",
+        "Inhalation"
+    ],
+    [
+        "The process by which plants make their own food",
+        "Photosynthesis"
+    ],
+    [
+        "An animal known for its black and white stripes",
+        "Zebra"
+    ],
+    [
+        "A reptile that lives in water",
+        "Crocodile"
+    ],
+    [
+        "The opposite of right",
+        "Left"
+    ],
+    [
+        "A term for a computer\u2019s brain",
+        "Processor"
+    ],
+    [
+        "A water-based activity",
+        "Swimming"
+    ],
+    [
+        "A common sound made by a dog",
+        "Bark"
+    ],
+    [
+        "A continent located below Asia",
+        "Australia"
+    ],
+    [
+        "A synonym for happy",
+        "Joyful"
+    ],
+    [
+        "A popular form of exercise involving lifting weights",
+        "Bodybuilding"
+    ],
+    [
+        "A fruit with a hard pit and a juicy flesh",
+        "Peach"
+    ],
+    [
+        "A popular beverage made from leaves",
+        "Tea"
+    ],
+    [
+        "A large vehicle used for transporting goods",
+        "Truck"
+    ],
+    [
+        "The study of stars and planets",
+        "Astronomy"
+    ],
+    [
+        "A season after summer",
+        "Fall"
+    ],
+    [
+        "The official language of Egypt",
+        "Arabic"
+    ],
+    [
+        "A type of fruit that is red or green",
+        "Apple"
+    ],
+    [
+        "A color of the rainbow",
+        "Yellow"
+    ],
+    [
+        "The capital of France",
+        "Paris"
+    ],
+    [
+        "A green vegetable often used in salads",
+        "Lettuce"
+    ],
+    [
+        "A large rodent with sharp teeth",
+        "Beaver"
+    ],
+    [
+        "An item often used to carry things",
+        "Bag"
+    ],
+    [
+        "A common pet known for purring",
+        "Cat"
+    ],
+    [
+        "A bird that can't fly",
+        "Penguin"
+    ],
+    [
+        "A famous statue in Rio de Janeiro",
+        "Christ the Redeemer"
+    ],
+    [
+        "A common color of roses",
+        "Red"
+    ],
+    [
+        "The number of continents on Earth",
+        "Seven"
+    ],
+    [
+        "The opposite of rich",
+        "Poor"
+    ],
+    [
+        "Something that can be seen in the sky at night",
+        "Star"
+    ],
+    [
+        "The process of changing liquid into vapor",
+        "Evaporation"
+    ],
+    [
+        "A famous fictional wizard",
+        "Harry Potter"
+    ],
+    [
+        "The main ingredient in guacamole",
+        "Avocado"
+    ],
+    [
+        "The opposite of inside",
+        "Outside"
+    ],
+    [
+        "The opposite of love",
+        "Hate"
+    ],
+    [
+        "The opposite of busy",
+        "Idle"
+    ],
+    [
+        "The largest continent",
+        "Asia"
+    ],
+    [
+        "An object that helps you see at night",
+        "Flashlight"
+    ],
+    [
+        "A common household item used to clean floors",
+        "Mop"
+    ],
+    [
+        "What animal is known for its trunk?",
+        "Elephant"
+    ],
+    [
+        "The color of an emerald",
+        "Green"
+    ],
+    [
+        "The first letter of the English alphabet",
+        "A"
+    ],
+    [
+        "A measurement of distance equal to 5,280 feet",
+        "Mile"
+    ],
+    [
+        "A large building for public entertainment or exhibitions",
+        "Arena"
+    ],
+    [
+        "A term for a public transport vehicle",
+        "Bus"
+    ],
+    [
+        "The process of growing plants",
+        "Gardening"
+    ],
+    [ "A famous wizarding school in Harry Potter",  "Hogwarts"],
+    [ "Director of 'Inception'",  "Christopher"],
+    [ "Lead actor in 'Iron Man'",  "Robert"],
+    [ "The fictional planet in 'Avatar'",  "Pandora"],
+    [ "The actor who played 'The Joker' in 'The Dark Knight'",  "HeathLedger"],
+    [ "Director of 'Pulp Fiction'",  "Quentin"],
+    [ "Actor who starred in 'The Pursuit of Happyness'",  "Will"],
+    [ "The iconic director of 'Jaws' and 'E.T.'",  "Steven"],
+    [ "The famous superhero team led by Captain America",  "Avengers"],
+    [ "The main character in 'The Matrix'",  "Neo"],
+    [ "Director of 'Titanic'",  "James"],
+    [ "The fictional character known as 'The Boy Who Lived'",  "Harry"],
+    [ "Lead actress in 'La La Land'",  "Emma"],
+    [ "The fictional city where Batman resides",  "Gotham"],
+    [ "The name of the spaceship in 'Star Wars: A New Hope'",  "Falcon"],
+    [ "The movie that won the Oscar for Best Picture in 2020",  "Parasite"],
+    [ "Famous director known for 'Jurassic Park' and 'Schindler's List'",  "Spielberg"],
+    [ "The actor who played the titular character in 'Sherlock Holmes'",  "Robert"],
+    [ "The fictional planet in 'Star Wars'",  "Tatooine"],
+    [ "The year the movie 'The Godfather' was released",  "1972"],
+    [ "Director of the 'Matrix' trilogy",  "Wachowskis"],
+    [ "The fictional country in 'Black Panther'",  "Wakanda"],
+    [ "The actor who voiced Darth Vader in 'Star Wars'",  "James"],
+    [ "The director of 'The Avengers' (2012)",  "Joss"],
+    [ "The main antagonist in 'The Lion King'",  "Scar"],
+    [ "The superhero who can crawl on walls",  "SpiderMan"],
+    [ "The fictional kingdom in 'Frozen'",  "Arendelle"],
+    [ "A famous British secret agent played by Daniel Craig",  "JamesBond"],
+    [ "The primary setting for 'Breaking Bad'",  "Albuquerque"],
+    [ "The iconic red carpet event where stars are honored",  "Oscars"],
+    [ "The superhero alter ego of Bruce Wayne",  "Batman"],
+    [ "The movie in which Tom Hanks plays a character named Forrest",  "ForrestGump"],
+    [ "The actor who starred as 'The Hulk' in the Marvel Cinematic Universe",  "Mark"],
+    [ "The first 'Harry Potter' film was released in this year",  "2001"],
+    [ "Director of 'Avatar'",  "James"],
+    [ "The superhero who wears a red suit and can run at the speed of sound",  "Flash"],
+    [ "A movie about a toy cowboy and spaceman",  "ToyStory"],
+    [ "A famous director known for 'The Shining' and 'A Clockwork Orange'",  "Stanley"],
+    [ "The film series featuring the character Indiana Jones",  "IndianaJones"],
+    [ "The character known as 'The Man in Black' in 'Westworld'",  "William"],
+    [ "The main antagonist in the 'Avengers' movies",  "Thanos"],
+    [ "The actor who portrayed the Joker in 'The Dark Knight'",  "Heath"],
+    [ "The main villain in 'Frozen'",  "Elsa"],
+    [ "The actor who played 'Iron Man' in the Marvel Cinematic Universe",  "Robert"],
+    [ "The famous movie about a shark terrorizing a beach town",  "Jaws"],
+    [ "The movie with a character named Jack Dawson",  "Titanic"],
+    [ "The movie about a monster causing destruction in Japan",  "Godzilla"],
+    [ "The director of 'The Dark Knight Trilogy'",  "Christopher"],
+    [ "The director of 'Avatar'",  "James"],
+    ["A tool used for cutting paper", "Scissors"],
+    ["The opposite of 'yes'", "No"],
+    ["The capital city of France", "Paris"],
+    ["A celestial body that orbits the Earth", "Moon"],
+    ["A unit of time equal to 60 seconds", "Minute"],
+    ["A structure spanning a river or road", "Bridge"],
+    ["The liquid part of soup", "Broth"],
+    ["A place to borrow books", "Library"],
+    ["The process of creating software", "Programming"],
+    ["The season after winter", "Spring"],
+    ["An insect known for making honey", "Bee"],
+    ["A piece of furniture for sitting", "Chair"],
+    ["The largest mammal on Earth", "Whale"],
+    ["A sweet treat made from cacao", "Chocolate"],
+    ["The natural satellite of Earth", "Moon"],
+    ["A game played on a checkered board", "Chess"],
+    ["The opposite of 'east'", "West"],
+    ["A container for carrying groceries", "Bag"],
+    ["An electronic device for making calls", "Phone"],
+    ["A body of water surrounded by land", "Lake"],
+    ["A musical instrument with strings", "Guitar"],
+    ["A structure for housing birds", "Nest"],
+    ["The liquid produced by flowers to attract pollinators", "Nectar"],
+    ["A vehicle with two wheels powered by pedaling", "Bicycle"],
+    ["A round fruit with red or green skin", "Apple"],
+    ["The study of the stars and planets", "Astronomy"],
+    ["The opposite of 'up'", "Down"],
+    ["A soft, fluffy covering for a bed", "Blanket"],
+    ["The part of the body used for seeing", "Eye"],
+    ["A machine for flying in the sky", "Airplane"],
+    ["A type of tree that produces acorns", "Oak"],
+    ["A flat, round food item often topped with cheese and sauce", "Pizza"],
+    ["A writing tool with ink", "Pen"],
+    ["The color of the sky on a clear day", "Blue"],
+    ["A small rodent known for its whiskers", "Mouse"],
+    ["A room where food is cooked", "Kitchen"],
+    ["A large natural water body", "Ocean"],
+    ["A person who paints pictures", "Artist"],
+    ["An animal known for its trunk", "Elephant"],
+    ["The opposite of 'hot'", "Cold"],
+    ["A person who studies ancient cultures", "Archaeologist"],
+    ["The device used to compute or perform calculations", "Calculator"],
+    ["The process of preserving food by freezing", "Freezing"],
+    ["A stringed instrument played with a bow", "Violin"],
+    ["A liquid used to quench thirst", "Water"],
+    ["A symbol used in mathematics to denote addition", "Plus"],
+    ["The smallest unit of life", "Cell"],
+    ["A card game for two players", "Poker"],
+    ["The place where planes land and take off", "Airport"],
+    ["A piece of clothing worn on the head", "Hat"],
+    ["The opposite of 'fast'", "Slow"],
+    ["A type of footwear", "Shoe"],
+    ["An edible seed that grows underground", "Peanut"],
+    ["The season of falling leaves", "Autumn"],
+    ["A soft sound made by cats", "Purr"],
+    ["A device for measuring time", "Clock"],
+    ["A tall plant with green leaves", "Tree"],
+    ["The frozen form of water", "Ice"],
+    ["A sport played on ice with skates", "Hockey"],
+    ["A feeling of happiness", "Joy"],
+    ["A structure where bees live", "Hive"],
+    ["The force that attracts objects to the Earth", "Gravity"],
+    ["The science of numbers", "Mathematics"],
+    ["A room in a school where lessons are taught", "Classroom"],
+    ["A vehicle used for transporting goods", "Truck"],
+    ["A precious metal often used for jewelry", "Gold"],
+    ["A tool for driving nails", "Hammer"],
+    ["A type of flower with a pleasant fragrance", "Rose"],
+    ["A sweet yellow fruit with a peel", "Banana"],
+    ["The opposite of 'night'", "Day"],
+    ["A small book with blank pages for writing", "Notebook"],
+    ["The main character in a story", "Protagonist"],
+    ["A short journey for pleasure", "Trip"],
+    ["The hottest planet in the solar system", "Venus"],
+    ["A thin piece of metal for cutting", "Blade"],
+    ["The process of preparing and cooking food", "Cooking"],
+    ["A game played with a bat and ball", "Baseball"],
+    ["A type of fuel for cars", "Gasoline"],
+    ["A structure for keeping animals", "Barn"],
+    ["The number after nine", "Ten"],
+    ["The opposite of 'rich'", "Poor"],
+    ["A container for holding liquids", "Bottle"],
+    ["A large area of flat land", "Plain"],
+    ["The place where ships dock", "Harbor"],
+    ["A sharp tool used for cutting wood", "Saw"],
+    ["A person who writes books", "Author"],
+    ["The color of grass", "Green"],
+    ["A vehicle for space exploration", "Rocket"],
+    ["A farm animal that produces milk", "Cow"],
+    ["The capital city of Japan", "Tokyo"],
+    ["The process of capturing light to create images", "Photography"],
+    ["A sport played with a round ball on a field", "Soccer"],
+    ["A device used to cool a room", "Fan"],
+    ["A day when people do not work", "Holiday"],
+    ["The opposite of 'weak'", "Strong"],
+    ["A piece of jewelry worn around the neck", "Necklace"],
+    ["A place where fish are kept", "Aquarium"],
+    ["A body part used for smelling", "Nose"],
+    ["A protective covering for the head", "Helmet"],
+    ["The month after December", "January"],
+    ["A bird known for its colorful feathers", "Peacock"],
+    ["A person who repairs cars", "Mechanic"],
+    ["A person who delivers mail", "Postman"],
+    ["A tool used to dig in the ground", "Shovel"],
+    ["A planet in our solar system with rings", "Saturn"],
+    ["The opposite of 'noisy'", "Quiet"],
+    ["A vehicle used for emergency medical transport", "Ambulance"],
+    ["The study of animals", "Zoology"],
+    ["A place where bread is baked", "Bakery"],
+    ["A short piece of writing about a single topic", "Essay"],
+    ["The part of the body used for hearing", "Ear"],
+    ["A round object used in many sports", "Ball"],
+    ["A type of footwear worn in warm weather", "Sandal"],
+    ["The opposite of 'dark'", "Light"],
+    ["A soft drink made from lemons", "Lemonade"],
+    ["A large body of saltwater", "Sea"],
+    ["The opposite of 'early'", "Late"],
+    ["A weapon used in archery", "Bow"],
+    ["A person who plays musical instruments", "Musician"],
+    ["A place where people perform plays", "Theater"],
+    ["A person who studies plants", "Botanist"],
+    ["A flat surface for eating meals", "Table"],
+    ["The study of the Earth", "Geology"],
+    ["The opposite of 'small'", "Large"],
+    ["A person who creates art", "Painter"],
+    ["The liquid that falls from clouds", "Rain"],
+    ["A person who takes care of patients", "Nurse"],
+    ["The part of a plant that grows underground", "Root"],
+    ["A period of 100 years", "Century"],
+    ["The opposite of 'high'", "Low"],
+    ["A container for storing water", "Tank"],
+    ["A tool used for measuring length", "Ruler"],
+    ["A bird known for its ability to mimic sounds", "Parrot"],
+    ["A part of a car that shows speed", "Speedometer"],
+    ["A person who protects people or property", "Guard"],
+    ["A liquid used for cleaning", "Soap"],
+    ["A place where goods are sold", "Market"],
+    ["A machine for printing documents", "Printer"],
+    ["A bird known for its ability to swim", "Duck"],
+    ["A person who writes news articles", "Journalist"],
+    ["A color made by mixing red and blue", "Purple"],
+    ["A vehicle that travels underwater", "Submarine"],
+    ["A small bird known for its sweet song", "Canary"],
+    ["A type of tree known for its needles", "Pine"],
+    ["A tool used for writing on paper", "Pencil"],
+    ["A season when snow falls", "Winter"],
+    ["A piece of clothing for the hands", "Glove"],
+    ["A person who studies the weather", "Meteorologist"],
+    ["A place where people swim", "Pool"],
+    ["The study of space", "Astronomy"],
+    ["The opposite of 'soft'", "Hard"],
+    ["A large wild cat with a mane", "Lion"],
+    ["A container for storing trash", "Bin"],
+    ["A machine for cleaning floors", "Vacuum"],
+    ["A bird known for its large size and long legs", "Ostrich"],
+    ["A sweet liquid made by bees", "Honey"],
+    ["A person who prepares food", "Chef"],
+    ["A place where people go to exercise", "Gym"],
+    ["A stringed instrument smaller than a violin", "Viola"],
+    ["The opposite of 'start'", "Stop"],
+    ["A person who sells goods", "Merchant"],
+    ["A type of footwear worn for sports", "Sneaker"],
+    ["A small piece of land surrounded by water", "Island"],
+    ["A type of tree that loses its leaves in fall", "Maple"],
+    ["A vehicle that runs on tracks", "Train"],
+    ["A soft cushion for sleeping", "Pillow"],
+    ["A small insect known for its light", "Firefly"],
+    ["A protective covering for books", "Cover"],
+    ["A tool used for sewing", "Needle"],
+    ["The opposite of 'happy'", "Sad"],
+    ["A piece of paper with printed information", "Flyer"],
+    ["A person who catches fish", "Fisherman"],
+    ["The opposite of 'full'", "Empty"],
+    ["A device used for boiling water", "Kettle"],
+    ["A game played with cards", "Solitaire"],
+    ["A type of building where people live", "Apartment"],
+    ["A person who designs buildings", "Architect"],
+    ["The opposite of 'left'", "Right"],
+    ["A large bird of prey", "Eagle"],
+    ["A tool used for cutting wood", "Axe"],
+    ["A person who studies rocks", "Geologist"],
+    ["The color of the sun", "Yellow"],
+    ["A device for making coffee", "Coffee maker"],
+    ["A piece of furniture for holding books", "Bookshelf"],
+    ["A tool used for gardening", "Hoe"],
+    ["The opposite of 'open'", "Closed"],
+    ["A type of animal with scales", "Reptile"],
+    ["A sweet frozen dessert", "Icecream"],
+    ["A person who studies insects", "Entomologist"],
+    ["A bird known for its white feathers", "Swan"],
+    ["A place where ships are built", "Shipyard"],
+    ["A round object that reflects images", "Mirror"],
+    ["The opposite of 'north'", "South"],
+    ["A tool used for hitting nails", "Hammer"],
+    ["A type of fruit that is orange", "Orange"],
+    ["The opposite of 'love'", "Hate"],
+    ["A place where food is stored cold", "Refrigerator"],
+    ["A stringed instrument played with fingers", "Harp"],
+    ["The opposite of 'clean'", "Dirty"],
+    ["A person who tells stories", "Storyteller"],
+    ["A tool for holding objects together", "Clamp"],
+    ["A protective covering for the feet", "Boot"],
+    ["A place where people study", "School"],
+    ["A vehicle used for racing", "Racecar"],
+    ["A sweet treat made of sugar", "Candy"],
+    ["A type of bird known for its speed", "Falcon"],
+    ["A person who leads a group", "Leader"],
+    ["A container for carrying liquids", "Jug"],
+    ["The opposite of 'above'", "Below"],
+    ["A large body of fresh water", "River"],
+    ["The opposite of 'slow'", "Fast"],
+    ["A place where people buy groceries", "Supermarket"],
+    ["A protective covering for the body", "Armor"]
+]

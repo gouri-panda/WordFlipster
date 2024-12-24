@@ -7,4 +7,5 @@
     <string name="word_shuffle_hint">Can you find the hidden word? Rearrange the letters to solve the puzzle! 💡</string>
     <string name="word_cryptic_hint"> Each word has been scrambled by shifting its letters forward or backward in the alphabet. Your task is to uncover the original word! Remember, the alphabet loops around — \'A\' can follow \'Z.\'E.g. The scrambled word is \'Fdh,\' and by shifting each letter backward by 3, you get \'Cat\'.</string>
     <string name="word_cryptic">Word Cryptic</string>
+    <string name="word_code">Word Code</string>
 </resources>

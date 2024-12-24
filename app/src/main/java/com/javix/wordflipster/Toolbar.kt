@@ -26,7 +26,7 @@ fun TopBar(navController: NavController,screen : Screens = Screens.WelcomeScreen
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 8.dp)
+            .padding(top = 16.dp, end =4.dp)
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(4.dp),

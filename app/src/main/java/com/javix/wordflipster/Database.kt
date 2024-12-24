@@ -12,11 +12,11 @@ import com.google.android.gms.games.Game
 import com.google.gson.Gson
 import java.util.Date
 
-@Database(entities = [ChallengeEntity::class], version = 3, exportSchema = false)
+@Database(entities = [ChallengeEntity::class, QuoteEntity::class], version = 4, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class WordFlipsterDatabase : RoomDatabase() {
     abstract fun challengeDao(): ChallengeDao
-
+    abstract fun quotesDao(): QuotesLevelsDao
     companion object {
         @Volatile
         private var INSTANCE: WordFlipsterDatabase? = null
@@ -28,8 +28,10 @@ abstract class WordFlipsterDatabase : RoomDatabase() {
                     context.applicationContext,
                     WordFlipsterDatabase::class.java,
                     "challenge_database"
-                ).addMigrations(MIGRATION_1_2)
+                )
+                    .addMigrations(MIGRATION_1_2)
                     .addMigrations(Migration_2_3)
+                    .addMigrations(MIGRATION_3_4)
                     .build()
 
                 INSTANCE = instance
@@ -46,6 +48,26 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
 val Migration_2_3 = object: Migration(2,3) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE challenges ADD COLUMN gameType TEXT")
+    }
+}
+val MIGRATION_3_4 = object : Migration(3, 4) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        // SQL to create the new table
+        database.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS quote_levels (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                quote TEXT NOT NULL,
+                author TEXT NOT NULL,
+                birth TEXT NOT NULL,
+                death TEXT NOT NULL,
+                others TEXT,
+                timeTaken INTEGER,
+                date INTEGER NOT NULL,
+                gameType TEXT
+            )
+            """.trimIndent()
+        )
     }
 }
 

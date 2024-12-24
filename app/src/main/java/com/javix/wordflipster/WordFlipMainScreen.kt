@@ -49,7 +49,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -66,6 +65,8 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -74,7 +75,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.gson.Gson
@@ -85,97 +85,104 @@ import kotlinx.coroutines.flow.filter
 
 @Composable
 fun WordFlipMainScreen(navController: NavController, category: String) {
-    var showDialog by remember { mutableStateOf(false) }
-    BackHandler {
-        showDialog = true
-    }
-    val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(
-        LocalContext.current.applicationContext, category = category
-    ) { challenge ->
-        finishChallenge(challenge, navController)
-    }
-    )
-
-    val charLists = homeViewModel.getCharList()
-    homeViewModel.updateCurrentScreen(Screens.WordFlipHomeScreen)
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = { Text("Exit Game?") },
-            text = { Text("Are you sure you want to exit? Your progress will be lost.") },
-            confirmButton = {
-                TextButton(onClick = {
-                    showDialog = false
-                    navController.popBackStack()
-                }) {
-                    Text("Yes")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDialog = false }) {
-                    Text("No")
-                }
-            }
+    BaseScreen {
+        var showDialog by remember { mutableStateOf(false) }
+        BackHandler {
+            showDialog = true
+        }
+        val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(
+            LocalContext.current.applicationContext, category = category
+        ) { challenge ->
+            finishChallenge(challenge, navController)
+        }
         )
-    }
-    if (!homeViewModel.isLoading.value) {
-        Box(
-            modifier = Modifier
-                .padding(8.dp)
-                .padding(WindowInsets.ime.asPaddingValues())
-        ) {
-            Column(
+
+        val charLists = homeViewModel.getCharList()
+        homeViewModel.updateCurrentScreen(Screens.WordFlipHomeScreen)
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text("Exit Game?") },
+                text = { Text("Are you sure you want to exit? Your progress will be lost.") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        showDialog = false
+                        navController.popBackStack()
+                    }) {
+                        Text("Yes")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDialog = false }) {
+                        Text("No")
+                    }
+                }
+            )
+        }
+        if (!homeViewModel.isLoading.value) {
+            Box(
                 modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .fillMaxSize()
+                    .padding(8.dp)
+                    .padding(WindowInsets.ime.asPaddingValues())
             ) {
-                TopBar(navController, screen = Screens.WordFlipHomeScreen) {} // Todo show dialog button exit if necessary
-
-
-                TimerAndCorrectObjectsWithTimerWrapper(
-                    homeViewModel
-                )
-
-                Box(
+                Column(
                     modifier = Modifier
+                        .align(Alignment.TopEnd)
                         .fillMaxSize()
-                        .padding(bottom = 32.dp),
-                    contentAlignment = Alignment.Center
                 ) {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                    TopBar(
+                        navController,
+                        screen = Screens.WordFlipHomeScreen
+                    ) {} // Todo show dialog button exit if necessary
+
+
+                    TimerAndCorrectObjectsWithTimerWrapper(
+                        homeViewModel
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(bottom = 32.dp),
+                        contentAlignment = Alignment.Center
                     ) {
-                        WordGridWithWoodenTiles(charLists[homeViewModel.currentWordIndex.collectAsState().value])
-                        ArrowButton()
-                        InputWordWrapperView(
-                            charLists[homeViewModel.currentWordIndex.collectAsState().value],
-                            currentWordIndex = homeViewModel.currentWordIndex.collectAsState().value,
-                            isVibrationEnabled = homeViewModel.isVibrationEnabled()
-                        ) { count, isCorrectWord ->
-                            homeViewModel.currentWordIndex.value = count
-                            homeViewModel.updateTotalWords(homeViewModel.totalWords.value + 1)
-                            if (isCorrectWord) {
-                                homeViewModel.updateCorrectWords(homeViewModel.wordsSolved.value + 1)
-                            }
-                        }
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Button(onClick = {
-                                homeViewModel.finishGame { challenge ->
-                                    finishChallenge(challenge, navController)
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            WordGridWithWoodenTiles(charLists[homeViewModel.currentWordIndex.collectAsState().value])
+                            ArrowButton()
+                            InputWordWrapperView(
+                                charLists[homeViewModel.currentWordIndex.collectAsState().value],
+                                currentWordIndex = homeViewModel.currentWordIndex.collectAsState().value,
+                                isVibrationEnabled = homeViewModel.isVibrationEnabled()
+                            ) { count, isCorrectWord ->
+                                homeViewModel.currentWordIndex.value = count
+                                homeViewModel.updateTotalWords(homeViewModel.totalWords.value + 1)
+                                if (isCorrectWord) {
+                                    homeViewModel.updateCorrectWords(homeViewModel.wordsSolved.value + 1)
                                 }
-                            },
-                                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue),
-                            ) {
-                                Text("Finish", color = Color.White)
+                            }
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Button(
+                                    onClick = {
+                                        homeViewModel.finishGame { challenge ->
+                                            finishChallenge(challenge, navController)
+                                        }
+                                    },
+                                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue),
+                                    shape = RoundedCornerShape(30)
+                                ) {
+                                    Text("Finish", color = Color.White)
+                                }
                             }
                         }
                     }
                 }
             }
+        } else {
+            CircularLoadingIndicator()
         }
-    } else {
-        CircularLoadingIndicator()
     }
 }
 
@@ -260,7 +267,7 @@ private fun InputWordWrapperView(
                     keyboardType = KeyboardType.Text,
                     capitalization = KeyboardCapitalization.Characters
                 ),
-                charColor = Color.Blue,
+                charColor = Color.Black,
                 correctWord = word,
                 isVibrationEnabled = isVibrationEnabled,
                 onValueChange = { value ->
@@ -324,8 +331,8 @@ fun InputWordView(
 
                     // Set color based on correctness, default to a neutral color for empty boxes
                     val borderColor = when {
-                        inputChar == null -> Color.Gray  // Default color for empty boxes
-                        isCorrectChar -> Color.Blue      // Blue if correct
+                        inputChar == null -> Color(0xFFBBA67A)  // Default color for empty boxes
+                        isCorrectChar -> Color(0xFFBBA67A)      // Green if correct
                         else -> {
                             // Trigger vibration if input is incorrect
                             if (isVibrationEnabled) {
@@ -394,14 +401,20 @@ private fun CharView(
         Modifier
             .size(containerSize)
             .border(
-                width = 1.dp,
+                width = 2.dp,
                 color = containerColor,
                 shape = RoundedCornerShape(containerRadius)
             )
             .scale(scale)
-            .padding(bottom = 4.dp)
-            .clip(RoundedCornerShape(containerRadius))
-            .background(charBackground)
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFFDCC49A), // Slightly darker at the top
+                        Color(0xFFF5E1B8)  // Lighter at the bottom
+                    )
+                ),
+                shape = RoundedCornerShape(8.dp)
+            )
 
 
     Column(
@@ -417,8 +430,12 @@ private fun CharView(
             text = char,
             color = charColor,
             modifier = modifier.wrapContentHeight(),
-            style = MaterialTheme.typography.body1,
-            fontSize = charSize,
+            style = TextStyle(
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                textAlign = TextAlign.Center
+            ),
             textAlign = TextAlign.Center,
         )
     }
@@ -437,33 +454,38 @@ fun WordGridWithWoodenTiles(word: List<String>) { // Here a letter is a string
         ) {
             word.forEach { letter ->
                 LazyRow(
-                    modifier = Modifier.padding(8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    modifier = Modifier.padding(2.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     items(letter.length) { index ->
                         Box(
                             modifier = Modifier
-                                .size(50.dp)
-                                .border(1.dp, Color(0xFF8B4513)) // Border color for wooden effect
-                                .background(
-                                    Brush.linearGradient(
-                                        colors = listOf(
-                                            Color(0xFFDEB887),
-                                            Color(0xFFA0522D)
-                                        ) // Simulating wood
-                                    )
+                                .size(45.dp)
+                                .border(
+                                    width = 2.dp,
+                                    color = Color(0xFFBBA67A), // Border color to match the style
+                                    shape = RoundedCornerShape(8.dp)
                                 )
-                                .shadow(
-                                    4.dp,
-                                    shape = RoundedCornerShape(4.dp)
-                                ), // Add a shadow for 3D effect
+                                .background(
+                                    brush = Brush.verticalGradient(
+                                        colors = listOf(
+                                            Color(0xFFF5E1B8),  // Lighter at the bottom
+                                            Color(0xFFDCC49A) // Slightly darker at the top
+                                        )
+                                    ),
+                                    shape = RoundedCornerShape(8.dp)
+                                ),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = letter[index].toString(),
-                                style = MaterialTheme.typography.h5,
-                                color = Color.Black,
-                                modifier = Modifier.padding(4.dp) // Adjust text positioning
+                                style = TextStyle(
+                                    fontSize = 28.sp, // Adjust to match the image's text size
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black, // Text color
+                                    fontFamily = FontFamily.Serif // Optional: Use a serif font if needed
+                                ),
+                                modifier = Modifier.padding(4.dp)
                             )
                         }
                     }
