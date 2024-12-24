@@ -109,6 +109,9 @@ dependencies {
     implementation("androidx.compose.animation:animation:1.6.0")
 
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.29.0-alpha")
+    implementation("androidx.media3:media3-exoplayer:1.1.0")
+    implementation("androidx.media3:media3-ui:1.1.0")
+
 
 
 

@@ -81,6 +81,8 @@ fun WordigmaScreen(navHostController: NavHostController) {
             navHostController.popBackStack()
         }
         viewModel.getCurrentLevel()
+        BackgroundMusic(R.raw.lofi, play = true)
+
 
         Column(
             modifier = Modifier

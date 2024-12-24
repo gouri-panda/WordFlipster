@@ -1,6 +1,15 @@
 package com.javix.wordflipster
 
 import android.content.Context
+import android.media.browse.MediaBrowser
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
 import java.io.IOException
 import java.nio.charset.Charset
 
@@ -29,3 +38,25 @@ fun loadJSONFromAsset(context: Context, fileName: String): String? {
         null
     }
 }
+
+@Composable
+fun BackgroundMusic(mediaResource: Int, play: Boolean) {
+    val context = LocalContext.current
+    val player = remember {
+        ExoPlayer.Builder(context).build().apply {
+            val mediaItem = MediaItem.fromUri("android.resource://${context.packageName}/$mediaResource")
+            setMediaItem(mediaItem)
+            prepare()
+            repeatMode = Player.REPEAT_MODE_ONE
+        }
+    }
+
+    LaunchedEffect(play) {
+        if (play) player.play() else player.pause()
+    }
+
+    DisposableEffect(Unit) {
+        onDispose { player.release() }
+    }
+}
+
